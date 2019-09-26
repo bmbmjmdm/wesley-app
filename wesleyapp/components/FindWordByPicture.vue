@@ -1,0 +1,295 @@
+<template>
+    <view class="container">
+        <view class="word-to-find">
+            <Word
+                v-if="shouldShowTargetWord && showTarget"
+                ref="targetWordRef"
+                :key="curWords.targetWord + curWords.allWords"
+                :word="curWords.targetWord"
+                :highlightSpeed="highlightSpeed"
+                :text-to-speech="textToSpeech"
+                :wordPressed="finishedTargetWord"
+                :setManuallyReading="setManuallyReading"
+                :manuallyReading="manuallyReading"
+                :narrating="false"
+                :continueSentence="()=>{}" />
+        </view>
+        <WordGrid
+            v-if="showGrid"
+            ref="wordGrid"
+            :finish-narration="finishNarration"
+            :words="curWords.allWords"
+            :highlight-speed="highlightSpeed"
+            :text-to-speech="textToSpeech"
+            :word-pressed="wordPressed"
+            :narrating="narrating"
+            :setManuallyReading="setManuallyReading"
+            :manuallyReading="manuallyReading"
+            :tutorial="tutorial"
+            :targetWord="curWords.targetWord" />
+    </view>
+</template>
+
+<script>
+import Word from './Word'
+import WordGrid from './WordGrid'
+import afterSpeak from './afterSpeak'
+import { updateData } from './userData'
+import userData from './userData'
+import getNextWord from './wordPicker'
+
+export default {
+    props: {
+        shadow: {
+            type: Object,
+            required: true
+        },
+        randomActivity: {
+            type: Function,
+            required: true
+        },
+        changeBackground: {
+            type: Function,
+            required: true
+        },
+        textToSpeech: {
+            type: Object,
+            required: true
+        },
+        highlightSpeed: {
+            type: Number,
+            required: true
+        },
+        playRandomSound: {
+            type: Function,
+            required: true
+        },
+        sayGJ: {
+            type: Function,
+            required: true
+        }
+    },
+    
+    components: {
+        Word,
+        WordGrid
+    },
+
+    data () {
+        return {
+            narrating: false,
+            curWords: {targetWord: "", allWords: [{word: "", pic: null}, {word: "", pic: null}, {word: "", pic: null}, {word: "", pic: null}] },
+            manuallyReading: false,
+            firstReading: true,
+            tutorial: true,
+            showGrid: false,
+            showTarget: false,
+            wordsFound: 0,
+            needsWordRead: true,
+            correctOnFirstTry: true,
+        }
+    },
+
+    mounted () {
+        this.getNext()
+    },
+
+    computed: {
+        // we only show the target word on easy mode. we speak it on all modes
+        shouldShowTargetWord () {
+            return userData.difficulty === "easy"
+        },
+
+        // we read the options on easy and normal mode, but not hard
+        shouldReadOptions () {
+            return userData.difficulty !== "hard"
+        }
+    },
+
+    methods: {
+        // Move on to the next target word. This does the following in order:
+        // Animates out the current words/pictures (and target word if on easy mode)
+        // Reads the new target word (and displays it if in easy mode)
+        // Displays the new words/pictures (and reads them if on normal/easy)
+        getNext () {
+            // after 4 words are found, go on to next activity
+            if (this.wordsFound >= 4) {
+                this.randomActivity()
+            }
+            // still in this activity, go on to next word
+            else {
+                this.correctOnFirstTry = true
+                // disable interaction
+                this.manuallyReading = true
+                this.narrating = true
+                this.firstReading = true
+                // hide these while we switch curWords
+                this.showGrid = false
+                this.showTarget = false
+                // move on to next word grid/target word
+                this.curWords = getNextWord("fwbp")
+                // show image and change background
+                this.overlayImage()
+            }
+        },
+
+        overlayImage () {
+            // WE DO NOT CURRENTLY OVERLAY AN IMAGE FOR THIS ACTIVITY
+            // this.showOverlay = true
+
+            // timeout is to allow the new image to fade in all the way
+            setTimeout(() => {
+                // this.showOverlay = false
+
+                // animate in target word
+                this.showTarget = true
+                var wordAnimateTime = 700
+                if (!this.shouldShowTargetWord) {
+                    wordAnimateTime = 0
+                }
+                // timeout is to allow word animation to finish
+                // if were in easy mode theres no animation so timeout time is 0
+                setTimeout(() => {
+                    // speak and highlight the word
+                    if (this.shouldShowTargetWord) {
+                        this.$refs.targetWordRef.readWord()
+                    }
+                    // we don't read the word here because:
+                    // its not easy mode so target word isnt displayed
+                    // the sentence hasnt been displayed yet
+                    // the background for this activity is generic, not the target word
+                    // due to the 3 above reasons, reading the word would be confusing. instead, we skip right to displaying the sentence
+                    else {
+                        //afterSpeak(this.textToSpeech, this.curWords.targetWord, this.finishedTargetWord)
+                        this.needsWordRead = true
+                        this.finishedTargetWord("", 0)
+                    }
+                }, wordAnimateTime)
+
+            }, /*1250*/ 0)
+        },
+
+        finishedTargetWord (event, timeout = 350) {
+            // if we already showed the grid we dont wait for it
+            var secondTimeout = 700
+            if (this.showGrid) {
+                secondTimeout = 0
+                timeout = 0
+            }
+            // callback to move on to reading the word grid after target word is read
+            if (this.narrating) {
+                // The first time the word is read, move on to animating and reading word grid
+                if (this.firstReading) {
+                    // Keep this true even if the target word tries to set it false
+                    this.manuallyReading = true
+                    // timeout is to pause between reading word and displaying word grid
+                    setTimeout( () => {
+                        // now animate in word grid
+                        this.firstReading = false
+                        this.showGrid = true
+                        // timeout is to allow word grid animation in to finish 
+                        setTimeout( () => {
+                            // we displayed and read the target word, so we can move on to reading the grid
+                            if (this.shouldShowTargetWord) {
+                                this.$refs.wordGrid.beginNarration()
+                            }
+                            // we didn't display the target word, which in this activity means we also didnt read it yet
+                            // we need to read that first before doing anything
+                            else if (this.needsWordRead) {
+                                this.needsWordRead = false
+                                this.firstReading = true
+                                this.finishNarration()
+                            }
+                            // ok we read the word, now we can either read the options or finish
+                            else {
+                                if (this.shouldReadOptions) {
+                                    this.$refs.wordGrid.beginNarration()
+                                }
+                                // we're on hard mode and not reading the options, recall this function to finish
+                                else {
+                                    this.finishedTargetWord()
+                                }
+                            }
+                        }, secondTimeout)
+                    }, timeout)
+                }
+                // second time word is read, let the user interact now
+                else {
+                    this.narrating = false
+                    // normal mode needs this set explicitly
+                    this.manuallyReading = false
+                }
+            }
+            // else would be for when the user clicks the target word at top of screen, which we dont do anything for
+        },
+
+        // We finished reading/highlighting the word grid, now repeat the word to be found
+        finishNarration () {
+            // timeout is delay between reading word grid and reading target word again
+            setTimeout( () => {
+                // in easy mode we highlight the word as we read it
+                if (this.shouldShowTargetWord) {
+                    this.$refs.targetWordRef.readWord()
+                }
+                // in normal mode we just read it
+                else {
+                    afterSpeak(this.textToSpeech, this.curWords.targetWord, this.finishedTargetWord)
+                }
+            }, 350)
+        },
+
+        // User clicked a word, if they clicked the right one, move on to the next word
+        wordPressed (word) {
+            if (word === this.curWords.targetWord) {
+                // set this to prevent the user from pressing buttons during transition
+                this.narrating = true
+                this.manuallyReading = true
+                // play a pleasant sound before moving on
+                this.playRandomSound((success) => {
+                    // animate out our word grid and target word
+                    this.$refs.wordGrid.animateOut()
+                    if (this.shouldShowTargetWord) {
+                        this.$refs.targetWordRef.animateOut()
+                    }
+                    // timeout to allow animations to finish
+                    setTimeout(() => {
+                        updateData(word, this.correctOnFirstTry)
+                        this.tutorial = false
+                        this.wordsFound ++
+                        // next word/grid
+                        this.sayGJ(this.getNext)
+                    }, 525)
+                })
+            }
+            else {
+                this.correctOnFirstTry = false
+            }
+        },
+
+        setManuallyReading (val) {
+            this.manuallyReading = val
+        },
+    }
+
+
+}
+</script>
+
+
+<style>
+    .container {
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        flex-direction: row;
+    }
+
+    .word-to-find {
+        align-self: center;
+        position: absolute;
+    }
+    .full-image {
+        height: 100%;
+        width: 100%;
+    }
+</style>
