@@ -16,7 +16,8 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[0].word === targetWord"
                 :tutorialFade="tutorial && words[0].word !== targetWord"
-                :unhighlightDuringNarration="true" /> 
+                :unhighlightDuringNarration="true"
+                :shadow="shadow" /> 
             <Word
                 class="m-5"
                 :key="words[1].word + 1 + words"
@@ -32,7 +33,8 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[1].word === targetWord"
                 :tutorialFade="tutorial && words[1].word !== targetWord"
-                :unhighlightDuringNarration="true" />
+                :unhighlightDuringNarration="true"
+                :shadow="shadow" />
         </view>
         <view class="word-container-inner">
             <Word
@@ -50,7 +52,8 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[2].word === targetWord"
                 :tutorialFade="tutorial && words[2].word !== targetWord"
-                :unhighlightDuringNarration="true" />
+                :unhighlightDuringNarration="true"
+                :shadow="shadow" />
             <Word
                 class="m-5"
                 :key="words[3].word + 3 + words"
@@ -66,7 +69,8 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[3].word === targetWord"
                 :tutorialFade="tutorial && words[3].word !== targetWord"
-                :unhighlightDuringNarration="true" />
+                :unhighlightDuringNarration="true"
+                :shadow="shadow" />
         </view>
     </view>
 </template>
@@ -120,7 +124,11 @@ export default {
         tutorial: {
             type: Boolean,
             default: false
-        }
+        },
+        shadow: {
+            type: Object,
+            required: true
+        },
     },
 
     data () {

@@ -8,6 +8,7 @@
         </touchable-opacity>
         <touchable-opacity
             class="mt-6 white-box"
+            :style="shadow"
             :onPress="() => changeActivity('options')">
             <text class="link-text">Options</text>
         </touchable-opacity>

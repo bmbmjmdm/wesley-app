@@ -6,10 +6,16 @@
             :style="shadow">
             <text class="normal-text">Back</text>
         </touchable-opacity>
-        <touchable-opacity class="white-box mt-6" :onPress="() => cycleDifficulty()">
+        <touchable-opacity
+            class="white-box mt-6"
+            :onPress="() => cycleDifficulty()"
+            :style="shadow">
             <text class="link-text">{{ difficultyText }}</text>
         </touchable-opacity>
-        <touchable-opacity class="white-box mt-6" :onPress="() => cycleAllowAutoAdjust()">
+        <touchable-opacity
+            class="white-box mt-6"
+            :onPress="() => cycleAllowAutoAdjust()"
+            :style="shadow">
             <text class="link-text">{{ allowAutoAdjustText }}</text>
         </touchable-opacity>
     </view>

@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -21,6 +22,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		1E80A2E04E66478699A62A87 /* libRNSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2206802EA2534039BA875BC2 /* libRNSound.a */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -35,10 +37,22 @@
 		2DCD954D1E0B4F2C00145EB5 /* wesleyappTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* wesleyappTests.m */; };
 		2DF0FFEE2056DD460020B375 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3EA31DF850E9000B6D8A /* libReact.a */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
+		7BF668FE2342DAAB00D200FF /* success_seven.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668CA2342DAAA00D200FF /* success_seven.wav */; };
+		7BF668FF2342DAAB00D200FF /* success_sixteen.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668F22342DAAA00D200FF /* success_sixteen.wav */; };
+		7BF669002342DAAB00D200FF /* success_fifteen.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668F32342DAAA00D200FF /* success_fifteen.wav */; };
+		7BF669012342DAAB00D200FF /* success_ten.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668F42342DAAA00D200FF /* success_ten.wav */; };
+		7BF669022342DAAB00D200FF /* success_nine.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668F52342DAAA00D200FF /* success_nine.wav */; };
+		7BF669032342DAAB00D200FF /* success_five.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668F62342DAAB00D200FF /* success_five.wav */; };
+		7BF669042342DAAB00D200FF /* success_four.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668F72342DAAB00D200FF /* success_four.wav */; };
+		7BF669052342DAAB00D200FF /* success_twelve.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668F82342DAAB00D200FF /* success_twelve.wav */; };
+		7BF669062342DAAB00D200FF /* success_one.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668F92342DAAB00D200FF /* success_one.wav */; };
+		7BF669072342DAAB00D200FF /* success_six.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668FA2342DAAB00D200FF /* success_six.wav */; };
+		7BF669082342DAAB00D200FF /* success_thirteen.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668FB2342DAAB00D200FF /* success_thirteen.wav */; };
+		7BF669092342DAAB00D200FF /* success_two.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668FC2342DAAB00D200FF /* success_two.wav */; };
+		7BF6690A2342DAAB00D200FF /* success_eight.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7BF668FD2342DAAB00D200FF /* success_eight.wav */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
 		C7A43EE2EC9A480185CE6C15 /* libTextToSpeech.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5C96F90EC8A41D9B38201A6 /* libTextToSpeech.a */; };
-		1E80A2E04E66478699A62A87 /* libRNSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2206802EA2534039BA875BC2 /* libRNSound.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -301,6 +315,20 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = RCTLinking;
 		};
+		7B214540234045890084EC8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C4D5DAC6737041D695B30541 /* RNSound.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 19825A1E1BD4A89800EE0337;
+			remoteInfo = RNSound;
+		};
+		7B214543234045890084EC8F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8476BEC753C240AD8188E7DA /* TextToSpeech.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3A6FB2081D99E12200593599;
+			remoteInfo = TextToSpeech;
+		};
 		832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */;
@@ -337,17 +365,30 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = wesleyapp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = wesleyapp/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
+		2206802EA2534039BA875BC2 /* libRNSound.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSound.a; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* wesleyapp-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "wesleyapp-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* wesleyapp-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "wesleyapp-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
+		7BF668CA2342DAAA00D200FF /* success_seven.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_seven.wav; path = ../android/app/src/main/res/raw/success_seven.wav; sourceTree = "<group>"; };
+		7BF668F22342DAAA00D200FF /* success_sixteen.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_sixteen.wav; path = ../android/app/src/main/res/raw/success_sixteen.wav; sourceTree = "<group>"; };
+		7BF668F32342DAAA00D200FF /* success_fifteen.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_fifteen.wav; path = ../android/app/src/main/res/raw/success_fifteen.wav; sourceTree = "<group>"; };
+		7BF668F42342DAAA00D200FF /* success_ten.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_ten.wav; path = ../android/app/src/main/res/raw/success_ten.wav; sourceTree = "<group>"; };
+		7BF668F52342DAAA00D200FF /* success_nine.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_nine.wav; path = ../android/app/src/main/res/raw/success_nine.wav; sourceTree = "<group>"; };
+		7BF668F62342DAAB00D200FF /* success_five.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_five.wav; path = ../android/app/src/main/res/raw/success_five.wav; sourceTree = "<group>"; };
+		7BF668F72342DAAB00D200FF /* success_four.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_four.wav; path = ../android/app/src/main/res/raw/success_four.wav; sourceTree = "<group>"; };
+		7BF668F82342DAAB00D200FF /* success_twelve.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_twelve.wav; path = ../android/app/src/main/res/raw/success_twelve.wav; sourceTree = "<group>"; };
+		7BF668F92342DAAB00D200FF /* success_one.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_one.wav; path = ../android/app/src/main/res/raw/success_one.wav; sourceTree = "<group>"; };
+		7BF668FA2342DAAB00D200FF /* success_six.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_six.wav; path = ../android/app/src/main/res/raw/success_six.wav; sourceTree = "<group>"; };
+		7BF668FB2342DAAB00D200FF /* success_thirteen.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_thirteen.wav; path = ../android/app/src/main/res/raw/success_thirteen.wav; sourceTree = "<group>"; };
+		7BF668FC2342DAAB00D200FF /* success_two.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_two.wav; path = ../android/app/src/main/res/raw/success_two.wav; sourceTree = "<group>"; };
+		7BF668FD2342DAAB00D200FF /* success_eight.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_eight.wav; path = ../android/app/src/main/res/raw/success_eight.wav; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		8476BEC753C240AD8188E7DA /* TextToSpeech.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = TextToSpeech.xcodeproj; path = "../node_modules/react-native-tts/ios/TextToSpeech.xcodeproj"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
-		8476BEC753C240AD8188E7DA /* TextToSpeech.xcodeproj */ = {isa = PBXFileReference; name = "TextToSpeech.xcodeproj"; path = "../node_modules/react-native-tts/ios/TextToSpeech.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		E5C96F90EC8A41D9B38201A6 /* libTextToSpeech.a */ = {isa = PBXFileReference; name = "libTextToSpeech.a"; path = "libTextToSpeech.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		C4D5DAC6737041D695B30541 /* RNSound.xcodeproj */ = {isa = PBXFileReference; name = "RNSound.xcodeproj"; path = "../node_modules/react-native-sound/RNSound.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		2206802EA2534039BA875BC2 /* libRNSound.a */ = {isa = PBXFileReference; name = "libRNSound.a"; path = "libRNSound.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		C4D5DAC6737041D695B30541 /* RNSound.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSound.xcodeproj; path = "../node_modules/react-native-sound/RNSound.xcodeproj"; sourceTree = "<group>"; };
+		E5C96F90EC8A41D9B38201A6 /* libTextToSpeech.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTextToSpeech.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -549,6 +590,31 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		7B214515234045860084EC8F /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				E5C96F90EC8A41D9B38201A6 /* libTextToSpeech.a */,
+				2206802EA2534039BA875BC2 /* libRNSound.a */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		7B21453B234045880084EC8F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7B214541234045890084EC8F /* libRNSound.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7B21453D234045880084EC8F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7B214544234045890084EC8F /* libTextToSpeech.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -582,11 +648,25 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				7BF668FD2342DAAB00D200FF /* success_eight.wav */,
+				7BF668F32342DAAA00D200FF /* success_fifteen.wav */,
+				7BF668F62342DAAB00D200FF /* success_five.wav */,
+				7BF668F72342DAAB00D200FF /* success_four.wav */,
+				7BF668F52342DAAA00D200FF /* success_nine.wav */,
+				7BF668F92342DAAB00D200FF /* success_one.wav */,
+				7BF668CA2342DAAA00D200FF /* success_seven.wav */,
+				7BF668FA2342DAAB00D200FF /* success_six.wav */,
+				7BF668F22342DAAA00D200FF /* success_sixteen.wav */,
+				7BF668F42342DAAA00D200FF /* success_ten.wav */,
+				7BF668FB2342DAAB00D200FF /* success_thirteen.wav */,
+				7BF668F82342DAAB00D200FF /* success_twelve.wav */,
+				7BF668FC2342DAAB00D200FF /* success_two.wav */,
 				13B07FAE1A68108700A75B9A /* wesleyapp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* wesleyappTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+				7B214515234045860084EC8F /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -717,6 +797,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -771,6 +852,14 @@
 				{
 					ProductGroup = 146834001AC3E56700842450 /* Products */;
 					ProjectRef = 146833FF1AC3E56700842450 /* React.xcodeproj */;
+				},
+				{
+					ProductGroup = 7B21453B234045880084EC8F /* Products */;
+					ProjectRef = C4D5DAC6737041D695B30541 /* RNSound.xcodeproj */;
+				},
+				{
+					ProductGroup = 7B21453D234045880084EC8F /* Products */;
+					ProjectRef = 8476BEC753C240AD8188E7DA /* TextToSpeech.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1029,6 +1118,20 @@
 			remoteRef = 78C398B81ACF4ADC00677621 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		7B214541234045890084EC8F /* libRNSound.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSound.a;
+			remoteRef = 7B214540234045890084EC8F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		7B214544234045890084EC8F /* libTextToSpeech.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTextToSpeech.a;
+			remoteRef = 7B214543234045890084EC8F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		832341B51AAA6A8300B99B32 /* libRCTText.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1057,8 +1160,21 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BF669022342DAAB00D200FF /* success_nine.wav in Resources */,
+				7BF669012342DAAB00D200FF /* success_ten.wav in Resources */,
+				7BF669082342DAAB00D200FF /* success_thirteen.wav in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				7BF6690A2342DAAB00D200FF /* success_eight.wav in Resources */,
+				7BF669042342DAAB00D200FF /* success_four.wav in Resources */,
+				7BF669002342DAAB00D200FF /* success_fifteen.wav in Resources */,
+				7BF668FE2342DAAB00D200FF /* success_seven.wav in Resources */,
+				7BF669072342DAAB00D200FF /* success_six.wav in Resources */,
+				7BF669062342DAAB00D200FF /* success_one.wav in Resources */,
+				7BF669032342DAAB00D200FF /* success_five.wav in Resources */,
+				7BF669092342DAAB00D200FF /* success_two.wav in Resources */,
+				7BF668FF2342DAAB00D200FF /* success_sixteen.wav in Resources */,
+				7BF669052342DAAB00D200FF /* success_twelve.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1181,25 +1297,25 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-soundRNSound",
+				);
 				INFOPLIST_FILE = wesleyappTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/wesleyapp.app/wesleyapp";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)\..\node_modules\react-native-tts\ios\TextToSpeech",
-					"$(SRCROOT)\..\node_modules\react-native-sound\RNSound",
-				);
 			};
 			name = Debug;
 		};
@@ -1208,25 +1324,25 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-soundRNSound",
+				);
 				INFOPLIST_FILE = wesleyappTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/wesleyapp.app/wesleyapp";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)\..\node_modules\react-native-tts\ios\TextToSpeech",
-					"$(SRCROOT)\..\node_modules\react-native-sound\RNSound",
-				);
 			};
 			name = Release;
 		};
@@ -1236,6 +1352,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-soundRNSound",
+				);
 				INFOPLIST_FILE = wesleyapp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -1244,12 +1365,8 @@
 					"-lc++",
 				);
 				PRODUCT_NAME = wesleyapp;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)\..\node_modules\react-native-tts\ios\TextToSpeech",
-					"$(SRCROOT)\..\node_modules\react-native-sound\RNSound",
-				);
 			};
 			name = Debug;
 		};
@@ -1258,6 +1375,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-soundRNSound",
+				);
 				INFOPLIST_FILE = wesleyapp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -1266,12 +1388,8 @@
 					"-lc++",
 				);
 				PRODUCT_NAME = wesleyapp;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)\..\node_modules\react-native-tts\ios\TextToSpeech",
-					"$(SRCROOT)\..\node_modules\react-native-sound\RNSound",
-				);
 			};
 			name = Release;
 		};
@@ -1287,8 +1405,18 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-soundRNSound",
+				);
 				INFOPLIST_FILE = "wesleyapp-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1298,16 +1426,6 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)\..\node_modules\react-native-tts\ios\TextToSpeech",
-					"$(SRCROOT)\..\node_modules\react-native-sound\RNSound",
-				);
 			};
 			name = Debug;
 		};
@@ -1323,8 +1441,18 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-soundRNSound",
+				);
 				INFOPLIST_FILE = "wesleyapp-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1334,16 +1462,6 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)\..\node_modules\react-native-tts\ios\TextToSpeech",
-					"$(SRCROOT)\..\node_modules\react-native-sound\RNSound",
-				);
 			};
 			name = Release;
 		};
@@ -1358,8 +1476,18 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-soundRNSound",
+				);
 				INFOPLIST_FILE = "wesleyapp-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1369,16 +1497,6 @@
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/wesleyapp-tvOS.app/wesleyapp-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)\..\node_modules\react-native-tts\ios\TextToSpeech",
-					"$(SRCROOT)\..\node_modules\react-native-sound\RNSound",
-				);
 			};
 			name = Debug;
 		};
@@ -1393,8 +1511,18 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)..\node_modules\neact-native-ttsiosTextToSpeech",
+					"$(SRCROOT)..\node_modules\neact-native-soundRNSound",
+				);
 				INFOPLIST_FILE = "wesleyapp-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -1404,16 +1532,6 @@
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/wesleyapp-tvOS.app/wesleyapp-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)\..\node_modules\react-native-tts\ios\TextToSpeech",
-					"$(SRCROOT)\..\node_modules\react-native-sound\RNSound",
-				);
 			};
 			name = Release;
 		};

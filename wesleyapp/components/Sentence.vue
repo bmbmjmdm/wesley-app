@@ -13,7 +13,8 @@
             :manually-reading="manuallyReading"
             :set-manually-reading="setManuallyReading"
             :tutorialHighlight="tutorial && word === targetWord"
-            :tutorialFade="tutorial && word !== targetWord" />
+            :tutorialFade="tutorial && word !== targetWord"
+            :shadow="shadow" />
     </view>
 </template>
 
@@ -65,7 +66,11 @@ export default {
         tutorial: {
             type: Boolean,
             default: false
-        }
+        },
+        shadow: {
+            type: Object,
+            required: true
+        },
     },
 
     data () {

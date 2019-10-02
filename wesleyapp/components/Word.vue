@@ -1,5 +1,7 @@
 <template>
-    <touchable-opacity :onPress="manualReadWord">
+    <touchable-opacity
+        :onPress="manualReadWord"
+        :style="shadow">
         <animated:view
             :style="{maxHeight: maxGrowth,
                     maxWidth: maxGrowth,
@@ -13,6 +15,7 @@
             class="column">
             <view class="row">
                 <text
+                    v-if="highlightedText"
                     :numberOfLines="1"
                     :class="{'highlighted-text':!tutorialHighlight, 'highlighted-text-red':tutorialHighlight}">
                     {{ highlightedText }}
@@ -84,7 +87,11 @@ export default {
         unhighlightDuringNarration: {
             type: Boolean,
             default: false
-        }
+        },
+        shadow: {
+            type: Object,
+            required: true
+        },
     },
 
     data () {

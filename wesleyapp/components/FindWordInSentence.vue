@@ -12,7 +12,8 @@
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
-                :continueSentence="()=>{}" />
+                :continueSentence="()=>{}"
+                :shadow="shadow" />
         </view>
         <Sentence
             v-if="showSentence"
@@ -26,7 +27,8 @@
             :setManuallyReading="setManuallyReading"
             :manuallyReading="manuallyReading"
             :tutorial="tutorial"
-            :targetWord="curSentence.targetWord" />
+            :targetWord="curSentence.targetWord"
+            :shadow="shadow" />
         <Modal
             animationType="fade"
             :transparent="true"
@@ -45,7 +47,7 @@ import afterSpeak from './afterSpeak'
 import { updateData } from './userData'
 import userData from './userData'
 import getNextWord from './wordPicker'
-import applePic from '../assets/apple.png'
+import transparentPic from '../assets/transparent.png'
 
 export default {
     props: {
@@ -88,7 +90,7 @@ export default {
     data () {
         return {
             narrating: false,
-            curSentence: {sentence: "", targetWord: "", pic: applePic},
+            curSentence: {sentence: "", targetWord: "", pic: transparentPic},
             manuallyReading: false,
             firstReading: true,
             showOverlay: true,
@@ -125,7 +127,7 @@ export default {
         // Displays the new sentence (and reads it if in easy/normal mode)
         getNext () {
             // after 4 sentences are read, go on to next activity
-            if (this.sentencesRead >= 99) {
+            if (this.sentencesRead >= 1) {
                 this.randomActivity()
             }
             // still in this activity, go on to next sentence

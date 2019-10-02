@@ -12,7 +12,8 @@
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
-                :continueSentence="()=>{}" />
+                :continueSentence="()=>{}"
+                :shadow="shadow" />
         </view>
         <WordGrid
             v-if="showGrid"
@@ -26,7 +27,8 @@
             :setManuallyReading="setManuallyReading"
             :manuallyReading="manuallyReading"
             :tutorial="tutorial"
-            :targetWord="curWords.targetWord" />
+            :targetWord="curWords.targetWord"
+            :shadow="shadow" />
     </view>
 </template>
 
@@ -287,6 +289,7 @@ export default {
     .word-to-find {
         align-self: center;
         position: absolute;
+        z-index: 1
     }
     .full-image {
         height: 100%;

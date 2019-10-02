@@ -15,7 +15,8 @@
                 :narrating="true"
                 :setManuallyReading="() => {}"
                 :manuallyReading="true"
-                :tutorial="false" />
+                :tutorial="false"
+                :shadow="shadow" />
         </View>
 
         <Home
