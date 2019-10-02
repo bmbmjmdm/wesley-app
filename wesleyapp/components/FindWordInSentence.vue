@@ -29,20 +29,12 @@
             :tutorial="tutorial"
             :targetWord="curSentence.targetWord"
             :shadow="shadow" />
-        <Modal
-            animationType="fade"
-            :transparent="true"
-            :onRequestClose="()=>{}"
-            :visible="showOverlay">
-            <Image :source="curSentence.pic" class="full-image" />
-        </Modal>
     </view>
 </template>
 
 <script>
 import Sentence from './Sentence'
 import Word from './Word'
-import { Modal } from 'react-native';
 import afterSpeak from './afterSpeak'
 import { updateData } from './userData'
 import userData from './userData'
@@ -84,16 +76,14 @@ export default {
     components: {
         Sentence,
         Word,
-        Modal
     },
 
     data () {
         return {
             narrating: false,
-            curSentence: {sentence: "", targetWord: "", pic: transparentPic},
+            curSentence: {sentence: "", targetWord: "", pic: null},
             manuallyReading: false,
             firstReading: true,
-            showOverlay: true,
             tutorial: true,
             showSentence: false,
             showWord: false,
@@ -122,12 +112,12 @@ export default {
     methods: {
         // Move on to the next sentence/target word. This does the following in order:
         // Animates out the current sentence (and target word if on easy mode)
-        // Loads the new image (using the modal for the fade affect) and sets it as the background
+        // Loads the new image and sets it as the background
         // Reads the new target word (and displays it if in easy mode)
         // Displays the new sentence (and reads it if in easy/normal mode)
         getNext () {
             // after 4 sentences are read, go on to next activity
-            if (this.sentencesRead >= 1) {
+            if (this.sentencesRead >= 4) {
                 this.randomActivity()
             }
             // still in this activity, go on to next sentence
@@ -143,16 +133,12 @@ export default {
                 // move on to next sentence/word
                 this.curSentence = getNextWord("fwis")
                 // show image and change background
-                this.overlayImage()
+                this.fadeNewBackground()
             }
         },
 
-        overlayImage () {
-            this.showOverlay = true
-            // timeout is to allow the new image to fade in all the way
-            setTimeout(() => {
-                this.changeBackground(this.curSentence.pic)
-                this.showOverlay = false
+        fadeNewBackground () {
+            this.changeBackground(this.curSentence.pic, () => {
                 // new image is now displayed as background, animate in target word
                 this.showWord = true
                 var wordAnimateTime = 700
@@ -171,8 +157,7 @@ export default {
                         afterSpeak(this.textToSpeech, this.curSentence.targetWord, this.finishedTargetWord)
                     }
                 }, wordAnimateTime)
-
-            }, 1250)
+            })
         },
 
         finishedTargetWord () {

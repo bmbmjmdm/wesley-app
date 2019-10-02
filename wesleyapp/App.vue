@@ -1,55 +1,64 @@
 <template>
-      <ImageBackground :source="bgImage"
+      <ImageBackground
+        :source="bgImageBack"
         class="full-flex">
+        <animated:view
+            :style="{opacity: backgroundOpacity}"
+            class="full-flex">
+            <ImageBackground
+                :source="bgImageFront"
+                class="full-flex">
 
-        <View
-            v-if="showGJ"
-            class="container">
-            <Sentence
-                ref="gjSentence"
-                :finish-narration="finishGJ"
-                :sentence="gjSentence"
-                :highlight-speed="highlightSpeed"
-                :text-to-speech="textToSpeech"
-                :word-pressed="() => {}"
-                :narrating="true"
-                :setManuallyReading="() => {}"
-                :manuallyReading="true"
-                :tutorial="false"
-                :shadow="shadow" />
-        </View>
+                <View
+                    v-if="showGJ"
+                    class="container">
+                    <Sentence
+                        ref="gjSentence"
+                        :finish-narration="finishGJ"
+                        :sentence="gjSentence"
+                        :highlight-speed="highlightSpeed"
+                        :text-to-speech="textToSpeech"
+                        :word-pressed="() => {}"
+                        :narrating="true"
+                        :setManuallyReading="() => {}"
+                        :manuallyReading="true"
+                        :tutorial="false"
+                        :shadow="shadow" />
+                </View>
 
-        <Home
-            v-if="curActivity === 'home'"
-            :shadow="shadow"
-            :change-activity="changeActivity"
-        />
-        <Options
-            v-else-if="curActivity === 'options'"
-            :shadow="shadow"
-            :change-activity="changeActivity"
-        />
-        <FindWordInSentence
-            v-else-if="curActivity === 'findWordInSentence'"
-            :text-to-speech="textToSpeech"
-            :shadow="shadow"
-            :highlight-speed="highlightSpeed"
-            :random-activity="randomActivity"
-            :change-background="changeBackground"
-            :playRandomSound="playRandomSound"
-            :sayGJ="sayGJ"
-        />
-        <FindWordByPicture
-            v-else-if="curActivity === 'findWordByPicture'"
-            :text-to-speech="textToSpeech"
-            :shadow="shadow"
-            :highlight-speed="highlightSpeed"
-            :random-activity="randomActivity"
-            :change-background="changeBackground"
-            :playRandomSound="playRandomSound"
-            :sayGJ="sayGJ"
-        />
-        
+                <Home
+                    v-if="curActivity === 'home'"
+                    :shadow="shadow"
+                    :change-activity="changeActivity"
+                />
+                <Options
+                    v-else-if="curActivity === 'options'"
+                    :shadow="shadow"
+                    :change-activity="changeActivity"
+                />
+                <FindWordInSentence
+                    v-else-if="curActivity === 'findWordInSentence'"
+                    :text-to-speech="textToSpeech"
+                    :shadow="shadow"
+                    :highlight-speed="highlightSpeed"
+                    :random-activity="randomActivity"
+                    :change-background="changeBackground"
+                    :playRandomSound="playRandomSound"
+                    :sayGJ="sayGJ"
+                />
+                <FindWordByPicture
+                    v-else-if="curActivity === 'findWordByPicture'"
+                    :text-to-speech="textToSpeech"
+                    :shadow="shadow"
+                    :highlight-speed="highlightSpeed"
+                    :random-activity="randomActivity"
+                    :change-background="changeBackground"
+                    :playRandomSound="playRandomSound"
+                    :sayGJ="sayGJ"
+                />
+                
+            </ImageBackground>
+        </view>
     </ImageBackground>
 </template>
 
@@ -63,6 +72,7 @@ import Options from './components/Options';
 import bgDefault from './assets/home.jpg';
 import Sound  from 'react-native-sound'
 import Sentence from './components/Sentence'
+import { Animated, Easing } from "react-native";
 
 
 export default {
@@ -85,7 +95,8 @@ export default {
                 shadowRadius: 5,
             },
             highlightSpeed: 56,
-            bgImage: bgDefault,
+            bgImageBack: bgDefault,
+            bgImageFront: bgDefault,
             soundList: [
                 'success_one.wav',
                 'success_two.wav',
@@ -105,7 +116,7 @@ export default {
             gjSentence: "",
             gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job"],
             gjCallback: null,
-
+            backgroundOpacity: new Animated.Value(1),
         }
     },
 
@@ -138,16 +149,26 @@ export default {
 
         // TODO
         randomActivity () {
-            this.defaultBackground()
-            this.curActivity = "findWordByPicture"
+            this.defaultBackground(() => {
+                this.curActivity = "findWordByPicture"
+            })
         },
 
-        changeBackground (newImage) {
-            this.bgImage = newImage
+        // fades in the new background
+        changeBackground (newImage, callback) {
+            this.backgroundOpacity = new Animated.Value(0)
+            this.bgImageFront = newImage
+            Animated.timing(this.backgroundOpacity, {
+                toValue: 1,
+                duration: 600,
+            }).start(() => {
+                this.bgImageBack = newImage
+                callback()
+            })
         },
 
-        defaultBackground () {
-            this.bgImage = bgDefault
+        defaultBackground (callback) {
+            this.changeBackground(bgDefault, callback)
         },
 
         playRandomSound(callback) {
