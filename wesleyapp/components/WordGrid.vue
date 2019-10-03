@@ -2,7 +2,7 @@
     <view class="word-container-outer">
         <view class="word-container-inner">
             <Word
-                class="m-5"
+                :style="wordMargin"
                 :key="words[0].word + 0 + words"
                 :ref="'wordRef0'"
                 :word="words[0].word"
@@ -19,7 +19,7 @@
                 :unhighlightDuringNarration="true"
                 :shadow="shadow" /> 
             <Word
-                class="m-5"
+                :style="wordMargin"
                 :key="words[1].word + 1 + words"
                 :ref="'wordRef1'"
                 :word="words[1].word"
@@ -38,7 +38,7 @@
         </view>
         <view class="word-container-inner">
             <Word
-                class="m-5"
+                :style="wordMargin"
                 :key="words[2].word + 2 + words"
                 :ref="'wordRef2'"
                 :word="words[2].word"
@@ -55,7 +55,7 @@
                 :unhighlightDuringNarration="true"
                 :shadow="shadow" />
             <Word
-                class="m-5"
+                :style="wordMargin"
                 :key="words[3].word + 3 + words"
                 :ref="'wordRef3'"
                 :word="words[3].word"
@@ -77,6 +77,7 @@
 
 <script>
 import Word from './Word'
+import { Dimensions } from "react-native"
 
 export default {
     components: {
@@ -134,6 +135,23 @@ export default {
     data () {
         return {
             readThisMany: 0,
+            sizeFactor: 1.0,
+        }
+    },
+
+    created () {
+        let screenWidth = Dimensions.get('window').width
+        this.sizeFactor = screenWidth/600
+    },
+
+    computed: {
+        wordMargin () {
+            return {
+                marginTop: 50 * this.sizeFactor,
+                marginBottom: 50 * this.sizeFactor,
+                marginRight: 85 * this.sizeFactor,
+                marginLeft: 85 * this.sizeFactor
+            }
         }
     },
 
@@ -178,11 +196,5 @@ export default {
     }
     .word-container-outer {
         flex-direction: column;
-    }
-    .m-5 {
-        margin-top: 50;
-        margin-bottom: 50;
-        margin-right: 85;
-        margin-left: 85;
     }
 </style>

@@ -17,18 +17,20 @@
                 <text
                     v-if="highlightedText"
                     :numberOfLines="1"
+                    :style="{fontSize: 40 * sizeFactor}"
                     :class="{'highlighted-text':!tutorialHighlight, 'highlighted-text-red':tutorialHighlight}">
                     {{ highlightedText }}
                 </text>
                 <text
                     :numberOfLines="1"
+                    :style="{fontSize: 40 * sizeFactor}"
                     :class="{'normal-text':!tutorialFade, 'normal-text-fade':tutorialFade}">
                     {{ normalText }}
                 </text>
             </view>
             <image
                 v-if="pic"
-                :style="{height: 248, width: 139, resizeMode: 'stretch', marginTop: 15, opacity: tutorialFade ? 0.33 : 1}"
+                :style="{height: 248 * sizeFactor, width: 139 * sizeFactor, resizeMode: 'stretch', marginTop: 15 * sizeFactor, opacity: tutorialFade ? 0.33 : 1}"
                 :source="pic">
         </view>
     </touchable-opacity>
@@ -36,7 +38,7 @@
 
 <script>
 import afterSpeak from './afterSpeak'
-import { Animated, Easing } from "react-native";
+import { Animated, Easing, Dimensions } from "react-native"
 
 export default {    
     props: {
@@ -102,15 +104,22 @@ export default {
             highlighting: false,
             maxGrowth: new Animated.Value(0),
             minGrowth: new Animated.Value(0),
-            paddingGrowth: new Animated.Value(0)
+            paddingGrowth: new Animated.Value(0),
+            sizeFactor: 1.0,
         }
     },
+
+    created () {
+        let screenWidth = Dimensions.get('window').width
+        this.sizeFactor = screenWidth/600
+    },
+
     mounted () {
-        var size = 300
-        var padding = 30
+        var size = 300 * this.sizeFactor
+        var padding = 30 * this.sizeFactor
         if (this.pic) {
-            size = 500
-            padding = 15
+            size = 500 * this.sizeFactor
+            padding = 15 * this.sizeFactor
         }
         this.animateGrowth(size, padding)
     },
@@ -229,21 +238,17 @@ export default {
     .highlighted-text {
         color: blue;
         background-color: yellow;
-        font-size: 40;
     }
     .normal-text {
         color: white;
-        font-size: 40;
     }
     .normal-text-fade {
         color: rgba(255, 255, 255, 0.33);
-        font-size: 40;
     }
 
     .highlighted-text-red {
         color: red;
         background-color: yellow;
-        font-size: 40;
     }
 
     .blue-box {

@@ -260,7 +260,7 @@ export default {
                         this.wordsFound ++
                         // next word/grid
                         this.sayGJ(this.getNext)
-                    }, 525)
+                    }, 825)
                 })
             }
             else {
