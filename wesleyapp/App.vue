@@ -1,12 +1,14 @@
 <template>
       <ImageBackground
         :source="bgImageBack"
+        :imageStyle="{resizeMode: 'stretch'}"
         class="full-flex">
         <animated:view
             :style="{opacity: backgroundOpacity}"
             class="full-flex">
             <ImageBackground
                 :source="bgImageFront"
+                :imageStyle="{resizeMode: 'stretch'}"
                 class="full-flex">
 
                 <View
