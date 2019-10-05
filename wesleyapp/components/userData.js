@@ -32,37 +32,45 @@ var userData = vueContainer.userData
 
 export default userData
 
+export function setUserData(data) {
+    Vue.set(userData, 'wordHistory', data.wordHistory)
+    Vue.set(userData, 'difficulty', data.difficulty)
+    Vue.set(userData, 'allowAutoAdjust', data.allowAutoAdjust)
+}
+
 // right is a boolean
 // REMEMBER this can update difficulty, do not call if you haven't cleaned up the screen yet
 export function updateData(word, right) {
     // make sure the word exists in our history
-    if (!userData.wordHistory[word]) userData.wordHistory[word] = {
-        total: 0,
-        right: 0,
-        wrong: 0
+    if (!userData.wordHistory[word]) {
+        Vue.set(userData.wordHistory, word, {
+            total: 0,
+            right: 0,
+            wrong: 0
+        })
     }
 
     if (right) {
-        userData.rightStreek ++
-        userData.wrongStreek = 0
-        userData.wordHistory[word].total ++
-        userData.wordHistory[word].right ++
+        Vue.set(userData, 'rightStreek', userData.rightStreek + 1)
+        Vue.set(userData, 'wrongStreek', 0)
+        Vue.set(userData.wordHistory[word], 'total', userData.wordHistory[word].total + 1)
+        Vue.set(userData.wordHistory[word], 'right', userData.wordHistory[word].right + 1)
     }
     else {
-        userData.wrongStreek ++
-        userData.rightStreek = 0
-        userData.wordHistory[word].total ++
-        userData.wordHistory[word].wrong ++
+        Vue.set(userData, 'wrongStreek', userData.wrongStreek + 1)
+        Vue.set(userData, 'rightStreek', 0)
+        Vue.set(userData.wordHistory[word], 'total', userData.wordHistory[word].total + 1)
+        Vue.set(userData.wordHistory[word], 'wrong', userData.wordHistory[word].wrong + 1)
     }
 
     // Update difficulty
     if (userData.allowAutoAdjust) {
         if (userData.rightStreek >= 8) {
-            userData.rightStreek = 0
+            Vue.set(userData, 'rightStreek', 0)
             increaseDifficulty()
         }
         else if (userData.wrongStreek >= 5) {
-            userData.wrongStreek = 0
+            Vue.set(userData, 'wrongStreek', 0)
             decreaseDifficulty()
         }
     }

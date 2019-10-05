@@ -110,8 +110,10 @@ export default {
     },
 
     created () {
-        let screenWidth = Dimensions.get('window').width
-        this.sizeFactor = screenWidth/600
+        //let screenWidth = Dimensions.get('window').width
+        let screenHeight = Dimensions.get('window').height
+        //this.sizeFactor = screenWidth/600
+        this.sizeFactor = screenHeight/960
     },
 
     mounted () {

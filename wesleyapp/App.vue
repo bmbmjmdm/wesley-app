@@ -64,7 +64,7 @@
 
 <script>
 import tts from 'react-native-tts';
-import { Platform } from 'react-native';
+import { Platform, AppState, AsyncStorage } from 'react-native';
 import FindWordInSentence from './components/FindWordInSentence';
 import FindWordByPicture from './components/FindWordByPicture';
 import Home from './components/Home';
@@ -73,6 +73,8 @@ import bgDefault from './assets/home.jpg';
 import Sound  from 'react-native-sound'
 import Sentence from './components/Sentence'
 import { Animated, Easing } from "react-native";
+import userData from './components/userData'
+import { setUserData } from './components/userData'
 
 
 export default {
@@ -117,10 +119,12 @@ export default {
             gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job"],
             gjCallback: null,
             backgroundOpacity: new Animated.Value(1),
+            appState: "active",
         }
     },
 
-    mounted () {
+    async mounted () {
+        // TODO get rid of this in favor of real voices
         this.textToSpeech.voices().then(voices => {
             // hear all the voices
             /*
@@ -130,16 +134,23 @@ export default {
             }*/
             // Setup voice
             if (Platform.OS === 'android') {
-                this.textToSpeech.setDefaultVoice(voices[15].id);
-                this.textToSpeech.setDefaultRate(0.3);
+                this.textToSpeech.setDefaultVoice(voices[15].id)
+                this.textToSpeech.setDefaultRate(0.3)
             }
             else if (Platform.OS === 'ios') {
                 // TODO
             }
-        });
+        })
         
-        // TODO load saved user data
-        // TODO setup listeners for app closing to save user data
+        // load saved user data
+        let data = await AsyncStorage.getItem("WesleyApp-childProgress")
+        if (data) {
+            data = JSON.parse(data)
+            setUserData(data)
+        }
+
+        // setup listeners for app closing to save user data
+		AppState.addEventListener('change', this.handleAppStateChange)
     },
 
     methods: {
@@ -199,7 +210,17 @@ export default {
                 this.showGJ = false
                 this.gjCallback()
             }, 525)
-        }
+        },
+
+        
+        //save child progress data when app is put into background/closed 
+        handleAppStateChange (nextAppState) {
+            if (this.appState === 'active' && nextAppState.match(/inactive|background/) ) {
+                let stringFile = JSON.stringify(userData)
+                AsyncStorage.setItem("WesleyApp-childProgress", stringFile);
+            }
+            this.appState = nextAppState
+        },
     }
 
 }
