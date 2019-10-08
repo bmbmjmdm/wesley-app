@@ -22,15 +22,10 @@
 </template>
 
 <script>
-import {setDifficulty, setAllowAutoAdjust} from './userData'
-import userData from './userData'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     props: {
-        shadow: {
-            type: Object,
-            required: true
-        },
         changeActivity: {
             type: Function,
             required: true
@@ -39,30 +34,42 @@ export default {
 
     computed: {
         difficultyText () {
-            if (userData.difficulty === "easy") return "Easy difficulty"
-            else if (userData.difficulty === "medium") return "Medium difficulty"
-            else if (userData.difficulty === "hard") return "Hard difficulty"
+            if (this.difficulty === "easy") return "Easy difficulty"
+            else if (this.difficulty === "medium") return "Medium difficulty"
+            else if (this.difficulty === "hard") return "Hard difficulty"
         },
+
         allowAutoAdjustText () {
-            if (userData.allowAutoAdjust) return "Auto Difficulty Adjustment ON"
+            if (this.allowAutoAdjust) return "Auto Difficulty Adjustment ON"
             else return "Auto Difficulty Adjustment OFF"
-        }
+        },
+        
+        ...mapGetters([
+            'shadow',
+            'difficulty',
+            'allowAutoAdjust'
+        ]),
     },
 
     methods: {
+        ...mapMutations([
+            'setDifficulty',
+            'setAllowAutoAdjust'
+        ]),
+
         cycleDifficulty () {
-            if (userData.difficulty === "easy") {
-                setDifficulty("medium")
+            if (this.difficulty === "easy") {
+                this.setDifficulty("medium")
             }
-            else if (userData.difficulty === "medium") {
-                setDifficulty("hard")
+            else if (this.difficulty === "medium") {
+                this.setDifficulty("hard")
             }
             else {
-                setDifficulty("easy")
+                this.setDifficulty("easy")
             }
         },
         cycleAllowAutoAdjust () {
-            setAllowAutoAdjust(!userData.allowAutoAdjust)
+            this.setAllowAutoAdjust(!this.allowAutoAdjust)
         }
     }
 

@@ -5,21 +5,19 @@
             :key="word+index+sentence"
             :ref="'wordRef'"
             :word="word"
-            :highlight-speed="highlightSpeed"
-            :text-to-speech="textToSpeech"
             :narrating="narrating"
             :continueSentence="readWords"
             :word-pressed="wordPressed"
             :manually-reading="manuallyReading"
             :set-manually-reading="setManuallyReading"
             :tutorialHighlight="tutorial && word === targetWord"
-            :tutorialFade="tutorial && word !== targetWord"
-            :shadow="shadow" />
+            :tutorialFade="tutorial && word !== targetWord" />
     </view>
 </template>
 
 <script>
 import Word from './Word'
+import { mapGetters } from 'vuex'
 
 export default {
     components: {
@@ -29,14 +27,6 @@ export default {
     props: {
         sentence: {
             type: String,
-            required: true
-        },
-        highlightSpeed: {
-            type: Number,
-            required: true
-        },
-        textToSpeech: {
-            type: Object,
             required: true
         },
         finishNarration: {
@@ -67,10 +57,6 @@ export default {
             type: Boolean,
             default: false
         },
-        shadow: {
-            type: Object,
-            required: true
-        },
     },
 
     data () {
@@ -84,7 +70,10 @@ export default {
         words () {
             // use spaces to determine splits
            return this.sentence.split(" ")
-        }
+        },
+        
+        ...mapGetters([
+        ])
     },
 
     methods: {

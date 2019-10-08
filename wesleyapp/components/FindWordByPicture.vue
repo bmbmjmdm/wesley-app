@@ -6,60 +6,39 @@
                 ref="targetWordRef"
                 :key="curWords.targetWord + curWords.allWords"
                 :word="curWords.targetWord"
-                :highlightSpeed="highlightSpeed"
-                :text-to-speech="textToSpeech"
                 :wordPressed="finishedTargetWord"
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
-                :continueSentence="()=>{}"
-                :shadow="shadow" />
+                :continueSentence="()=>{}" />
         </view>
         <WordGrid
             v-if="showGrid"
             ref="wordGrid"
             :finish-narration="finishNarration"
             :words="curWords.allWords"
-            :highlight-speed="highlightSpeed"
-            :text-to-speech="textToSpeech"
             :word-pressed="wordPressed"
             :narrating="narrating"
             :setManuallyReading="setManuallyReading"
             :manuallyReading="manuallyReading"
             :tutorial="tutorial"
-            :targetWord="curWords.targetWord"
-            :shadow="shadow" />
+            :targetWord="curWords.targetWord" />
     </view>
 </template>
 
 <script>
 import Word from './Word'
 import WordGrid from './WordGrid'
-import afterSpeak from './afterSpeak'
-import { updateData } from './userData'
-import userData from './userData'
-import getNextWord from './wordPicker'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
     props: {
-        shadow: {
-            type: Object,
-            required: true
-        },
         randomActivity: {
             type: Function,
             required: true
         },
         changeBackground: {
             type: Function,
-            required: true
-        },
-        textToSpeech: {
-            type: Object,
-            required: true
-        },
-        highlightSpeed: {
-            type: Number,
             required: true
         },
         playRandomSound: {
@@ -99,16 +78,28 @@ export default {
     computed: {
         // we only show the target word on easy mode. we speak it on all modes
         shouldShowTargetWord () {
-            return userData.difficulty === "easy"
+            return this.difficulty === "easy"
         },
 
         // we read the options on easy and normal mode, but not hard
         shouldReadOptions () {
-            return userData.difficulty !== "hard"
-        }
+            return this.difficulty !== "hard"
+        },
+        
+        ...mapGetters([
+            'difficulty',
+            'getNextWord'
+        ]),
     },
 
     methods: {
+        ...mapMutations([
+            'updateData'
+        ]),
+        ...mapActions([
+            'afterSpeak'
+        ]),
+        
         // Move on to the next target word. This does the following in order:
         // Animates out the current words/pictures (and target word if on easy mode)
         // Reads the new target word (and displays it if in easy mode)
@@ -129,46 +120,38 @@ export default {
                 this.showGrid = false
                 this.showTarget = false
                 // move on to next word grid/target word
-                this.curWords = getNextWord("fwbp")
+                this.curWords = this.getNextWord("fwbp")
                 // show image and change background
-                this.overlayImage()
+                this.fadeNewBackground()
             }
         },
 
-        overlayImage () {
-            // WE DO NOT CURRENTLY OVERLAY AN IMAGE FOR THIS ACTIVITY
-            // this.showOverlay = true
-
-            // timeout is to allow the new image to fade in all the way
+        fadeNewBackground () {
+            // no new background for this activity, moving on
+            // animate in target word
+            this.showTarget = true
+            var wordAnimateTime = 700
+            if (!this.shouldShowTargetWord) {
+                wordAnimateTime = 0
+            }
+            // timeout is to allow word animation to finish
+            // if were in easy mode theres no animation so timeout time is 0
             setTimeout(() => {
-                // this.showOverlay = false
-
-                // animate in target word
-                this.showTarget = true
-                var wordAnimateTime = 700
-                if (!this.shouldShowTargetWord) {
-                    wordAnimateTime = 0
+                // speak and highlight the word
+                if (this.shouldShowTargetWord) {
+                    this.$refs.targetWordRef.readWord()
                 }
-                // timeout is to allow word animation to finish
-                // if were in easy mode theres no animation so timeout time is 0
-                setTimeout(() => {
-                    // speak and highlight the word
-                    if (this.shouldShowTargetWord) {
-                        this.$refs.targetWordRef.readWord()
-                    }
-                    // we don't read the word here because:
-                    // its not easy mode so target word isnt displayed
-                    // the sentence hasnt been displayed yet
-                    // the background for this activity is generic, not the target word
-                    // due to the 3 above reasons, reading the word would be confusing. instead, we skip right to displaying the sentence
-                    else {
-                        //afterSpeak(this.textToSpeech, this.curWords.targetWord, this.finishedTargetWord)
-                        this.needsWordRead = true
-                        this.finishedTargetWord("", 0)
-                    }
-                }, wordAnimateTime)
-
-            }, /*1250*/ 0)
+                // we don't read the word here because:
+                // its not easy mode so target word isnt displayed
+                // the sentence hasnt been displayed yet
+                // the background for this activity is generic, not the target word
+                // due to the 3 above reasons, reading the word would be confusing. instead, we skip right to displaying the sentence
+                else {
+                    //afterSpeak(this.textToSpeech, this.curWords.targetWord, this.finishedTargetWord)
+                    this.needsWordRead = true
+                    this.finishedTargetWord("", 0)
+                }
+            }, wordAnimateTime)
         },
 
         finishedTargetWord (event, timeout = 350) {
@@ -235,7 +218,7 @@ export default {
                 }
                 // in normal mode we just read it
                 else {
-                    afterSpeak(this.textToSpeech, this.curWords.targetWord, this.finishedTargetWord)
+                    this.afterSpeak({ word: this.curWords.targetWord, callback: this.finishedTargetWord })
                 }
             }, 350)
         },
@@ -255,7 +238,7 @@ export default {
                     }
                     // timeout to allow animations to finish
                     setTimeout(() => {
-                        updateData(word, this.correctOnFirstTry)
+                        this.updateData({ word, right: this.correctOnFirstTry })
                         this.tutorial = false
                         this.wordsFound ++
                         // next word/grid

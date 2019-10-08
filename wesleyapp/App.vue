@@ -18,31 +18,23 @@
                         ref="gjSentence"
                         :finish-narration="finishGJ"
                         :sentence="gjSentence"
-                        :highlight-speed="highlightSpeed"
-                        :text-to-speech="textToSpeech"
                         :word-pressed="() => {}"
                         :narrating="true"
                         :setManuallyReading="() => {}"
                         :manuallyReading="true"
-                        :tutorial="false"
-                        :shadow="shadow" />
+                        :tutorial="false" />
                 </View>
 
                 <Home
                     v-if="curActivity === 'home'"
-                    :shadow="shadow"
                     :change-activity="changeActivity"
                 />
                 <Options
                     v-else-if="curActivity === 'options'"
-                    :shadow="shadow"
                     :change-activity="changeActivity"
                 />
                 <FindWordInSentence
                     v-else-if="curActivity === 'findWordInSentence'"
-                    :text-to-speech="textToSpeech"
-                    :shadow="shadow"
-                    :highlight-speed="highlightSpeed"
                     :random-activity="randomActivity"
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
@@ -50,9 +42,6 @@
                 />
                 <FindWordByPicture
                     v-else-if="curActivity === 'findWordByPicture'"
-                    :text-to-speech="textToSpeech"
-                    :shadow="shadow"
-                    :highlight-speed="highlightSpeed"
                     :random-activity="randomActivity"
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
@@ -65,8 +54,7 @@
 </template>
 
 <script>
-import tts from 'react-native-tts';
-import { Platform, AppState, AsyncStorage } from 'react-native';
+import { Platform, AppState, AsyncStorage, Dimensions } from 'react-native';
 import FindWordInSentence from './components/FindWordInSentence';
 import FindWordByPicture from './components/FindWordByPicture';
 import Home from './components/Home';
@@ -75,9 +63,10 @@ import bgDefault from './assets/home.jpg';
 import Sound  from 'react-native-sound'
 import Sentence from './components/Sentence'
 import { Animated, Easing } from "react-native";
-import userData from './components/userData'
-import { setUserData } from './components/userData'
-
+import store  from './components/store'
+import Vue from 'vue-native-core'
+import { mapGetters, mapMutations } from 'vuex'
+Vue.prototype.$store = store
 
 export default {
     components: {
@@ -91,14 +80,6 @@ export default {
     data () {
         return {
             curActivity: 'home',
-            textToSpeech: tts,
-            shadow: {
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.8,
-                shadowRadius: 5,
-            },
-            highlightSpeed: 56,
             bgImageBack: bgDefault,
             bgImageFront: bgDefault,
             soundList: [
@@ -126,36 +107,33 @@ export default {
     },
 
     async mounted () {
-        // TODO get rid of this in favor of real voices
-        this.textToSpeech.voices().then(voices => {
-            // hear all the voices
-            /*
-            for (index in voices) {
-                this.textToSpeech.setDefaultVoice(voices[index].id);
-                this.textToSpeech.speak("The dog is friendly");
-            }*/
-            // Setup voice
-            if (Platform.OS === 'android') {
-                this.textToSpeech.setDefaultVoice(voices[15].id)
-                this.textToSpeech.setDefaultRate(0.3)
-            }
-            else if (Platform.OS === 'ios') {
-                // TODO
-            }
-        })
-        
         // load saved user data
         let data = await AsyncStorage.getItem("WesleyApp-childProgress")
         if (data) {
             data = JSON.parse(data)
-            setUserData(data)
+            this.setUserData(data)
         }
 
         // setup listeners for app closing to save user data
-		AppState.addEventListener('change', this.handleAppStateChange)
+        AppState.addEventListener('change', this.handleAppStateChange)
+        
+        // setup resizing to fit different screens
+        let screenHeight = Dimensions.get('window').height
+        this.setSizeFactor(screenHeight/960)
+    },
+
+    computed: {
+        ...mapGetters([
+            'getUserData'
+        ]),
     },
 
     methods: {
+        ...mapMutations([
+            'setSizeFactor',
+            'setUserData'
+        ]),
+
         changeActivity (actName, changeObject) {
             this.curActivity = actName
         },
@@ -218,7 +196,7 @@ export default {
         //save child progress data when app is put into background/closed 
         handleAppStateChange (nextAppState) {
             if (this.appState === 'active' && nextAppState.match(/inactive|background/) ) {
-                let stringFile = JSON.stringify(userData)
+                let stringFile = JSON.stringify(this.getUserData)
                 AsyncStorage.setItem("WesleyApp-childProgress", stringFile);
             }
             this.appState = nextAppState

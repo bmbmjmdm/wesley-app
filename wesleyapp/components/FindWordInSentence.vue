@@ -6,61 +6,40 @@
                 ref="targetWordRef"
                 :key="curSentence.targetWord + curSentence.sentence"
                 :word="curSentence.targetWord"
-                :highlightSpeed="highlightSpeed"
-                :text-to-speech="textToSpeech"
                 :wordPressed="finishedTargetWord"
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
-                :continueSentence="()=>{}"
-                :shadow="shadow" />
+                :continueSentence="()=>{}" />
         </view>
         <Sentence
             v-if="showSentence"
             ref="sentenceRef"
             :finish-narration="finishNarration"
             :sentence="curSentence.sentence"
-            :highlight-speed="highlightSpeed"
-            :text-to-speech="textToSpeech"
             :word-pressed="wordPressed"
             :narrating="narrating"
             :setManuallyReading="setManuallyReading"
             :manuallyReading="manuallyReading"
             :tutorial="tutorial"
-            :targetWord="curSentence.targetWord"
-            :shadow="shadow" />
+            :targetWord="curSentence.targetWord" />
     </view>
 </template>
 
 <script>
 import Sentence from './Sentence'
 import Word from './Word'
-import afterSpeak from './afterSpeak'
-import { updateData } from './userData'
-import userData from './userData'
-import getNextWord from './wordPicker'
 import transparentPic from '../assets/transparent.png'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
     props: {
-        shadow: {
-            type: Object,
-            required: true
-        },
         randomActivity: {
             type: Function,
             required: true
         },
         changeBackground: {
             type: Function,
-            required: true
-        },
-        textToSpeech: {
-            type: Object,
-            required: true
-        },
-        highlightSpeed: {
-            type: Number,
             required: true
         },
         playRandomSound: {
@@ -100,16 +79,28 @@ export default {
     computed: {
         // we only show the target word on easy mode. we speak it on all modes
         shouldShowTargetWord () {
-            return userData.difficulty === "easy"
+            return this.difficulty === "easy"
         },
 
         // we read the sentence on easy and normal mode, but not hard
         shouldReadSentence () {
-            return userData.difficulty !== "hard"
-        }
+            return this.difficulty !== "hard"
+        },
+        
+        ...mapGetters([
+            'difficulty',
+            'getNextWord'
+        ]),
     },
 
     methods: {
+        ...mapMutations([
+            'updateData'
+        ]),
+        ...mapActions([
+            'afterSpeak'
+        ]),
+
         // Move on to the next sentence/target word. This does the following in order:
         // Animates out the current sentence (and target word if on easy mode)
         // Loads the new image and sets it as the background
@@ -131,7 +122,7 @@ export default {
                 this.showSentence = false
                 this.showWord = false
                 // move on to next sentence/word
-                this.curSentence = getNextWord("fwis")
+                this.curSentence = this.getNextWord("fwis")
                 // show image and change background
                 this.fadeNewBackground()
             }
@@ -154,7 +145,7 @@ export default {
                     }
                     // just speak it
                     else {
-                        afterSpeak(this.textToSpeech, this.curSentence.targetWord, this.finishedTargetWord)
+                        this.afterSpeak({ word: this.curSentence.targetWord, callback: this.finishedTargetWord })
                     }
                 }, wordAnimateTime)
             })
@@ -205,7 +196,7 @@ export default {
                 }
                 // in normal mode we just read it
                 else {
-                    afterSpeak(this.textToSpeech, this.curSentence.targetWord, this.finishedTargetWord)
+                    this.afterSpeak({ word: this.curSentence.targetWord, callback: this.finishedTargetWord })
                 }
             }, 350)
         },
@@ -225,7 +216,7 @@ export default {
                     }
                     // timeout to allow animations to finish
                     setTimeout(() => {
-                        updateData(word, this.correctOnFirstTry)
+                        this.updateData({ word, right: this.correctOnFirstTry })
                         this.tutorial = false
                         this.sentencesRead ++
                         // next word/sentence

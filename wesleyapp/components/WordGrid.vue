@@ -7,8 +7,6 @@
                 :ref="'wordRef0'"
                 :word="words[0].word"
                 :pic="words[0].pic"
-                :highlight-speed="highlightSpeed"
-                :text-to-speech="textToSpeech"
                 :narrating="narrating"
                 :continueSentence="readWords"
                 :word-pressed="wordPressed"
@@ -16,16 +14,13 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[0].word === targetWord"
                 :tutorialFade="tutorial && words[0].word !== targetWord"
-                :unhighlightDuringNarration="true"
-                :shadow="shadow" /> 
+                :unhighlightDuringNarration="true" /> 
             <Word
                 :style="wordMargin"
                 :key="words[1].word + 1 + words"
                 :ref="'wordRef1'"
                 :word="words[1].word"
                 :pic="words[1].pic"
-                :highlight-speed="highlightSpeed"
-                :text-to-speech="textToSpeech"
                 :narrating="narrating"
                 :continueSentence="readWords"
                 :word-pressed="wordPressed"
@@ -33,8 +28,7 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[1].word === targetWord"
                 :tutorialFade="tutorial && words[1].word !== targetWord"
-                :unhighlightDuringNarration="true"
-                :shadow="shadow" />
+                :unhighlightDuringNarration="true" />
         </view>
         <view class="word-container-inner">
             <Word
@@ -43,8 +37,6 @@
                 :ref="'wordRef2'"
                 :word="words[2].word"
                 :pic="words[2].pic"
-                :highlight-speed="highlightSpeed"
-                :text-to-speech="textToSpeech"
                 :narrating="narrating"
                 :continueSentence="readWords"
                 :word-pressed="wordPressed"
@@ -52,16 +44,13 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[2].word === targetWord"
                 :tutorialFade="tutorial && words[2].word !== targetWord"
-                :unhighlightDuringNarration="true"
-                :shadow="shadow" />
+                :unhighlightDuringNarration="true" />
             <Word
                 :style="wordMargin"
                 :key="words[3].word + 3 + words"
                 :ref="'wordRef3'"
                 :word="words[3].word"
                 :pic="words[3].pic"
-                :highlight-speed="highlightSpeed"
-                :text-to-speech="textToSpeech"
                 :narrating="narrating"
                 :continueSentence="readWords"
                 :word-pressed="wordPressed"
@@ -69,15 +58,14 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[3].word === targetWord"
                 :tutorialFade="tutorial && words[3].word !== targetWord"
-                :unhighlightDuringNarration="true"
-                :shadow="shadow" />
+                :unhighlightDuringNarration="true" />
         </view>
     </view>
 </template>
 
 <script>
 import Word from './Word'
-import { Dimensions } from "react-native"
+import { mapGetters } from 'vuex'
 
 export default {
     components: {
@@ -88,14 +76,6 @@ export default {
         // words is expected to be exactly 4 in length
         words: {
             type: Array,
-            required: true
-        },
-        highlightSpeed: {
-            type: Number,
-            required: true
-        },
-        textToSpeech: {
-            type: Object,
             required: true
         },
         finishNarration: {
@@ -126,22 +106,12 @@ export default {
             type: Boolean,
             default: false
         },
-        shadow: {
-            type: Object,
-            required: true
-        },
     },
 
     data () {
         return {
             readThisMany: 0,
-            sizeFactor: 1.0,
         }
-    },
-
-    created () {
-        let screenWidth = Dimensions.get('window').width
-        this.sizeFactor = screenWidth/600
     },
 
     computed: {
@@ -152,7 +122,11 @@ export default {
                 marginRight: 85 * this.sizeFactor,
                 marginLeft: 85 * this.sizeFactor
             }
-        }
+        },
+
+        ...mapGetters([
+            'sizeFactor'
+        ])
     },
 
     methods: {

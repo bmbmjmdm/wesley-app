@@ -16,29 +16,21 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
     props: {
-        shadow: {
-            type: Object,
-            required: true
-        },
         changeActivity: {
             type: Function,
             required: true
         }
     },
-    data () {
-        return {
-        }
+
+    computed: {
+        ...mapGetters([
+            'shadow'
+        ])
     },
-
-    mounted () {        
-    },
-
-    methods: {
-    }
-
 
 }
 </script>

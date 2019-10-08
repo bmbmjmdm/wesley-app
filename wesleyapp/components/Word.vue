@@ -37,21 +37,13 @@
 </template>
 
 <script>
-import afterSpeak from './afterSpeak'
-import { Animated, Easing, Dimensions } from "react-native"
+import { Animated, Easing } from "react-native"
+import { mapGetters, mapActions } from 'vuex'
 
 export default {    
     props: {
         word: {
             type: String,
-            required: true
-        },
-        highlightSpeed: {
-            type: Number,
-            required: true
-        },
-        textToSpeech: {
-            type: Object,
             required: true
         },
         continueSentence: {
@@ -90,10 +82,6 @@ export default {
             type: Boolean,
             default: false
         },
-        shadow: {
-            type: Object,
-            required: true
-        },
     },
 
     data () {
@@ -105,15 +93,7 @@ export default {
             maxGrowth: new Animated.Value(0),
             minGrowth: new Animated.Value(0),
             paddingGrowth: new Animated.Value(0),
-            sizeFactor: 1.0,
         }
-    },
-
-    created () {
-        //let screenWidth = Dimensions.get('window').width
-        let screenHeight = Dimensions.get('window').height
-        //this.sizeFactor = screenWidth/600
-        this.sizeFactor = screenHeight/960
     },
 
     mounted () {
@@ -126,7 +106,19 @@ export default {
         this.animateGrowth(size, padding)
     },
 
+    computed: {
+        ...mapGetters([
+            'shadow',
+            'sizeFactor',
+            'highlightSpeed'
+        ]),
+    },
+
     methods: {
+        ...mapActions([
+            'afterSpeak'
+        ]),
+        
         animateGrowth (max, padding) {            
             var time = 500
             if (this.pic) {
@@ -208,13 +200,16 @@ export default {
             this.reading = true
             this.highlighting = true
             this.highlightWord()
-            afterSpeak(this.textToSpeech, this.word, () => {
-                this.reading = false
-                if (this.narrating) {
-                    this.finishReading()
-                }
-                else {
-                    this.finishReadingPress()
+            this.afterSpeak({
+                word: this.word,
+                callback: () => {
+                    this.reading = false
+                    if (this.narrating) {
+                        this.finishReading()
+                    }
+                    else {
+                        this.finishReadingPress()
+                    }
                 }
             })
         },
