@@ -3,14 +3,26 @@
         <touchable-opacity
             :onPress="() => changeActivity('findWordInSentence')"
             class="blue-box"
-            :style="shadow">
-            <text class="normal-text">Start</text>
+            :style="[{paddingTop: paddingSize,
+                    paddingBottom: paddingSize,
+                    paddingRight: paddingSize * 1.5,
+                    paddingLeft: paddingSize * 1.5 },
+                    roundBox]">
+            <text 
+                :style="{fontSize: fontSize}"
+                class="normal-text">
+                Start
+            </text>
         </touchable-opacity>
         <touchable-opacity
             class="mt-6 white-box"
-            :style="shadow"
+            :style="[{padding: paddingSizeSmall}, roundBox]"
             :onPress="() => changeActivity('options')">
-            <text class="link-text">Options</text>
+            <text 
+                :style="{fontSize: fontSizeSmall}"
+                class="link-text">
+                Options
+            </text>
         </touchable-opacity>
     </view>
 </template>
@@ -28,7 +40,11 @@ export default {
 
     computed: {
         ...mapGetters([
-            'shadow'
+            'roundBox',
+            'paddingSize',
+            'paddingSizeSmall',
+            'fontSizeSmall',
+            'fontSize',
         ])
     },
 
@@ -46,25 +62,14 @@ export default {
 
     .blue-box {
         background-color: 'rgb(0, 119, 179)';
-        padding-top: 15;
-        padding-bottom: 15;
-        padding-right: 30;
-        padding-left: 30;
-        border-radius: 20;
-        elevation: 5;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
     }
 
     .link-text {
         color: 'rgb(0, 119, 179)';
-        font-size: 20
     }
 
     .normal-text {
         color: white;
-        font-size: 40;
     }
     
     .mt-6 {
@@ -73,14 +78,5 @@ export default {
 
     .white-box {
         background-color: 'rgb(255, 255, 255)';
-        padding-top: 15;
-        padding-bottom: 15;
-        padding-right: 30;
-        padding-left: 30;
-        border-radius: 20;
-        elevation: 5;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
     }
 </style>

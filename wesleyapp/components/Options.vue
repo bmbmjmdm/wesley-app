@@ -3,20 +3,36 @@
         <touchable-opacity
             :onPress="() => changeActivity('home')"
             class="blue-box"
-            :style="shadow">
-            <text class="normal-text">Back</text>
+            :style="[{paddingTop: paddingSize,
+                    paddingBottom: paddingSize,
+                    paddingRight: paddingSize * 1.5,
+                    paddingLeft: paddingSize * 1.5 },
+                    roundBox]">
+            <text 
+                :style="{fontSize: fontSize}"
+                class="normal-text">
+                Back
+            </text>
         </touchable-opacity>
         <touchable-opacity
             class="white-box mt-6"
             :onPress="() => cycleDifficulty()"
-            :style="shadow">
-            <text class="link-text">{{ difficultyText }}</text>
+            :style="[{padding: paddingSizeSmall}, roundBox]">
+            <text 
+                :style="{fontSize: fontSizeSmall}"
+                class="link-text">
+                {{ difficultyText }}
+            </text>
         </touchable-opacity>
         <touchable-opacity
             class="white-box mt-6"
             :onPress="() => cycleAllowAutoAdjust()"
-            :style="shadow">
-            <text class="link-text">{{ allowAutoAdjustText }}</text>
+            :style="[{padding: paddingSizeSmall}, roundBox]">
+            <text 
+                :style="{fontSize: fontSizeSmall}"
+                class="link-text">
+                {{ allowAutoAdjustText }}
+            </text>
         </touchable-opacity>
     </view>
 </template>
@@ -45,9 +61,13 @@ export default {
         },
         
         ...mapGetters([
-            'shadow',
+            'roundBox',
             'difficulty',
-            'allowAutoAdjust'
+            'allowAutoAdjust',
+            'paddingSize',
+            'paddingSizeSmall',
+            'fontSizeSmall',
+            'fontSize',
         ]),
     },
 
@@ -88,38 +108,18 @@ export default {
 
     .blue-box {
         background-color: 'rgb(0, 119, 179)';
-        padding-top: 15;
-        padding-bottom: 15;
-        padding-right: 30;
-        padding-left: 30;
-        border-radius: 20;
-        elevation: 5;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
     }
 
     .white-box {
         background-color: 'rgb(255, 255, 255)';
-        padding-top: 15;
-        padding-bottom: 15;
-        padding-right: 30;
-        padding-left: 30;
-        border-radius: 20;
-        elevation: 5;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
     }
 
     .link-text {
         color: 'rgb(0, 119, 179)';
-        font-size: 20
     }
 
     .normal-text {
         color: white;
-        font-size: 20;
     }
 
     .mt-6 {

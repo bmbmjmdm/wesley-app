@@ -28,19 +28,32 @@ export default new Vuex.Store({
         // whether we can adjust difficulty automatically based on user performance
         // persistant
         allowAutoAdjust: true,
-        // shadow used for word buttons
-        shadow: {
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.8,
-            shadowRadius: 5,
-        },
         // highlight speed of read words
         highlightSpeed: 56,
         // text to speech module
         textToSpeech: tts,
         // factor to multiply any dimensions to so that they scale with screen sizes
-        sizeFactor: 1,
+        sizeFactor: 1.0,
+        // base values for sizes
+        baseFontSize: 40,
+        basePaddingSize: 30,
+        baseFontSizeSmall: 20,
+        basePaddingSizeSmall: 15,
+        // the basic shape of all words in the app
+        roundBox: {
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.8,
+            shadowRadius: 5,
+            borderRadius: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            // Currently elevation (android shadows) causes a bug where text in the roundBox casts an anti-shadow, making 
+            // look like its faintly white highlighted when the background is semi-transparent 
+            //elevation: 5,
+        }
 
     },
     getters: {
@@ -50,6 +63,11 @@ export default new Vuex.Store({
         allowAutoAdjust: state => state.allowAutoAdjust,
         difficulty: state => state.difficulty,
         sizeFactor: state => state.sizeFactor,
+        fontSize: state => state.baseFontSize * state.sizeFactor,
+        paddingSize: state => state.basePaddingSize * state.sizeFactor,
+        fontSizeSmall: state => state.baseFontSizeSmall * state.sizeFactor,
+        paddingSizeSmall: state => state.basePaddingSizeSmall * state.sizeFactor,
+        roundBox: state => state.roundBox,
         // used for saving app
         getUserData: state => {
             return {

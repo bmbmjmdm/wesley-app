@@ -1,36 +1,35 @@
 <template>
-    <touchable-opacity
-        :onPress="manualReadWord"
-        :style="shadow">
+    <touchable-opacity :onPress="manualReadWord">
         <animated:view
-            :style="{maxHeight: maxGrowth,
+            :style="[{maxHeight: maxGrowth,
                     maxWidth: maxGrowth,
                     minWidth: minGrowth,
                     minHeight: minGrowth,
                     paddingTop: paddingGrowth,
                     paddingBottom: pic ? 0 : paddingGrowth,
                     paddingRight: pic ? 0 : paddingGrowth,
-                    paddingLeft: pic ? 0 : paddingGrowth,}"
+                    paddingLeft: pic ? 0 : paddingGrowth,},
+                    roundBox]"
             :class="{'blue-box':!tutorialHighlight && !tutorialFade, 'red-box':tutorialHighlight, 'fade-box':tutorialFade}"
-            class="column">
+            class="column m-03">
             <view class="row">
                 <text
                     v-if="highlightedText"
                     :numberOfLines="1"
-                    :style="{fontSize: 40 * sizeFactor}"
+                    :style="{fontSize: fontSize}"
                     :class="{'highlighted-text':!tutorialHighlight, 'highlighted-text-red':tutorialHighlight}">
                     {{ highlightedText }}
                 </text>
                 <text
                     :numberOfLines="1"
-                    :style="{fontSize: 40 * sizeFactor}"
+                    :style="{fontSize: fontSize}"
                     :class="{'normal-text':!tutorialFade, 'normal-text-fade':tutorialFade}">
                     {{ normalText }}
                 </text>
             </view>
             <image
                 v-if="pic"
-                :style="{height: 248 * sizeFactor, width: 139 * sizeFactor, resizeMode: 'stretch', marginTop: 15 * sizeFactor, opacity: tutorialFade ? 0.33 : 1}"
+                :style="{height: 248 * sizeFactor, width: 139 * sizeFactor, resizeMode: 'stretch', marginTop: paddingSizeSmall, opacity: tutorialFade ? 0.33 : 1}"
                 :source="pic">
         </view>
     </touchable-opacity>
@@ -98,19 +97,22 @@ export default {
 
     mounted () {
         var size = 300 * this.sizeFactor
-        var padding = 30 * this.sizeFactor
+        var padding = this.paddingSize
         if (this.pic) {
             size = 500 * this.sizeFactor
-            padding = 15 * this.sizeFactor
+            padding = this.paddingSizeSmall
         }
         this.animateGrowth(size, padding)
     },
 
     computed: {
         ...mapGetters([
-            'shadow',
+            'roundBox',
             'sizeFactor',
-            'highlightSpeed'
+            'highlightSpeed',
+            'fontSize',
+            'paddingSize',
+            'paddingSizeSmall'
         ]),
     },
 
@@ -240,7 +242,7 @@ export default {
         color: white;
     }
     .normal-text-fade {
-        color: rgba(255, 255, 255, 0.33);
+        color: rgba(255, 255, 255, 0.4);
     }
 
     .highlighted-text-red {
@@ -248,36 +250,20 @@ export default {
         background-color: yellow;
     }
 
+    .m-03 {
+        margin: 3
+    }
+
     .blue-box {
         background-color: 'rgb(0, 119, 179)';
-        margin: 3;
-        border-radius: 20;
-        elevation: 5;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden
     }
 
     .red-box {
         background-color: 'rgb(217, 56, 56)';
-        margin: 3;
-        border-radius: 20;
-        elevation: 5;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden
     }
 
     .fade-box {
-        background-color: 'rgba(0, 119, 179, 0.33)';
-        margin: 3;
-        border-radius: 20;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
+        background-color: 'rgba(0, 119, 179, 0.4)';
     }
 
     
