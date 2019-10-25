@@ -47,6 +47,13 @@
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                 />
+                <SpellWord
+                    v-else-if="curActivity === 'spellWord'"
+                    :random-activity="randomActivity"
+                    :change-background="changeBackground"
+                    :playRandomSound="playRandomSound"
+                    :sayGJ="sayGJ"
+                />
                 
             </ImageBackground>
         </view>
@@ -57,6 +64,7 @@
 import { Platform, AppState, AsyncStorage, Dimensions } from 'react-native';
 import FindWordInSentence from './components/FindWordInSentence';
 import FindWordByPicture from './components/FindWordByPicture';
+import SpellWord from './components/SpellWord';
 import Home from './components/Home';
 import Options from './components/Options';
 import bgDefault from './assets/home.jpg';
@@ -74,6 +82,7 @@ export default {
         Home,
         FindWordInSentence,
         FindWordByPicture,
+        SpellWord,
         Sentence
     },
 

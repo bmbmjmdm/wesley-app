@@ -29,7 +29,6 @@
 <script>
 import Sentence from './Sentence'
 import Word from './Word'
-import transparentPic from '../assets/transparent.png'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
@@ -252,9 +251,5 @@ export default {
         top: 0;
         align-self: center;
         margin-top: 50
-    }
-    .full-image {
-        height: 100%;
-        width: 100%;
     }
 </style>

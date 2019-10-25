@@ -8,7 +8,8 @@
                     paddingTop: paddingGrowth,
                     paddingBottom: pic ? 0 : paddingGrowth,
                     paddingRight: pic ? 0 : paddingGrowth,
-                    paddingLeft: pic ? 0 : paddingGrowth,},
+                    paddingLeft: pic ? 0 : paddingGrowth,
+                    opacity: opacityGrowth,},
                     roundBox]"
             :class="{'blue-box':!tutorialHighlight && !tutorialFade, 'red-box':tutorialHighlight, 'fade-box':tutorialFade}"
             class="column m-03">
@@ -81,6 +82,10 @@ export default {
             type: Boolean,
             default: false
         },
+        fadeAnimations: {
+            type: Boolean,
+            default: false
+        }
     },
 
     data () {
@@ -92,6 +97,7 @@ export default {
             maxGrowth: new Animated.Value(0),
             minGrowth: new Animated.Value(0),
             paddingGrowth: new Animated.Value(0),
+            opacityGrowth: new Animated.Value(0),
         }
     },
 
@@ -102,7 +108,17 @@ export default {
             size = 500 * this.sizeFactor
             padding = this.paddingSizeSmall
         }
-        this.animateGrowth(size, padding)
+
+        // we want to fade in the word on special occasion
+        if (this.fadeAnimations) {
+            this.maxGrowth.setValue(size)
+            this.paddingGrowth.setValue(padding)
+            this.animateOpacity(1)
+        }
+        else {
+            this.opacityGrowth.setValue(1)
+            this.animateGrowth(size, padding)
+        }
     },
 
     computed: {
@@ -138,9 +154,26 @@ export default {
                 })
             ]).start()
         },
+        
+        animateOpacity (value) {
+            var time = 1000
+            // Fade the letter in/out
+            Animated.parallel([
+                Animated.timing(this.opacityGrowth, {
+                    toValue: value,
+                    duration: time,
+                })
+            ]).start()
+        },
 
         animateOut () {
-            this.animateGrowth(0,0)
+            // we want to fade out the word on special occasion
+            if (this.fadeAnimations) {
+                this.animateOpacity(0)
+            }
+            else {
+                this.animateGrowth(0,0)
+            }
         },
 
         highlightWord () {

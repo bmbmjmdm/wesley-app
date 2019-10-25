@@ -3,6 +3,7 @@ import Vuex from "vuex"
 import tts from 'react-native-tts'
 import fwisList from './fwisList'
 import fwbpList from './fwbpList'
+import swList from './swList'
 import Sound  from 'react-native-sound'
 Vue.use(Vuex)
 
@@ -46,14 +47,16 @@ export default new Vuex.Store({
             shadowOpacity: 0.8,
             shadowRadius: 5,
             borderRadius: 20,
-            flexDirection: 'row',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
             // Currently elevation (android shadows) causes a bug where text in the roundBox casts an anti-shadow, making 
             // look like its faintly white highlighted when the background is semi-transparent 
             //elevation: 5,
-        }
+        },
+        radiusSize: 20,
+        previousWord: '',
 
     },
     getters: {
@@ -67,7 +70,9 @@ export default new Vuex.Store({
         paddingSize: state => state.basePaddingSize * state.sizeFactor,
         fontSizeSmall: state => state.baseFontSizeSmall * state.sizeFactor,
         paddingSizeSmall: state => state.basePaddingSizeSmall * state.sizeFactor,
+        radiusSize: state => state.radiusSize,
         roundBox: state => state.roundBox,
+        previousWord: state => previousWord,
         // used for saving app
         getUserData: state => {
             return {
@@ -89,11 +94,15 @@ export default new Vuex.Store({
             else if (activity === "fwbp") {
                 list = fwbpList
             }
+            else if (activity === "sw") {
+                list = swList
+            }
 
             if (state.wrongStreek >= 2) list = getEasyChoices(state, list)
             else if (state.rightStreek >= 2) list = getHardChoices(state, list)
 
-            return list[Math.floor(Math.random() * list.length)]
+            state.previousWord = list[Math.floor(Math.random() * list.length)]
+            return state.previousWord
         },
     },
     mutations: {
@@ -220,6 +229,9 @@ function getChoices(state, list, rightWrong) {
 
         // look through the whole list for words that pass the threshold
         for (var i of list) {
+            // we never want to show the same word twice
+            if (i.targetWord == state.previousWord) continue
+
             let wordHistory = state.wordHistory[i.targetWord]
             if (wordHistory) {
                 let ratio

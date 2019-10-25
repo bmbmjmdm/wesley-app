@@ -1,7 +1,7 @@
 <template>
     <view class="container">
         <touchable-opacity
-            :onPress="() => changeActivity('findWordInSentence')"
+            :onPress="() => changeActivity('spellWord')"
             class="blue-box"
             :style="[{paddingTop: paddingSize,
                     paddingBottom: paddingSize,
