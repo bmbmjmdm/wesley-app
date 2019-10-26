@@ -131,7 +131,11 @@ export default {
         },
 
         mixedLetters () {
-            return this.curWord.targetWord.split('').sort(function(){ return 0.5 - Math.random() }).join('')
+            let mixedWord = this.curWord.targetWord
+            while (mixedWord === this.curWord.targetWord) {
+                mixedWord = this.curWord.targetWord.split('').sort(function(){ return 0.5 - Math.random() }).join('')
+            }
+            return mixedWord
         },
         
         ...mapGetters([
