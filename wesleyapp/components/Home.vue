@@ -1,7 +1,7 @@
 <template>
     <view class="container">
         <touchable-opacity
-            :onPress="() => changeActivity('spellWord')"
+            :onPress="() => randomActivity(false)"
             class="blue-box"
             :style="[{paddingTop: paddingSize,
                     paddingBottom: paddingSize,
@@ -33,6 +33,10 @@ import { mapGetters } from 'vuex'
 export default {
     props: {
         changeActivity: {
+            type: Function,
+            required: true
+        },
+        randomActivity: {
             type: Function,
             required: true
         }

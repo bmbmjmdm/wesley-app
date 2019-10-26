@@ -57,6 +57,7 @@ export default new Vuex.Store({
         },
         radiusSize: 20,
         previousWord: '',
+        allowedTopics: 'reading spelling',
 
     },
     getters: {
@@ -72,7 +73,8 @@ export default new Vuex.Store({
         paddingSizeSmall: state => state.basePaddingSizeSmall * state.sizeFactor,
         radiusSize: state => state.radiusSize,
         roundBox: state => state.roundBox,
-        previousWord: state => previousWord,
+        previousWord: state => state.previousWord,
+        allowedTopics: state => state.allowedTopics,
         // used for saving app
         getUserData: state => {
             return {
@@ -101,8 +103,13 @@ export default new Vuex.Store({
             if (state.wrongStreek >= 2) list = getEasyChoices(state, list)
             else if (state.rightStreek >= 2) list = getHardChoices(state, list)
 
-            state.previousWord = list[Math.floor(Math.random() * list.length)]
-            return state.previousWord
+            let nextWord = list[Math.floor(Math.random() * list.length)]
+            // we never want to show the same word twice
+            while (nextWord.targetWord === state.previousWord) {
+                nextWord = list[Math.floor(Math.random() * list.length)]
+            }
+            state.previousWord = nextWord.targetWord
+            return nextWord
         },
     },
     mutations: {
@@ -160,6 +167,9 @@ export default new Vuex.Store({
         },
         setAllowAutoAdjust(state, value) {
             Vue.set(state, 'allowAutoAdjust', value)
+        },
+        setAllowedTopics(state, value) {
+            Vue.set(state, 'allowedTopics', value)
         },
 
     },

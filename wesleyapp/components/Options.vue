@@ -26,6 +26,16 @@
         </touchable-opacity>
         <touchable-opacity
             class="white-box mt-6"
+            :onPress="() => cycleTopics()"
+            :style="[{padding: paddingSizeSmall}, roundBox]">
+            <text 
+                :style="{fontSize: fontSizeSmall}"
+                class="link-text">
+                {{ topicText }}
+            </text>
+        </touchable-opacity>
+        <touchable-opacity
+            class="white-box mt-6"
             :onPress="() => cycleAllowAutoAdjust()"
             :style="[{padding: paddingSizeSmall}, roundBox]">
             <text 
@@ -59,11 +69,18 @@ export default {
             if (this.allowAutoAdjust) return "Auto Difficulty Adjustment ON"
             else return "Auto Difficulty Adjustment OFF"
         },
+
+        topicText () {
+            if (this.allowedTopics === 'reading') return "Reading only"
+            else if (this.allowedTopics === "spelling") return "Spelling only"
+            else return "Reading and Spelling"
+        },
         
         ...mapGetters([
             'roundBox',
             'difficulty',
             'allowAutoAdjust',
+            'allowedTopics',
             'paddingSize',
             'paddingSizeSmall',
             'fontSizeSmall',
@@ -74,7 +91,8 @@ export default {
     methods: {
         ...mapMutations([
             'setDifficulty',
-            'setAllowAutoAdjust'
+            'setAllowAutoAdjust',
+            'setAllowedTopics'
         ]),
 
         cycleDifficulty () {
@@ -90,7 +108,18 @@ export default {
         },
         cycleAllowAutoAdjust () {
             this.setAllowAutoAdjust(!this.allowAutoAdjust)
-        }
+        },
+        cycleTopics () {
+            if (this.allowedTopics === "reading") {
+                this.setAllowedTopics("spelling")
+            }
+            else if (this.allowedTopics === "spelling") {
+                this.setAllowedTopics("reading spelling")
+            }
+            else {
+                this.setAllowedTopics("reading")
+            }
+        },
     }
 
 

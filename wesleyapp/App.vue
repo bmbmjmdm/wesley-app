@@ -28,6 +28,7 @@
                 <Home
                     v-if="curActivity === 'home'"
                     :change-activity="changeActivity"
+                    :random-activity="randomActivity"
                 />
                 <Options
                     v-else-if="curActivity === 'options'"
@@ -133,7 +134,8 @@ export default {
 
     computed: {
         ...mapGetters([
-            'getUserData'
+            'getUserData',
+            'allowedTopics'
         ]),
     },
 
@@ -148,10 +150,23 @@ export default {
         },
 
         // TODO
-        randomActivity () {
-            this.defaultBackground(() => {
-                this.curActivity = "findWordByPicture"
-            })
+        randomActivity (changeBackground = true) {
+            var activityList = []
+            if (this.allowedTopics.includes('spelling')) activityList.push('spellWord')
+            if (this.allowedTopics.includes('reading')) {
+                activityList.push('findWordByPicture')
+                activityList.push('findWordInSentence')
+            }
+            let newActivity = activityList[Math.floor(Math.random() * activityList.length)]
+            this.curActivity = ''
+            if (changeBackground) {
+                this.defaultBackground(() => {
+                    this.curActivity = newActivity
+                })
+            }
+            else {
+                this.curActivity = newActivity
+            }
         },
 
         // fades in the new background
