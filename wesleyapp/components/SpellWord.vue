@@ -123,11 +123,11 @@ export default {
 
     computed: {
         shouldShowWordNormal () {
-            return this.difficulty === "medium"
+            return this.difficultySpelling === "medium"
         },
 
         shouldShowWordMadeOfLetters () {
-            return this.difficulty === "easy"
+            return this.difficultySpelling === "easy"
         },
 
         mixedLetters () {
@@ -139,7 +139,7 @@ export default {
         },
         
         ...mapGetters([
-            'difficulty',
+            'difficultySpelling',
             'getNextWord'
         ]),
     },
@@ -174,7 +174,7 @@ export default {
                 this.showWord = false
                 this.showLetters = false
                 // move on to next word
-                this.curWord = this.getNextWord("sw")
+                this.curWord = this.getNextWord()
                 // show image and change background
                 this.fadeNewBackground()
             }
@@ -316,7 +316,7 @@ export default {
 
             // timeout to allow animations to finish
             setTimeout(() => {
-                this.updateData({ word: this.curWord.targetWord, right: this.correctOnFirstTry })
+                this.updateData({ word: this.curWord.targetWord, right: this.correctOnFirstTry, multiplier: 2 })
                 this.wordsSpelt ++
                 // next word
                 this.sayGJ(this.getNext)

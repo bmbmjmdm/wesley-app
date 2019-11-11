@@ -80,16 +80,16 @@ export default {
     computed: {
         // we only show the letter hint on easy mode. we speak it on all modes
         shouldShowLetter () {
-            return this.difficulty === "easy"
+            return this.difficultySpelling === "easy"
         },
 
         // we read the list on easy and normal mode, but not hard
         shouldReadList () {
-            return this.difficulty !== "hard"
+            return this.difficultySpelling !== "hard"
         },
         
         ...mapGetters([
-            'difficulty',
+            'difficultySpelling',
             'getNextWord'
         ]),
     },
@@ -123,7 +123,7 @@ export default {
                 this.showList = false
                 this.showLetter = false
                 // move on to next list/word
-                this.curList = this.getNextWord("fwbl")
+                this.curList = this.getNextWord()
                 // show image and change background
                 this.fadeNewBackground()
             }

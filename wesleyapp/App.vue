@@ -26,37 +26,35 @@
                 </View>
 
                 <Home
-                    v-if="curActivity === 'home'"
-                    :change-activity="changeActivity"
+                    v-if="curActivity.name === 'home'"
                     :random-activity="randomActivity"
                 />
                 <Options
-                    v-else-if="curActivity === 'options'"
-                    :change-activity="changeActivity"
+                    v-else-if="curActivity.name === 'options'"
                 />
                 <FindWordInSentence
-                    v-else-if="curActivity === 'findWordInSentence'"
+                    v-else-if="curActivity.name === 'findWordInSentence'"
                     :random-activity="randomActivity"
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                 />
                 <FindWordByPicture
-                    v-else-if="curActivity === 'findWordByPicture'"
+                    v-else-if="curActivity.name === 'findWordByPicture'"
                     :random-activity="randomActivity"
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                 />
                 <FindWordByLetter
-                    v-else-if="curActivity === 'findWordByLetter'"
+                    v-else-if="curActivity.name === 'findWordByLetter'"
                     :random-activity="randomActivity"
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                 />
                 <SpellWord
-                    v-else-if="curActivity === 'spellWord'"
+                    v-else-if="curActivity.name === 'spellWord'"
                     :random-activity="randomActivity"
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
@@ -98,7 +96,6 @@ export default {
 
     data () {
         return {
-            curActivity: 'home',
             bgImageBack: bgDefault,
             bgImageFront: bgDefault,
             soundList: [
@@ -144,45 +141,44 @@ export default {
     computed: {
         ...mapGetters([
             'getUserData',
-            'allowedTopics'
+            'allowedTopics',
+            'curActivity',
         ]),
     },
 
     methods: {
         ...mapMutations([
             'setSizeFactor',
-            'setUserData'
+            'setUserData',
+            'setActivity'
         ]),
 
-        changeActivity (actName, changeObject) {
-            this.curActivity = actName
-        },
-
-        // TODO
         randomActivity (changeBackground = true) {
-            console.log('randomizing activity')
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
-                //activityList.push('spellWord')
-                activityList.push('findWordByLetter')
+                activityList.push({name: 'spellWord', topic: 'Spelling'})
+                // currently we're not using findWordByLetter
+                //activityList.push('findWordByLetter')
             }
             if (this.allowedTopics.includes('reading')) {
-                //activityList.push('findWordByPicture')
-                //activityList.push('findWordInSentence')
+                activityList.push({name: 'findWordByPicture', topic: 'Reading'})
+                activityList.push({name: 'findWordInSentence', topic: 'Reading'})
             }
+
             let newActivity = activityList[Math.floor(Math.random() * activityList.length)]
-            this.curActivity = ''
+            this.setActivity({name: '', topic: ''})
+
             if (!this.needsDefaultBackground(newActivity)) {
                 changeBackground = false
             }
             if (changeBackground) {
                 this.defaultBackground(() => {
-                    this.curActivity = newActivity
+                    this.setActivity(newActivity)
                 })
             }
             else {
                 Vue.nextTick(() => {
-                    this.curActivity = newActivity
+                    this.setActivity(newActivity)
                 })
             }
         },
@@ -205,7 +201,7 @@ export default {
         },
 
         needsDefaultBackground (activity) {
-            switch(activity) {
+            switch(activity.name) {
             case 'findWordInSentence':
                 return false
             case 'findWordByPicture':

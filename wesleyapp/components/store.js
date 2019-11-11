@@ -22,11 +22,16 @@ export default new Vuex.Store({
         wordHistory: {},
         // how many theyve gotten right/wrong in a row
         // not persistant
-        rightStreek: 0,
-        wrongStreek: 0,
+        // split up by topic
+        rightStreekReading: 0,
+        wrongStreekReading: 0,
+        rightStreekSpelling: 0,
+        wrongStreekSpelling: 0,
         // user's current difficulty, can be adjusted automatically by updateData or manually in settings
         // persistant
-        difficulty: "easy",
+        // split up by topic
+        difficultyReading: "easy",
+        difficultySpelling: "easy",
         // whether we can adjust difficulty automatically based on user performance
         // persistant
         allowAutoAdjust: true,
@@ -59,6 +64,10 @@ export default new Vuex.Store({
         radiusSize: 20,
         previousWord: '',
         allowedTopics: 'reading spelling',
+        curActivity: {
+            name: 'home',
+            topic: '',
+        },
 
     },
     getters: {
@@ -66,7 +75,8 @@ export default new Vuex.Store({
         textToSpeech: state => state.textToSpeech,
         shadow: state => state.shadow,
         allowAutoAdjust: state => state.allowAutoAdjust,
-        difficulty: state => state.difficulty,
+        difficultyReading: state => state.difficultyReading,
+        difficultySpelling: state => state.difficultySpelling,
         sizeFactor: state => state.sizeFactor,
         fontSize: state => state.baseFontSize * state.sizeFactor,
         paddingSize: state => state.basePaddingSize * state.sizeFactor,
@@ -76,42 +86,41 @@ export default new Vuex.Store({
         roundBox: state => state.roundBox,
         previousWord: state => state.previousWord,
         allowedTopics: state => state.allowedTopics,
+        curActivity: state => state.curActivity,
         // used for saving app
         getUserData: state => {
             return {
                 wordHistory: state.wordHistory,
-                difficulty: state.difficulty,
-                allowAutoAdjust: state.allowAutoAdjust
+                difficultyReading: state.difficultyReading,
+                difficultySpelling: state.difficultySpelling,
+                allowAutoAdjust: state.allowAutoAdjust,
+                allowedTopics: state.allowedTopics
             }
         },
 
-        // activities include
-        // fwbp - find word by picture
-        // fwis - find word in sentence
-        // fwbl - find word by letter
-        // sw - spell word
         // depending on the activity, the object returned will be different
-        getNextWord: state => activity => {
+        getNextWord: state => () => {
             let list
-            if (activity === "fwis") {
+            if (state.curActivity.name === "findWordInSentence") {
                 list = fwisList
             }
-            else if (activity === "fwbp") {
+            else if (state.curActivity.name === "findWordByPicture") {
                 list = fwbpList
             }
-            else if (activity === "fwbl") {
+            else if (state.curActivity.name === "findWordByLetter") {
                 list = fwblList
             }
-            else if (activity === "sw") {
+            else if (state.curActivity.name === "spellWord") {
                 list = swList
             }
 
-            if (state.wrongStreek >= 2) list = getEasyChoices(state, list)
-            else if (state.rightStreek >= 2) list = getHardChoices(state, list)
+
+            if (state['wrongStreek' + state.curActivity.topic] >= 2) list = getEasyChoices(state, list)
+            else if (state['rightStreek' + state.curActivity.topic] >= 2) list = getHardChoices(state, list)
 
             let nextWord = list[Math.floor(Math.random() * list.length)]
             // we never want to show the same word twice
-            while (nextWord.targetWord === state.previousWord) {
+            while (nextWord.targetWord === state.previousWord && list.length > 1) {
                 nextWord = list[Math.floor(Math.random() * list.length)]
             }
             state.previousWord = nextWord.targetWord
@@ -122,8 +131,14 @@ export default new Vuex.Store({
         // used when loading app
         setUserData(state, data) {
             Vue.set(state, 'wordHistory', data.wordHistory)
-            Vue.set(state, 'difficulty', data.difficulty)
+            Vue.set(state, 'difficultySpelling', data.difficultySpelling)
+            Vue.set(state, 'difficultyReading', data.difficultyReading)
+            Vue.set(state, 'allowedTopics', data.allowedTopics)
             Vue.set(state, 'allowAutoAdjust', data.allowAutoAdjust)
+        },
+
+        setActivity(state, activity) {
+            Vue.set(state, 'curActivity', activity)
         },
 
         setSizeFactor(state, size) {
@@ -132,7 +147,7 @@ export default new Vuex.Store({
 
         // right is a boolean
         // REMEMBER this can update difficulty, do not call if you haven't cleaned up the screen yet
-        updateData(state, { word, right }) {
+        updateData(state, { word, right, multiplier = 1 }) {
             // make sure the word exists in our history
             if (!state.wordHistory[word]) {
                 Vue.set(state.wordHistory, word, {
@@ -142,34 +157,40 @@ export default new Vuex.Store({
                 })
             }
 
+            let rightStreek = 'rightStreek' + state.curActivity.topic
+            let wrongStreek = 'wrongStreek' + state.curActivity.topic
+
             if (right) {
-                Vue.set(state, 'rightStreek', state.rightStreek + 1)
-                Vue.set(state, 'wrongStreek', 0)
+                Vue.set(state, rightStreek, state[rightStreek] + multiplier)
+                Vue.set(state, wrongStreek, 0)
                 Vue.set(state.wordHistory[word], 'total', state.wordHistory[word].total + 1)
                 Vue.set(state.wordHistory[word], 'right', state.wordHistory[word].right + 1)
             }
             else {
-                Vue.set(state, 'wrongStreek', state.wrongStreek + 1)
-                Vue.set(state, 'rightStreek', 0)
+                Vue.set(state, wrongStreek, state[wrongStreek] + multiplier)
+                Vue.set(state, rightStreek, 0)
                 Vue.set(state.wordHistory[word], 'total', state.wordHistory[word].total + 1)
                 Vue.set(state.wordHistory[word], 'wrong', state.wordHistory[word].wrong + 1)
             }
 
             // Update difficulty
             if (state.allowAutoAdjust) {
-                if (state.rightStreek >= 8) {
-                    Vue.set(state, 'rightStreek', 0)
+                if (state[rightStreek] >= 8) {
+                    Vue.set(state, rightStreek, 0)
                     increaseDifficulty(state)
                 }
-                else if (state.wrongStreek >= 5) {
-                    Vue.set(state, 'wrongStreek', 0)
+                else if (state[wrongStreek] >= 5) {
+                    Vue.set(state, wrongStreek, 0)
                     decreaseDifficulty(state)
                 }
             }
         },
 
-        setDifficulty(state, value) {
-            Vue.set(state, 'difficulty', value)
+        setDifficultyReading(state, value) {
+            Vue.set(state, 'difficultyReading', value)
+        },
+        setDifficultySpelling(state, value) {
+            Vue.set(state, 'difficultySpelling', value)
         },
         setAllowAutoAdjust(state, value) {
             Vue.set(state, 'allowAutoAdjust', value)
@@ -204,21 +225,24 @@ export default new Vuex.Store({
 
 // ############ helper functions that aren't exposed by the store ###################
 
+// topic is Reading or Spelling
 function increaseDifficulty (state) {
-    if (state.difficulty === "easy") {
-        Vue.set(state, 'difficulty', "medium")
+    let variable = 'difficulty' + state.curActivity.topic
+    if (state[variable] === "easy") {
+        Vue.set(state, variable, "medium")
     }
-    else if (state.difficulty === "medium") {
-        Vue.set(state, 'difficulty', "hard")
+    else if (state[variable] === "medium") {
+        Vue.set(state, variable, "hard")
     }
 }
 
 function decreaseDifficulty (state) {
-    if (state.difficulty === "medium") {
-        Vue.set(state, 'difficulty', "easy")
+    let variable = 'difficulty' + state.curActivity.topic
+    if (state[variable] === "medium") {
+        Vue.set(state, variable, "easy")
     }
-    else if (state.difficulty === "hard") {
-        Vue.set(state, 'difficulty', "medium")
+    else if (state[variable] === "hard") {
+        Vue.set(state, variable, "medium")
     }
 }
 

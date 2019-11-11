@@ -78,16 +78,16 @@ export default {
     computed: {
         // we only show the target word on easy mode. we speak it on all modes
         shouldShowTargetWord () {
-            return this.difficulty === "easy"
+            return this.difficultyReading === "easy"
         },
 
         // we read the options on easy and normal mode, but not hard
         shouldReadOptions () {
-            return this.difficulty !== "hard"
+            return this.difficultyReading !== "hard"
         },
         
         ...mapGetters([
-            'difficulty',
+            'difficultyReading',
             'getNextWord'
         ]),
     },
@@ -120,7 +120,7 @@ export default {
                 this.showGrid = false
                 this.showTarget = false
                 // move on to next word grid/target word
-                this.curWords = this.getNextWord("fwbp")
+                this.curWords = this.getNextWord()
                 // show image and change background
                 this.fadeNewBackground()
             }

@@ -17,7 +17,7 @@
         <touchable-opacity
             class="mt-6 white-box"
             :style="[{padding: paddingSizeSmall}, roundBox]"
-            :onPress="() => changeActivity('options')">
+            :onPress="() => setActivity({name: 'options'})">
             <text 
                 :style="{fontSize: fontSizeSmall}"
                 class="link-text">
@@ -28,14 +28,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     props: {
-        changeActivity: {
-            type: Function,
-            required: true
-        },
         randomActivity: {
             type: Function,
             required: true
@@ -49,6 +45,11 @@ export default {
             'paddingSizeSmall',
             'fontSizeSmall',
             'fontSize',
+        ])
+    },
+    methods: {
+        ...mapMutations([
+            'setActivity'
         ])
     },
 

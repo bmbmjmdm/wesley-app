@@ -78,16 +78,16 @@ export default {
     computed: {
         // we only show the target word on easy mode. we speak it on all modes
         shouldShowTargetWord () {
-            return this.difficulty === "easy"
+            return this.difficultyReading === "easy"
         },
 
         // we read the sentence on easy and normal mode, but not hard
         shouldReadSentence () {
-            return this.difficulty !== "hard"
+            return this.difficultyReading !== "hard"
         },
         
         ...mapGetters([
-            'difficulty',
+            'difficultyReading',
             'getNextWord'
         ]),
     },
@@ -121,7 +121,7 @@ export default {
                 this.showSentence = false
                 this.showWord = false
                 // move on to next sentence/word
-                this.curSentence = this.getNextWord("fwis")
+                this.curSentence = this.getNextWord()
                 // show image and change background
                 this.fadeNewBackground()
             }
