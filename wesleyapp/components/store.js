@@ -4,6 +4,7 @@ import tts from 'react-native-tts'
 import fwisList from './fwisList'
 import fwbpList from './fwbpList'
 import swList from './swList'
+import fwblList from './fwblList'
 import Sound  from 'react-native-sound'
 Vue.use(Vuex)
 
@@ -87,6 +88,8 @@ export default new Vuex.Store({
         // activities include
         // fwbp - find word by picture
         // fwis - find word in sentence
+        // fwbl - find word by letter
+        // sw - spell word
         // depending on the activity, the object returned will be different
         getNextWord: state => activity => {
             let list
@@ -95,6 +98,9 @@ export default new Vuex.Store({
             }
             else if (activity === "fwbp") {
                 list = fwbpList
+            }
+            else if (activity === "fwbl") {
+                list = fwblList
             }
             else if (activity === "sw") {
                 list = swList

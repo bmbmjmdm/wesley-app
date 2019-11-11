@@ -48,6 +48,13 @@
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                 />
+                <FindWordByLetter
+                    v-else-if="curActivity === 'findWordByLetter'"
+                    :random-activity="randomActivity"
+                    :change-background="changeBackground"
+                    :playRandomSound="playRandomSound"
+                    :sayGJ="sayGJ"
+                />
                 <SpellWord
                     v-else-if="curActivity === 'spellWord'"
                     :random-activity="randomActivity"
@@ -65,6 +72,7 @@
 import { Platform, AppState, AsyncStorage, Dimensions } from 'react-native';
 import FindWordInSentence from './components/FindWordInSentence';
 import FindWordByPicture from './components/FindWordByPicture';
+import FindWordByLetter from './components/FindWordByLetter'
 import SpellWord from './components/SpellWord';
 import Home from './components/Home';
 import Options from './components/Options';
@@ -84,6 +92,7 @@ export default {
         FindWordInSentence,
         FindWordByPicture,
         SpellWord,
+        FindWordByLetter,
         Sentence
     },
 
@@ -153,10 +162,13 @@ export default {
         randomActivity (changeBackground = true) {
             console.log('randomizing activity')
             var activityList = []
-            if (this.allowedTopics.includes('spelling')) activityList.push('spellWord')
+            if (this.allowedTopics.includes('spelling')) {
+                //activityList.push('spellWord')
+                activityList.push('findWordByLetter')
+            }
             if (this.allowedTopics.includes('reading')) {
-                activityList.push('findWordByPicture')
-                activityList.push('findWordInSentence')
+                //activityList.push('findWordByPicture')
+                //activityList.push('findWordInSentence')
             }
             let newActivity = activityList[Math.floor(Math.random() * activityList.length)]
             this.curActivity = ''
@@ -200,6 +212,8 @@ export default {
                 return true
             case 'spellWord':
                 return false
+            case 'findWordByLetter':
+                return true
             default:
                 return true
             } 
