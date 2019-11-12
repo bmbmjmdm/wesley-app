@@ -1,5 +1,5 @@
 <template>
-      <ImageBackground
+    <ImageBackground
         :source="bgImageBack"
         :imageStyle="{resizeMode: 'stretch'}"
         class="full-flex">
@@ -98,21 +98,6 @@ export default {
         return {
             bgImageBack: bgDefault,
             bgImageFront: bgDefault,
-            soundList: [
-                'success_one.wav',
-                'success_two.wav',
-                'success_four.wav',
-                'success_five.wav',
-                'success_six.wav',
-                'success_seven.wav',
-                'success_eight.wav',
-                'success_nine.wav',
-                'success_ten.wav',
-                'success_twelve.wav',
-                'success_thirteen.wav',
-                'success_fifteen.wav',
-                'success_sixteen.wav'
-            ],
             showGJ: false,
             gjSentence: "",
             gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job"],
@@ -216,8 +201,9 @@ export default {
         },
 
         playRandomSound(callback) {
-            var ran = Math.floor(Math.random() * this.soundList.length)
-            var sound = new Sound(this.soundList[ran], Sound.MAIN_BUNDLE, (error) => {
+            var ran = Math.floor(Math.random() * 29)
+            console.log("loading success_"+ran)
+            var sound = new Sound("success_" + ran + ".wav", Sound.MAIN_BUNDLE, (error) => {
                 if (error) {
                     console.log('failed to load sound #' + ran, error)
                     return
