@@ -313,6 +313,7 @@ export default {
                 this.$refs.targetWordRef.animateOut()
             }
             this.$refs.speltWordRef.animateOut()
+            this.showWord = false
 
             // timeout to allow animations to finish
             setTimeout(() => {

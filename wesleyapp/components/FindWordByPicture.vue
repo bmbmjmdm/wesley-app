@@ -236,6 +236,8 @@ export default {
                     if (this.shouldShowTargetWord) {
                         this.$refs.targetWordRef.animateOut()
                     }
+                    this.showWord = false
+                    
                     // timeout to allow animations to finish
                     setTimeout(() => {
                         this.updateData({ word, right: this.correctOnFirstTry })

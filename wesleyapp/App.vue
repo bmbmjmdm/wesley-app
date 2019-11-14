@@ -108,6 +108,8 @@ export default {
     },
 
     async mounted () {
+        this.textToSpeech.getInitStatus().then(() => this.textToSpeech.speak(''))
+
         // load saved user data
         let data = await AsyncStorage.getItem("WesleyApp-childProgress")
         if (data) {
@@ -128,6 +130,7 @@ export default {
             'getUserData',
             'allowedTopics',
             'curActivity',
+            'textToSpeech'
         ]),
     },
 

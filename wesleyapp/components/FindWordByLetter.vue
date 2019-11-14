@@ -216,6 +216,8 @@ export default {
                     if (this.shouldShowLetter) {
                         this.$refs.letterRef.animateOut()
                     }
+                    this.showLetter = false
+
                     // timeout to allow animations to finish
                     setTimeout(() => {
                         this.updateData({ word, right: this.correctOnFirstTry })
