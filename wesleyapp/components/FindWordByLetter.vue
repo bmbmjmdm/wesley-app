@@ -12,7 +12,7 @@
                 :narrating="false"
                 :continueSequence="()=>{}" />
         </view>
-        <view class="word-list">
+        <view :class="{'mt-10': sizeFactor < 1}">
             <WordList
                 v-if="showList"
                 ref="listRef"
@@ -23,7 +23,9 @@
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :tutorial="tutorial"
-                :targetWord="curList.targetWord" />
+                :targetWord="curList.targetWord"
+                :finishLetters="doneSpelling"
+                :lettersClickable="shouldClickLetters" />
         </view>
     </view>
 </template>
@@ -69,7 +71,7 @@ export default {
             showLetter: false,
             firstList: true,
             listsRead: 0,
-            correctOnFirstTry: true
+            correctOnFirstTry: true,
         }
     },
 
@@ -87,10 +89,15 @@ export default {
         shouldReadList () {
             return this.difficultySpelling !== "hard"
         },
+
+        shouldClickLetters () {
+            return this.difficultySpelling === "hard"
+        },
         
         ...mapGetters([
             'difficultySpelling',
-            'getNextWord'
+            'getNextWord',
+            'sizeFactor'
         ]),
     },
 
@@ -175,7 +182,7 @@ export default {
                             else {
                                 this.finishedLetterHint()
                             }
-                        }, 700)
+                        }, 1000)
                     }, 350)
                 }
                 // second time letter is read, let the user interact now
@@ -204,33 +211,39 @@ export default {
         },
 
         // User clicked a word, if they clicked the right one, move on to the next list
-        wordPressed (word) {
-            if (word === this.curList.targetWord) {
+        // if we're on hard mode, they must have clicked the right letter
+        wordPressed (word, index, letter) {
+            if ((word === this.curList.targetWord) && (!this.shouldClickLetters || letter === this.curList.letter)) {
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true
                 this.manuallyReading = true
-                // play a pleasant sound before moving on
-                this.playRandomSound((success) => {
-                    // animate out our list and letter
-                    this.$refs.listRef.animateOut()
-                    if (this.shouldShowLetter) {
-                        this.$refs.letterRef.animateOut()
-                    }
-                    this.showLetter = false
-
-                    // timeout to allow animations to finish
-                    setTimeout(() => {
-                        this.updateData({ word, right: this.correctOnFirstTry })
-                        this.tutorial = false
-                        this.listsRead ++
-                        // next word/list
-                        this.sayGJ(this.getNext)
-                    }, 1000)
-                })
+                this.$refs.listRef.readLettersOfWord(index)
             }
             else {
                 this.correctOnFirstTry = false
             }
+        },
+
+        // correct word finished spelling after being pressed
+        doneSpelling () {
+            // play a pleasant sound before moving on
+            this.playRandomSound((success) => {
+                // animate out our list and letter
+                this.$refs.listRef.animateOut()
+                if (this.shouldShowLetter) {
+                    this.$refs.letterRef.animateOut()
+                }
+                this.showLetter = false
+
+                // timeout to allow animations to finish
+                setTimeout(() => {
+                    this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
+                    this.tutorial = false
+                    this.listsRead ++
+                    // next word/list
+                    this.sayGJ(this.getNext)
+                }, 1000)
+            })
         },
 
         setManuallyReading (val) {
@@ -255,13 +268,10 @@ export default {
         position: absolute;
         top: 0;
         align-self: center;
-        margin-top: 40
+        margin-top: 50
     }
 
-    .word-list {
-        position: absolute;
-        top: 100;
-        align-self: center;
+    .mt-10 {
         margin-top: 50
     }
 </style>

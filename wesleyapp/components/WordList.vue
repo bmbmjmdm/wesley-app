@@ -1,30 +1,35 @@
+<!--currently this is a list of words made of letters -->
 <template>
     <view class="word-container">
-        <Word
+        <WordMadeOfLetters
             v-for="(word,index) in list"
             class="mb-3"
             :key="word+index+list"
             :ref="'wordRef'"
             :word="word"
             :narrating="narrating"
-            :continueSentence="readWords"
-            :word-pressed="wordPressed"
+            :doneReading="readWords"
+            :touchableCallback="() => { wordPressed(word, index) }"
+            :touchable="!lettersClickable"
             :manually-reading="manuallyReading"
             :set-manually-reading="setManuallyReading"
-            :tutorialHighlight="tutorial && word === targetWord"
-            :tutorialFade="tutorial && word !== targetWord"
-            :unhighlightDuringNarration="true"
-            :fadeAnimations="true" />
+            :letterPressed="(letter) => { wordPressed(word, index, letter) }"
+            :tutorialHighlightWord="tutorial && word === targetWord"
+            :tutorialFadeWord="tutorial && word !== targetWord"
+            :fadeIn="true"
+            :doneSplitting="()=>{}"
+            :doneJoining="()=>{}"
+            :finishNarration="finishLetters" />
     </view>
 </template>
 
 <script>
-import Word from './Word'
+import WordMadeOfLetters from './WordMadeOfLetters'
 import { mapGetters } from 'vuex'
 
 export default {
     components: {
-        Word
+        WordMadeOfLetters
     },
     
     props: {
@@ -57,6 +62,14 @@ export default {
             default: ""
         },
         tutorial: {
+            type: Boolean,
+            default: false
+        },
+        finishLetters: {
+            type: Function,
+            default: () => {}
+        },
+        lettersClickable: {
             type: Boolean,
             default: false
         },
@@ -102,6 +115,10 @@ export default {
                 this.readThisMany--
             }
         },
+
+        readLettersOfWord(index) {
+            this.$refs.wordRef[this.$refs.wordRef.length-(this.list.length-index)].readLetters()
+        },
     }
 
 
@@ -113,6 +130,7 @@ export default {
     .word-container {
         flex-direction: column;
         flex-wrap: wrap;
+        align-items: center;
     }
     .mb-3 {
         margin-bottom: 15

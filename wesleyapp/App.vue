@@ -145,8 +145,7 @@ export default {
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
                 activityList.push({name: 'spellWord', topic: 'Spelling'})
-                // currently we're not using findWordByLetter
-                //activityList.push('findWordByLetter')
+                activityList.push({name: 'findWordByLetter', topic: 'Spelling'})
             }
             if (this.allowedTopics.includes('reading')) {
                 activityList.push({name: 'findWordByPicture', topic: 'Reading'})

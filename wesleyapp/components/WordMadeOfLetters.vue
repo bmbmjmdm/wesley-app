@@ -1,5 +1,8 @@
 <template>
-    <view class="word-container">
+    <touchable-opacity
+        v-if="touchable"
+        :onPress="manualReadWord"
+        class="word-container">
         <Letter
             v-for="(letter,index) in letters"
             :key="letter+index+word"
@@ -10,8 +13,29 @@
             :letter-pressed="(ltr) => { letterPressed(ltr, index) }"
             :manually-reading="manuallyReading"
             :set-manually-reading="setManuallyReading"
-            :tutorial-highlight="tutorial && letter === targetLetter"
-            :tutorial-fade="tutorial && letter !== targetLetter"
+            :tutorial-highlight="(tutorial && letter === targetLetter) || tutorialHighlightWord"
+            :tutorial-fade="(tutorial && letter !== targetLetter) || tutorialFadeWord"
+            :position="index === 0 ? 'left' : index === word.length-1 ? 'right' : 'center'"
+            :transparent="transparent"
+            :start-split="startSplit"
+            :fade-in="fadeIn"
+            :disabled="true" />
+    </touchable-opacity>
+    <view
+        v-else
+        class="word-container">
+        <Letter
+            v-for="(letter,index) in letters"
+            :key="letter+index+word"
+            :ref="'letterRef'"
+            :letter="letter"
+            :narrating="narrating"
+            :continueSequence="continueReadLetters"
+            :letter-pressed="(ltr) => { letterPressed(ltr, index) }"
+            :manually-reading="manuallyReading"
+            :set-manually-reading="setManuallyReading"
+            :tutorial-highlight="(tutorial && letter === targetLetter) || tutorialHighlightWord"
+            :tutorial-fade="(tutorial && letter !== targetLetter) || tutorialFadeWord"
             :position="index === 0 ? 'left' : index === word.length-1 ? 'right' : 'center'"
             :transparent="transparent"
             :start-split="startSplit"
@@ -39,7 +63,7 @@ export default {
         },
         finishNarration: {
             type: Function,
-            required: true
+            default: () => {}
         },
         letterPressed: {
             type: Function,
@@ -84,14 +108,31 @@ export default {
         doneReading: {
             type: Function,
             required: true
-        }
+        },
+        touchable: {
+            type: Boolean,
+            default: false,
+        },
+        touchableCallback: {
+            type: Function,
+            default: null
+        },
+        tutorialHighlightWord: {
+            type: Boolean,
+            default: false,
+        },
+        tutorialFadeWord: {
+            type: Boolean,
+            default: false,
+        },
     },
 
     data () {
         return {
             readThisMany: 0,
             doneHighlighting: false,
-            doneSpeaking: false
+            doneSpeaking: false,
+            pressed: false,
         }
     },
 
@@ -175,6 +216,14 @@ export default {
             this.$refs.letterRef[this.$refs.letterRef.length-this.letters.length+position].animateOpacity(1)
         },
 
+        manualReadWord () {
+            if (!this.manuallyReading && !this.narrating) {
+                this.setManuallyReading(true)
+                this.pressed = true
+                this.readWord()
+            }
+        },
+
         readWord () {
             this.readThisMany = this.letters.length
             this.doneHighlighting = false
@@ -209,7 +258,15 @@ export default {
                     this.$refs.letterRef[this.$refs.letterRef.length-clearThisMany].unhighlightLetter()
                     clearThisMany--
                 }
-                this.doneReading()
+                // doneReading is specifically for narrating, whereas touchableCallback is for manual pressing
+                if (this.pressed) {
+                    this.setManuallyReading(false)
+                    this.pressed = false
+                    this.touchableCallback()
+                }
+                else {
+                    this.doneReading()
+                }
             }
         },
     }

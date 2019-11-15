@@ -1,5 +1,5 @@
 <template>
-    <touchable-opacity :onPress="manualReadLetter">
+    <touchable-opacity :onPress="manualReadLetter" :disabled="disabled">
         <animated:view
             :style="{opacity: opacityGrowth,
                     borderTopLeftRadius: radiusLeftGrowth,
@@ -92,7 +92,11 @@ export default {
         fadeIn: {
             type: Boolean,
             default: false
-        }
+        },
+        disabled: {
+            type: Boolean,
+            default: false
+        },
     },
 
     data () {
