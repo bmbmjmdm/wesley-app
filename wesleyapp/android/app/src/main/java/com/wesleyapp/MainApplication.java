@@ -3,7 +3,7 @@ package com.wesleyapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.kevinresol.react_native_sound_recorder.RNSoundRecorderPackage;
+import com.rnim.rn.audio.ReactNativeAudioPackage;
 import com.zmxv.RNSound.RNSoundPackage;
 import net.no_mad.tts.TextToSpeechPackage;
 import com.facebook.react.ReactNativeHost;
@@ -26,7 +26,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RNSoundRecorderPackage(),
+            new ReactNativeAudioPackage(),
             new RNSoundPackage(),
             new TextToSpeechPackage()
       );

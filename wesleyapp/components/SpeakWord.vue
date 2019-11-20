@@ -18,9 +18,10 @@
 </template>
 
 <script>
+import { Platform } from 'react-native'
 import Word from './Word'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import SoundRecorder from 'react-native-sound-recorder'
+import {AudioRecorder, AudioUtils} from 'react-native-audio'
 import Sound  from 'react-native-sound'
 
 export default {
@@ -56,6 +57,10 @@ export default {
             wordsSpoken: 0,
             userSpoke: false,
             reinforced: false,
+            filePath: AudioUtils.DocumentDirectoryPath + '/tempFile.aac',
+            hasAudio: false,
+            currentMetering: 0,
+            audioBegins: 0,
         }
     },
 
@@ -142,9 +147,9 @@ export default {
                     if (this.reinforced) {
                         this.doneReinforcing()
                     }
-                    // play their recording back to them
+                    // load the recording
                     else {
-                        var recording = new Sound('tempFile.mp4', SoundRecorder.PATH_CACHE, (error) => {
+                        var recording = new Sound(this.filePath, '', (error) => {
                             if (error) {
                                 console.log('failed to load the sound', error)
                                 this.reinforced = true
@@ -156,8 +161,11 @@ export default {
                                 }
                             }
 
+                            // Set the recording to start at 0.1 second before we heard the user start speaking
+                            recording.setCurrentTime(Math.max(this.audioBegins - 0.1, 0))
                             // After it plays, read the word a final time
-                            recording.play((success) => {
+                            let callback = (success) => {
+                                recording.release()
                                 this.reinforced = true
                                 if (this.shouldShowTargetWord) {
                                     this.$refs.targetWordRef.readWord()
@@ -165,7 +173,17 @@ export default {
                                 else {
                                     this.afterSpeak(this.curWord.targetWord, this.finishedTargetWord)
                                 }
-                            })
+                            }
+                            // play the recording
+                            recording.play(callback)
+                            // make sure it doesn't play for more than 2 seconds
+                            setTimeout(() => {
+                                if (!this.reinforced) {
+                                    recording.stop()
+                                    callback()
+                                }
+                            }, 2000)
+
                         })
                     }
                 }
@@ -178,6 +196,25 @@ export default {
         },
 
         promptSpeaking () {
+            AudioRecorder.prepareRecordingAtPath(this.filePath, { MeteringEnabled: true })
+            this.currentMetering = 0
+            this.hasAudio = false
+            this.audioBegins = 0
+            // keep track of metering
+            AudioRecorder.onProgress = (data) => {
+                this.currentMetering = data.currentMetering
+                if (this.currentMetering > 10000) {
+                    this.hasAudio = true
+                    if (this.audioBegins === 0) this.audioBegins = data.currentTime
+                }
+            }
+            AudioRecorder.onFinished = (data) => {
+                // Android callback comes in the form of a promise instead.
+                if (Platform.OS === 'ios') {
+                    this.finishRecording()
+                }
+            }
+            
             let prompt = "Please read the word out loud"
             if (!this.shouldShowTargetWord) {
                 prompt = "What's the picture of? Say it out loud"
@@ -187,42 +224,41 @@ export default {
                 callback: () => {
                     this.narrating = false
                     this.manuallyReading = false
-                    SoundRecorder.start(SoundRecorder.PATH_CACHE + '/tempFile.mp4')
-                    setTimeout(this.finishRecording, 5000)
+                    AudioRecorder.startRecording()
+                    setTimeout(this.stopRecording, 5000)
                 }
             })
         },
 
+        async stopRecording () {
+            await AudioRecorder.stopRecording()
+            if (Platform.OS === 'android') {
+                this.finishRecording()
+            }
+        },
+
         // The recording time is done, stop recording and either re-prompt the user or move on to the next word
         finishRecording () {
-            SoundRecorder.stop().then((result) => {
-                if (DECIBLES) {
-                    // set this to prevent the user from pressing buttons during transition
-                    this.narrating = true
-                    this.manuallyReading = true
+            if (this.hasAudio) {
+                // set this to prevent the user from pressing buttons during transition
+                this.narrating = true
+                this.manuallyReading = true
 
-                    // indicate we're in a finished state
-                    this.userSpoke = true
-                    //read the target word to reinforce and let user self-learn
-                    if (this.shouldShowTargetWord) {
-                        this.$refs.targetWordRef.readWord()
-                    }
-                    else {
-                        this.afterSpeak(this.curWord.targetWord, this.finishedTargetWord)
-                    }
+                // indicate we're in a finished state
+                this.userSpoke = true
+                //read the target word to reinforce and let user self-learn
+                if (this.shouldShowTargetWord) {
+                    this.$refs.targetWordRef.readWord()
                 }
                 else {
-                    this.narrating = true
-                    this.manuallyReading = true
-                    this.promptSpeaking()
+                    this.afterSpeak(this.curWord.targetWord, this.finishedTargetWord)
                 }
-            })
-            .catch((error) => {
-                console.log(error)
+            }
+            else {
                 this.narrating = true
                 this.manuallyReading = true
                 this.promptSpeaking()
-            })
+            }
         },
 
         doneReinforcing () {

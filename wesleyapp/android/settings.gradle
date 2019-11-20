@@ -1,6 +1,6 @@
 rootProject.name = 'wesleyapp'
-include ':react-native-sound-recorder'
-project(':react-native-sound-recorder').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-sound-recorder/android')
+include ':react-native-audio'
+project(':react-native-audio').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-audio/android')
 include ':react-native-sound'
 project(':react-native-sound').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-sound/android')
 include ':react-native-tts'
