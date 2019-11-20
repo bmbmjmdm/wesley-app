@@ -136,7 +136,7 @@ export default {
                     wordAnimateTime = 0
                 }
                 // timeout is to allow word animation to finish
-                // if were in easy mode theres no animation so timeout time is 0
+                // if were not in easy mode theres no animation so timeout time is 0
                 setTimeout(() => {
                     // speak and highlight the word
                     if (this.shouldShowTargetWord) {

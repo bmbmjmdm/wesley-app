@@ -3,7 +3,8 @@ import Vuex from "vuex"
 import tts from 'react-native-tts'
 import fwisList from './fwisList'
 import fwbpList from './fwbpList'
-import swList from './swList'
+import speakList from './speakList'
+import spellList from './spellList'
 import fwblList from './fwblList'
 import Sound  from 'react-native-sound'
 Vue.use(Vuex)
@@ -110,10 +111,12 @@ export default new Vuex.Store({
             else if (state.curActivity.name === "findWordByLetter") {
                 list = fwblList
             }
-            else if (state.curActivity.name === "spellWord") {
-                list = swList
+            else if (state.curActivity.name === "speakWord") {
+                list = speakList
             }
-
+            else if (state.curActivity.name === "spellWord") {
+                list = spellList
+            }
 
             if (state['wrongStreek' + state.curActivity.topic] >= 2) list = getEasyChoices(state, list)
             else if (state['rightStreek' + state.curActivity.topic] >= 2) list = getHardChoices(state, list)

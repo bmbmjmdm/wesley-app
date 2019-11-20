@@ -51,5 +51,7 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app records speech at times for playback and self improvement</string>
 </dict>
 </plist>

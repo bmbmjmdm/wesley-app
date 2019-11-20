@@ -60,6 +60,13 @@
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                 />
+                <SpeakWord
+                    v-else-if="curActivity.name === 'speakWord'"
+                    :random-activity="randomActivity"
+                    :change-background="changeBackground"
+                    :playRandomSound="playRandomSound"
+                    :sayGJ="sayGJ"
+                />
                 
             </ImageBackground>
         </view>
@@ -67,11 +74,12 @@
 </template>
 
 <script>
-import { Platform, AppState, AsyncStorage, Dimensions } from 'react-native';
+import { Platform, AppState, AsyncStorage, Dimensions, PermissionsAndroid } from 'react-native';
 import FindWordInSentence from './components/FindWordInSentence';
 import FindWordByPicture from './components/FindWordByPicture';
 import FindWordByLetter from './components/FindWordByLetter'
 import SpellWord from './components/SpellWord';
+import SpeakWord from './components/SpeakWord';
 import Home from './components/Home';
 import Options from './components/Options';
 import bgDefault from './assets/home.jpg';
@@ -91,7 +99,8 @@ export default {
         FindWordByPicture,
         SpellWord,
         FindWordByLetter,
-        Sentence
+        Sentence,
+        SpeakWord
     },
 
     data () {
@@ -123,6 +132,9 @@ export default {
         // setup resizing to fit different screens
         let screenHeight = Dimensions.get('window').height
         this.setSizeFactor(screenHeight/960)
+        
+        // ask for permissions
+        await this.askForPermissions()
     },
 
     computed: {
@@ -144,12 +156,13 @@ export default {
         randomActivity (changeBackground = true) {
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
-                activityList.push({name: 'spellWord', topic: 'Spelling'})
-                activityList.push({name: 'findWordByLetter', topic: 'Spelling'})
+                //activityList.push({name: 'spellWord', topic: 'Spelling'})
+                //activityList.push({name: 'findWordByLetter', topic: 'Spelling'})
             }
             if (this.allowedTopics.includes('reading')) {
-                activityList.push({name: 'findWordByPicture', topic: 'Reading'})
-                activityList.push({name: 'findWordInSentence', topic: 'Reading'})
+                //activityList.push({name: 'findWordByPicture', topic: 'Reading'})
+                //activityList.push({name: 'findWordInSentence', topic: 'Reading'})
+                activityList.push({name: 'speakWord', topic: 'Reading'})
             }
 
             let newActivity = activityList[Math.floor(Math.random() * activityList.length)]
@@ -242,6 +255,49 @@ export default {
             }
             this.appState = nextAppState
         },
+
+        // only called once at start of app
+        async askForPermissions () {
+            if (Platform.OS === 'android') {
+                try {
+                    const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                        {
+                        title: 'Permissions for write access',
+                        message: 'Give permission to write files',
+                        buttonPositive: 'ok',
+                        },
+                    )
+                    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                        console.log('You can use the storage')
+                    } else {
+                        console.log('permission denied')
+                    }
+                } catch (err) {
+                    console.warn(err)
+                }
+            }
+            if (Platform.OS === 'android') {
+                try {
+                    const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+                        {
+                        title: 'Permissions for mic access',
+                        message: 'Give permission to use mic',
+                        buttonPositive: 'ok',
+                        },
+                    )
+                    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                        console.log('You can use the mic')
+                    } else {
+                        console.log('permission denied')
+                    }
+                } catch (err) {
+                    console.warn(err)
+                }
+            }
+        },
+
     }
 
 }
