@@ -213,12 +213,12 @@ export default {
                     if (this.shouldShowTargetWord) {
                         this.$refs.targetWordRef.animateOut()
                     }
-                    this.showWord = false
 
                     // timeout to allow animations to finish
                     setTimeout(() => {
                         this.updateData({ word, right: this.correctOnFirstTry })
                         this.tutorial = false
+                        this.showWord = false
                         this.sentencesRead ++
                         // next word/sentence
                         this.sayGJ(this.getNext)

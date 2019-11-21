@@ -10,7 +10,8 @@
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
-                :continueSequence="()=>{}" />
+                :continueSequence="()=>{}"
+                :fadeIn="true" />
         </view>
         <view :class="{'mt-10': sizeFactor < 1}">
             <WordList
@@ -141,7 +142,7 @@ export default {
             //this.changeBackground(this.curList.pic, () => {
                 // new image is now displayed as background, animate in letter hint
                 this.showLetter = true
-                var letterAnimateTime = 700
+                var letterAnimateTime = 1000
                 if (!this.shouldShowLetter) {
                     letterAnimateTime = 0
                 }
@@ -233,11 +234,11 @@ export default {
                 if (this.shouldShowLetter) {
                     this.$refs.letterRef.animateOut()
                 }
-                this.showLetter = false
 
                 // timeout to allow animations to finish
                 setTimeout(() => {
                     this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
+                    this.showLetter = false
                     this.tutorial = false
                     this.listsRead ++
                     // next word/list

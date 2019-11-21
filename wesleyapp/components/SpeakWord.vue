@@ -12,17 +12,23 @@
                 :narrating="false"
                 :continueSentence="()=>{}" />
         </view>
-        <view>
-        </view>
+        <animated:image
+            v-if="showMic"
+            :fadeDuration="0"
+            :style="{height: maxGrowth, width: maxGrowth, resizeMode: 'stretch'}"
+            :source="micPic">
     </view>
 </template>
 
 <script>
-import { Platform } from 'react-native'
+import { Platform, Animated } from 'react-native'
 import Word from './Word'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import {AudioRecorder, AudioUtils} from 'react-native-audio'
 import Sound  from 'react-native-sound'
+import micNormal from '../assets/mic.png'
+import micReady from '../assets/micReady.png'
+import micRecording from '../assets/micRecording.png'
 
 export default {
     props: {
@@ -61,6 +67,9 @@ export default {
             hasAudio: false,
             currentMetering: 0,
             audioBegins: 0,
+            showMic: true,
+            silenceDuration: 999,
+            maxGrowth: new Animated.Value(0),
         }
     },
 
@@ -77,10 +86,23 @@ export default {
         shouldReadTargetWord () {
             return this.difficultyReading === "easy"
         },
+
+        micPic () {
+            if (this.narrating) {
+                return micNormal
+            }
+            else if (this.silenceDuration <= 3) {
+                return micRecording
+            }
+            else {
+                return micReady
+            }
+        },
         
         ...mapGetters([
             'difficultyReading',
-            'getNextWord'
+            'getNextWord',
+            'sizeFactor'
         ]),
     },
 
@@ -120,6 +142,7 @@ export default {
             this.changeBackground(this.curWord.pic, () => {
                 // new image is now displayed as background, animate in target word
                 this.showWord = true
+                this.animateGrowth(true)
                 var wordAnimateTime = 700
                 if (!this.shouldShowTargetWord) {
                     wordAnimateTime = 0
@@ -157,7 +180,7 @@ export default {
                                     this.$refs.targetWordRef.readWord()
                                 }
                                 else {
-                                    this.afterSpeak(this.curWord.targetWord, this.finishedTargetWord)
+                                    this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
                                 }
                             }
 
@@ -171,7 +194,7 @@ export default {
                                     this.$refs.targetWordRef.readWord()
                                 }
                                 else {
-                                    this.afterSpeak(this.curWord.targetWord, this.finishedTargetWord)
+                                    this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
                                 }
                             }
                             // play the recording
@@ -200,12 +223,17 @@ export default {
             this.currentMetering = 0
             this.hasAudio = false
             this.audioBegins = 0
+            this.silenceDuration = 999
             // keep track of metering
             AudioRecorder.onProgress = (data) => {
                 this.currentMetering = data.currentMetering
-                if (this.currentMetering > 10000) {
+                if (this.currentMetering > 8000) {
                     this.hasAudio = true
+                    this.silenceDuration = 0
                     if (this.audioBegins === 0) this.audioBegins = data.currentTime
+                }
+                else {
+                    this.silenceDuration++
                 }
             }
             AudioRecorder.onFinished = (data) => {
@@ -251,7 +279,7 @@ export default {
                     this.$refs.targetWordRef.readWord()
                 }
                 else {
-                    this.afterSpeak(this.curWord.targetWord, this.finishedTargetWord)
+                    this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
                 }
             }
             else {
@@ -264,25 +292,40 @@ export default {
         doneReinforcing () {
             // play a pleasant sound before moving on
             this.playRandomSound((success) => {
-                let timeoutTime = 525
                 // animate out our word
                 if (this.shouldShowTargetWord) {
                     this.$refs.targetWordRef.animateOut()
-                    timeoutTime = 0
                 }
-                this.showWord = false
+                this.animateGrowth(false)
 
                 // timeout to allow animations to finish
                 setTimeout(() => {
+                    this.showWord = false
                     this.wordsSpoken ++
                     // next word/sentence
                     this.sayGJ(this.getNext)
-                }, timeoutTime)
+                }, 525)
             })
         },
 
         setManuallyReading (val) {
             this.manuallyReading = val
+        },
+        
+        // true = grow it
+        // false = shrink it
+        animateGrowth (grow) {
+            let max = 0
+            if (grow) {
+                max =  250 * this.sizeFactor
+            }
+            // Animate the word in, going from 0 size to full
+            Animated.parallel([
+                Animated.timing(this.maxGrowth, {
+                    toValue: max,
+                    duration: 500,
+                }),
+            ]).start()
         },
     }
 
