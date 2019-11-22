@@ -156,12 +156,12 @@ export default {
         randomActivity (changeBackground = true) {
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
-                //activityList.push({name: 'spellWord', topic: 'Spelling'})
-                //activityList.push({name: 'findWordByLetter', topic: 'Spelling'})
+                activityList.push({name: 'spellWord', topic: 'Spelling'})
+                activityList.push({name: 'findWordByLetter', topic: 'Spelling'})
             }
             if (this.allowedTopics.includes('reading')) {
-                //activityList.push({name: 'findWordByPicture', topic: 'Reading'})
-                //activityList.push({name: 'findWordInSentence', topic: 'Reading'})
+                activityList.push({name: 'findWordByPicture', topic: 'Reading'})
+                activityList.push({name: 'findWordInSentence', topic: 'Reading'})
                 activityList.push({name: 'speakWord', topic: 'Reading'})
             }
 
