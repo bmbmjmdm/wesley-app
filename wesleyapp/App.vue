@@ -67,7 +67,13 @@
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                 />
-                
+                <FindLetterByAlliteration
+                    v-else-if="curActivity.name === 'findLetterByAlliteration'"
+                    :random-activity="randomActivity"
+                    :change-background="changeBackground"
+                    :playRandomSound="playRandomSound"
+                    :sayGJ="sayGJ"
+                />
             </ImageBackground>
         </view>
     </ImageBackground>
@@ -78,6 +84,7 @@ import { Platform, AppState, AsyncStorage, Dimensions, PermissionsAndroid } from
 import FindWordInSentence from './components/FindWordInSentence';
 import FindWordByPicture from './components/FindWordByPicture';
 import FindWordByLetter from './components/FindWordByLetter'
+import FindLetterByAlliteration from './components/FindLetterByAlliteration'
 import SpellWord from './components/SpellWord';
 import SpeakWord from './components/SpeakWord';
 import Home from './components/Home';
@@ -99,6 +106,7 @@ export default {
         FindWordByPicture,
         SpellWord,
         FindWordByLetter,
+        FindLetterByAlliteration,
         Sentence,
         SpeakWord
     },
@@ -109,7 +117,7 @@ export default {
             bgImageFront: bgDefault,
             showGJ: false,
             gjSentence: "",
-            gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job"],
+            gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job", "Wow wow", "Oh yeah"],
             gjCallback: null,
             backgroundOpacity: new Animated.Value(1),
             appState: "active",
@@ -142,7 +150,8 @@ export default {
             'getUserData',
             'allowedTopics',
             'curActivity',
-            'textToSpeech'
+            'textToSpeech',
+            'difficultyReading'
         ]),
     },
 
@@ -156,16 +165,22 @@ export default {
         randomActivity (changeBackground = true) {
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
-                activityList.push({name: 'spellWord', topic: 'Spelling'})
-                activityList.push({name: 'findWordByLetter', topic: 'Spelling'})
+                activityList.push({name: 'spellWord', topic: 'Spelling', changeChance: 0})
+                activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.33})
+                activityList.push({name: 'findLetterByAlliteration', topic: 'Spelling', changeChance: 0.33})
             }
             if (this.allowedTopics.includes('reading')) {
-                activityList.push({name: 'findWordByPicture', topic: 'Reading'})
-                activityList.push({name: 'findWordInSentence', topic: 'Reading'})
-                activityList.push({name: 'speakWord', topic: 'Reading'})
+                activityList.push({name: 'findWordByPicture', topic: 'Reading', changeChance: 0})
+                activityList.push({name: 'findWordInSentence', topic: 'Reading', changeChance: 0})
+                activityList.push({name: 'speakWord', topic: 'Reading', changeChance: 0.5})
             }
 
             let newActivity = activityList[Math.floor(Math.random() * activityList.length)]
+            let random = Math.random()
+            while (this.curActivity.name === newActivity.name || newActivity.changeChance > random) {
+              newActivity = activityList[Math.floor(Math.random() * activityList.length)]
+              random = Math.random()
+            }
             this.setActivity({name: '', topic: ''})
 
             if (!this.needsDefaultBackground(newActivity)) {
@@ -210,6 +225,19 @@ export default {
                 return false
             case 'findWordByLetter':
                 return true
+            case 'findLetterByAlliteration':
+                return true
+            case 'speakWord':
+                return false
+            default:
+                return true
+            } 
+        },
+
+        canPlay (activity) {
+            switch(activity.name) {
+            case 'speakWord':
+                return this.difficultyReading !== 'easy'
             default:
                 return true
             } 
@@ -219,11 +247,15 @@ export default {
             var ran = Math.floor(Math.random() * 29)
             console.log("loading success_"+ran)
             var sound = new Sound("success_" + ran + ".wav", Sound.MAIN_BUNDLE, (error) => {
+                let realCallback = () => {
+                  sound.release()
+                  callback()
+                }
                 if (error) {
                     console.log('failed to load sound #' + ran, error)
-                    return
+                    realCallback()
                 } 
-                sound.play(callback)
+                sound.play(realCallback)
             })
         },
 

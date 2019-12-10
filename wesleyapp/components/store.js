@@ -3,6 +3,7 @@ import Vuex from "vuex"
 import tts from 'react-native-tts'
 import fwisList from './fwisList'
 import fwbpList from './fwbpList'
+import flbaList from './flbaList'
 import speakList from './speakList'
 import spellList from './spellList'
 import fwblList from './fwblList'
@@ -110,6 +111,9 @@ export default new Vuex.Store({
             }
             else if (state.curActivity.name === "findWordByLetter") {
                 list = fwblList
+            }
+            else if (state.curActivity.name === "findLetterByAlliteration") {
+                list = flbaList
             }
             else if (state.curActivity.name === "speakWord") {
                 list = speakList

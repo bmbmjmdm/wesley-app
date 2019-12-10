@@ -268,16 +268,17 @@ export default {
             ]).start()
         },
 
-        readLetter (callback) {
+        readLetter (callback, unhighlight) {
             this.highlighted = true
             this.afterSpeak({
                 word: this.letter,
                 callback: () => {
                     if (this.narrating) {
-                        if (this.unhighlightDuringNarration) {
-                            this.highlighted = false
+                        if (this.unhighlightDuringNarration || unhighlight) {
+                          this.highlighted = false
                         }
-                        this.continueSequence()
+                        if (callback) callback()
+                        else this.continueSequence()
                     }
                     else {
                         this.highlighted = false

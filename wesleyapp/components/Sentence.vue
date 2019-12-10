@@ -6,6 +6,7 @@
             :ref="'wordRef'"
             :word="word"
             :narrating="narrating"
+            :fadeAnimations="fadeAnimations"
             :continueSentence="readWords"
             :word-pressed="wordPressed"
             :manually-reading="manuallyReading"
@@ -57,6 +58,10 @@ export default {
             type: Boolean,
             default: false
         },
+        fadeAnimations: {
+          type: Boolean,
+          default: false
+        }
     },
 
     data () {

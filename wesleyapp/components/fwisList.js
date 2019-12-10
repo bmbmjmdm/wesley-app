@@ -18,7 +18,7 @@ export default [
     {sentence: "The park is fun", targetWord: "park", pic: parkPic},
     {sentence: "Reading is cool", targetWord: "Reading", pic: readingPic},
     {sentence: "The apple is red", targetWord: "apple", pic: applePic},
-    {sentence: "Flowers smell good", targetWord: "flowers", pic: flowersPic},
+    {sentence: "Flowers smell good", targetWord: "Flowers", pic: flowersPic},
     {sentence: "The clouds are white", targetWord: "clouds", pic: cloudsPic},
     {sentence: "This cat is cute", targetWord: "cat", pic: catPic},
     {sentence: "I love my grandma", targetWord: "grandma", pic: grandmaPic},

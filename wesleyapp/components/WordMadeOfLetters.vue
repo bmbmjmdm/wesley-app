@@ -269,6 +269,12 @@ export default {
                 }
             }
         },
+
+        pressLetter(index) {
+            // negative distance from end of word
+            let position = index - this.word.length
+            this.$refs.letterRef[this.$refs.letterRef.length + position].readLetter(this.finishNarration, true)
+        },
     }
 
 
