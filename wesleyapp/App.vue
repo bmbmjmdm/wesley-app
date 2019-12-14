@@ -178,7 +178,7 @@ export default {
 
             let newActivity = activityList[Math.floor(Math.random() * activityList.length)]
             let random = Math.random()
-            while (this.curActivity.name === newActivity.name || newActivity.changeChance > random) {
+            while (this.curActivity.name === newActivity.name || newActivity.changeChance > random || !this.canPlay(newActivity)) {
               newActivity = activityList[Math.floor(Math.random() * activityList.length)]
               random = Math.random()
             }
