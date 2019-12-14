@@ -41,6 +41,7 @@
 <script>
 import Sentence from './Sentence'
 import WordMadeOfLetters from './WordMadeOfLetters'
+import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
@@ -88,14 +89,14 @@ export default {
     },
 
     computed: {
-        // we only show the target word on easy mode. we speak it on all modes
+        // we show the sentence on easy and medium difficulty
         shouldShowSentence () {
-            return this.difficultyReading !== "hard"
+            return this.difficultySpelling < difficulty.HARD
         },
 
-        // we read the sentence on easy and normal mode, but not hard
+        // we read the sentence on easy and hard mode
         shouldReadSentence () {
-            return this.difficultyReading !== "medium"
+            return this.difficultySpelling !== difficulty.MEDIUM
         },
 
         // make mix of 5 letters including the target letter
@@ -123,7 +124,7 @@ export default {
         },
         
         ...mapGetters([
-            'difficultyReading',
+            'difficultySpelling',
             'getNextWord'
         ]),
     },
@@ -244,7 +245,9 @@ export default {
               // timeout to allow animations to finish
               setTimeout(() => {
                   this.updateData({ word: this.curSentence.targetWord, right: this.correctOnFirstTry })
-                  this.tutorial = false
+                  if (this.difficultySpelling > difficulty.VERY_EASY) {
+                    this.tutorial = false
+                  }
                   this.showSentence = false
                   this.showLetters = false
                   this.sentencesRead ++

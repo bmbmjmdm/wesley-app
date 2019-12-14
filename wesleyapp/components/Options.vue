@@ -60,20 +60,23 @@
 </template>
 
 <script>
+import { difficulty } from './store'
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     computed: {
         difficultyTextReading () {
-            if (this.difficultyReading === "easy") return "Reading: Easy"
-            else if (this.difficultyReading === "medium") return "Reading: Medium"
-            else if (this.difficultyReading === "hard") return "Reading: Hard"
+            if (this.difficultyReading === difficulty.VERY_EASY) return "Reading: Very Easy"
+            else if (this.difficultyReading === difficulty.EASY) return "Reading: Easy"
+            else if (this.difficultyReading === difficulty.MEDIUM) return "Reading: Medium"
+            else if (this.difficultyReading === difficulty.HARD) return "Reading: Hard"
         },
 
         difficultyTextSpelling () {
-            if (this.difficultySpelling === "easy") return "Spelling: Easy"
-            else if (this.difficultySpelling === "medium") return "Spelling: Medium"
-            else if (this.difficultySpelling === "hard") return "Spelling: Hard"
+            if (this.difficultyReading === difficulty.VERY_EASY) return "Reading: Very Easy"
+            else if (this.difficultySpelling === difficulty.EASY) return "Spelling: Easy"
+            else if (this.difficultySpelling === difficulty.MEDIUM) return "Spelling: Medium"
+            else if (this.difficultySpelling === difficulty.HARD) return "Spelling: Hard"
         },
 
         allowAutoAdjustText () {
@@ -110,27 +113,21 @@ export default {
         ]),
 
         cycleDifficultyReading () {
-            if (this.difficultyReading === "easy") {
-                this.setDifficultyReading("medium")
+            var diff = this.difficultyReading
+            diff++
+            if (diff > difficulty.HARD) {
+                diff = difficulty.VERY_EASY
             }
-            else if (this.difficultyReading === "medium") {
-                this.setDifficultyReading("hard")
-            }
-            else {
-                this.setDifficultyReading("easy")
-            }
+            this.setDifficultyReading(diff)
         },
 
         cycleDifficultySpelling () {
-            if (this.difficultySpelling === "easy") {
-                this.setDifficultySpelling("medium")
+            var diff = this.difficultySpelling
+            diff++
+            if (diff > difficulty.HARD) {
+                diff = difficulty.VERY_EASY
             }
-            else if (this.difficultySpelling === "medium") {
-                this.setDifficultySpelling("hard")
-            }
-            else {
-                this.setDifficultySpelling("easy")
-            }
+            this.setDifficultyReading(diff)
         },
 
         cycleAllowAutoAdjust () {

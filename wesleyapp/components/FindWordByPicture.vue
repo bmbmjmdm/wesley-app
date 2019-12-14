@@ -29,6 +29,7 @@
 <script>
 import Word from './Word'
 import WordGrid from './WordGrid'
+import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
@@ -78,12 +79,12 @@ export default {
     computed: {
         // we only show the target word on easy mode. we speak it on all modes
         shouldShowTargetWord () {
-            return this.difficultyReading === "easy"
+            return this.difficultyReading <= difficulty.EASY
         },
 
         // we read the options on easy and normal mode, but not hard
         shouldReadOptions () {
-            return this.difficultyReading !== "hard"
+            return this.difficultyReading < difficulty.HARD
         },
         
         ...mapGetters([
@@ -240,7 +241,9 @@ export default {
                     // timeout to allow animations to finish
                     setTimeout(() => {
                         this.updateData({ word, right: this.correctOnFirstTry })
-                        this.tutorial = false
+                        if (this.difficultyReading > difficulty.VERY_EASY) {
+                            this.tutorial = false
+                        }
                         this.showWord = false
                         this.wordsFound ++
                         // next word/grid

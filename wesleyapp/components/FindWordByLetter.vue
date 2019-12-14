@@ -34,6 +34,7 @@
 <script>
 import WordList from './WordList'
 import Letter from './Letter'
+import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
@@ -83,16 +84,16 @@ export default {
     computed: {
         // we only show the letter hint on easy mode. we speak it on all modes
         shouldShowLetter () {
-            return this.difficultySpelling === "easy"
+            return this.difficultySpelling <= difficulty.EASY
         },
 
         // we read the list on easy and normal mode, but not hard
         shouldReadList () {
-            return this.difficultySpelling !== "hard"
+            return this.difficultySpelling < difficulty.HARD
         },
 
         shouldClickLetters () {
-            return this.difficultySpelling === "hard"
+            return this.difficultySpelling >= difficulty.HARD
         },
         
         ...mapGetters([
@@ -239,7 +240,9 @@ export default {
                 setTimeout(() => {
                     this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
                     this.showLetter = false
-                    this.tutorial = false
+                    if (this.difficultySpelling > difficulty.VERY_EASY) {
+                        this.tutorial = false
+                    }
                     this.listsRead ++
                     // next word/list
                     this.sayGJ(this.getNext)

@@ -29,6 +29,7 @@ import Sound  from 'react-native-sound'
 import micNormal from '../assets/mic.png'
 import micReady from '../assets/micReady.png'
 import micRecording from '../assets/micRecording.png'
+import { difficulty } from './store'
 
 export default {
     props: {
@@ -80,11 +81,11 @@ export default {
     computed: {
         // we show target word on easy/medium
         shouldShowTargetWord () {
-            return this.difficultyReading !== "hard"
+            return this.difficultyReading < difficulty.HARD
         },
         // we read target word on easy
         shouldReadTargetWord () {
-            return this.difficultyReading === "easy"
+            return this.difficultyReading <= difficulty.EASY
         },
 
         micPic () {

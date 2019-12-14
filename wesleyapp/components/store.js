@@ -11,6 +11,12 @@ import Sound  from 'react-native-sound'
 Vue.use(Vuex)
 
 
+export var difficulty = {
+    VERY_EASY: 0,
+    EASY: 1,
+    MEDIUM: 2,
+    HARD: 3
+}
 
 export default new Vuex.Store({
     state: {
@@ -32,8 +38,8 @@ export default new Vuex.Store({
         // user's current difficulty, can be adjusted automatically by updateData or manually in settings
         // persistant
         // split up by topic
-        difficultyReading: "easy",
-        difficultySpelling: "easy",
+        difficultyReading: difficulty.VERY_EASY,
+        difficultySpelling: difficulty.VERY_EASY,
         // whether we can adjust difficulty automatically based on user performance
         // persistant
         allowAutoAdjust: true,
@@ -235,22 +241,12 @@ export default new Vuex.Store({
 // topic is Reading or Spelling
 function increaseDifficulty (state) {
     let variable = 'difficulty' + state.curActivity.topic
-    if (state[variable] === "easy") {
-        Vue.set(state, variable, "medium")
-    }
-    else if (state[variable] === "medium") {
-        Vue.set(state, variable, "hard")
-    }
+    Vue.set(state, variable, Math.min(difficulty.HARD, state[variable] + 1))
 }
 
 function decreaseDifficulty (state) {
     let variable = 'difficulty' + state.curActivity.topic
-    if (state[variable] === "medium") {
-        Vue.set(state, variable, "easy")
-    }
-    else if (state[variable] === "hard") {
-        Vue.set(state, variable, "medium")
-    }
+    Vue.set(state, variable, Math.max(difficulty.VERY_EASY, state[variable] - 1))
 }
 
 function getEasyChoices(state, list) {

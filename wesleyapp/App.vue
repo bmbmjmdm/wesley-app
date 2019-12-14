@@ -94,6 +94,7 @@ import Sound  from 'react-native-sound'
 import Sentence from './components/Sentence'
 import { Animated, Easing } from "react-native";
 import store  from './components/store'
+import { difficulty } from './components/store'
 import Vue from 'vue-native-core'
 import { mapGetters, mapMutations } from 'vuex'
 Vue.prototype.$store = store
@@ -172,7 +173,7 @@ export default {
             if (this.allowedTopics.includes('reading')) {
                 activityList.push({name: 'findWordByPicture', topic: 'Reading', changeChance: 0})
                 activityList.push({name: 'findWordInSentence', topic: 'Reading', changeChance: 0})
-                activityList.push({name: 'speakWord', topic: 'Reading', changeChance: 0.5})
+                activityList.push({name: 'speakWord', topic: 'Reading', changeChance: 0})
             }
 
             let newActivity = activityList[Math.floor(Math.random() * activityList.length)]
@@ -237,7 +238,7 @@ export default {
         canPlay (activity) {
             switch(activity.name) {
             case 'speakWord':
-                return this.difficultyReading !== 'easy'
+                return this.difficultyReading > difficulty.EASY
             default:
                 return true
             } 

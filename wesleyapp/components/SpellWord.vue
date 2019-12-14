@@ -72,6 +72,7 @@ import WordMadeOfLetters from './WordMadeOfLetters'
 import Word from './Word'
 import Letter from './Letter'
 import Vue from 'vue-native-core'
+import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
@@ -123,11 +124,11 @@ export default {
 
     computed: {
         shouldShowWordNormal () {
-            return this.difficultySpelling === "medium"
+            return this.difficultySpelling === difficulty.MEDIUM
         },
 
         shouldShowWordMadeOfLetters () {
-            return this.difficultySpelling === "easy"
+            return this.difficultySpelling <= difficulty.EASY
         },
 
         mixedLetters () {
@@ -251,7 +252,9 @@ export default {
                     this.tutorial1 = false
                 }
                 else {
+                  if (this.difficultySpelling > difficulty.VERY_EASY) {
                     this.tutorial2 = false
+                  }
                 }
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true
