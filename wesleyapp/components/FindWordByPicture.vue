@@ -60,7 +60,7 @@ export default {
     data () {
         return {
             narrating: false,
-            curWords: {targetWord: "", allWords: [{word: "", pic: null}, {word: "", pic: null}, {word: "", pic: null}, {word: "", pic: null}] },
+            curWords: {targetWord: "", allWords: [{targetWord: "", pic: null}, {targetWord: "", pic: null}, {targetWord: "", pic: null}, {targetWord: "", pic: null}] },
             manuallyReading: false,
             firstReading: true,
             tutorial: true,
@@ -226,7 +226,7 @@ export default {
 
         // User clicked a word, if they clicked the right one, move on to the next word
         wordPressed (word) {
-            if (word === this.curWords.targetWord) {
+            if (word.toLowerCase() === this.curWords.targetWord) {
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true
                 this.manuallyReading = true

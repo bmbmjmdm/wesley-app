@@ -1,12 +1,8 @@
 import Vue from 'vue-native-core'
 import Vuex from "vuex"
 import tts from 'react-native-tts'
-import fwisList from './fwisList'
-import fwbpList from './fwbpList'
-import flbaList from './flbaList'
-import speakList from './speakList'
-import spellList from './spellList'
-import fwblList from './fwblList'
+import wordList from './wordList'
+import letterList from './letterList'
 import Sound  from 'react-native-sound'
 Vue.use(Vuex)
 
@@ -109,23 +105,26 @@ export default new Vuex.Store({
         // depending on the activity, the object returned will be different
         getNextWord: state => () => {
             let list
+            let populateOptions = false
             if (state.curActivity.name === "findWordInSentence") {
-                list = fwisList
-            }
-            else if (state.curActivity.name === "findWordByPicture") {
-                list = fwbpList
-            }
-            else if (state.curActivity.name === "findWordByLetter") {
-                list = fwblList
-            }
-            else if (state.curActivity.name === "findLetterByAlliteration") {
-                list = flbaList
+                list = wordList
             }
             else if (state.curActivity.name === "speakWord") {
-                list = speakList
+                list = wordList
             }
             else if (state.curActivity.name === "spellWord") {
-                list = spellList
+                list = wordList
+            }
+            else if (state.curActivity.name === "findWordByPicture") {
+                list = wordList
+                populateOptions = true
+            }
+            else if (state.curActivity.name === "findLetterByAlliteration") {
+                list = letterList
+            }
+            else if (state.curActivity.name === "findWordByLetter") {
+                list = letterList
+                populateOptions = true
             }
 
             if (state['wrongStreek' + state.curActivity.topic] >= 2) list = getEasyChoices(state, list)
@@ -137,6 +136,13 @@ export default new Vuex.Store({
                 nextWord = list[Math.floor(Math.random() * list.length)]
             }
             state.previousWord = nextWord.targetWord
+            
+            // populate options for findWordByPicture and findWordByLetter
+            if (populateOptions) {
+                // we can surmise which (fwbp or fwbl) we're getting options for via the nextWord object
+                nextWord.allWords = getWordOptions(nextWord)
+            }
+
             return nextWord
         },
     },
@@ -214,6 +220,7 @@ export default new Vuex.Store({
 
     },
     actions: {
+        // TODO we might be given a full sentence here, not just a word
         afterSpeak ({ getters }, { word, callback })  {
             var helper = () => {
                 getters.textToSpeech.removeEventListener('tts-finish', helper)
@@ -302,4 +309,52 @@ function getChoices(state, list, rightWrong) {
     }
 
     return newList
+}
+
+
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}
+
+function getWordOptions(nextWord) {
+    let allWords = []
+    // fwbl uses words/letterList, fwbp uses nextWord as is/wordList
+    if (nextWord.words) {
+        list = letterList
+        allWords.push(nextWord.words[Math.floor(Math.random() * nextWord.words.length)])
+    }
+    else {
+        list = wordList
+        allWords.push(nextWord)
+    }
+    // now choose a random 3 more words from our given list (no duplicates)
+    while (allWords.length < 4) {
+        let randomWord = list[Math.floor(Math.random() * list.length)]
+        // if we were given a letterList, we need to extract the word from the given letter's words
+        if (randomWord.words) {
+            randomWord = randomWord.words[Math.floor(Math.random() * randomWord.words.length)]
+        }
+        // this second part of the check is to make sure we dont add a word containing the target letter for fwbl
+        // the !randomWord.includes part is to check to make sure we're looking at a string, not an object
+        if (!allWords.includes(randomWord) && (!randomWord.includes || !randomWord.includes(nextWord.targetWord))) {
+            allWords.push(randomWord)
+        }
+    }
+    shuffle(allWords)
+    return allWords
 }

@@ -7,7 +7,7 @@
                 v-if="showSentence"
                 ref="sentenceRef"
                 :finish-narration="sentenceDone"
-                :sentence="curSentence.sentence"
+                :sentence="curSentence.alliteration"
                 :word-pressed="() => {}"
                 :narrating="narrating"
                 :setManuallyReading="setManuallyReading"
@@ -72,7 +72,7 @@ export default {
     data () {
         return {
             narrating: false,
-            curSentence: {sentence: "", targetWord: "", pic: null},
+            curSentence: {alliteration: "", targetWord: ""},
             manuallyReading: false,
             tutorial: true,
             showLetters: false,
@@ -179,7 +179,7 @@ export default {
               }
               // just speak it
               else if (this.shouldReadSentence) {
-                  this.afterSpeak({ word: this.curSentence.sentence, callback: this.sentenceDone })
+                  this.afterSpeak({ word: this.curSentence.alliteration, callback: this.sentenceDone })
               }
               else {
                   this.sentenceDone()
@@ -225,7 +225,7 @@ export default {
                 }
                 // just speak it
                 else {
-                    this.afterSpeak({ word: this.curSentence.sentence, callback: this.sentenceDone })
+                    this.afterSpeak({ word: this.curSentence.alliteration, callback: this.sentenceDone })
                 }
             }
             else {

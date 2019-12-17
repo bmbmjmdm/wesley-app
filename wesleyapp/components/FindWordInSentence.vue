@@ -203,7 +203,7 @@ export default {
 
         // User clicked a word, if they clicked the right one, move on to the next sentence
         wordPressed (word) {
-            if (word === this.curSentence.targetWord) {
+            if (word.toLowerCase() === this.curSentence.targetWord) {
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true
                 this.manuallyReading = true

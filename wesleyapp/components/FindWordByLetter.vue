@@ -4,8 +4,8 @@
             <Letter
                 v-if="shouldShowLetter && showLetter"
                 ref="letterRef"
-                :key="curList.letter + curList.list"
-                :letter="curList.letter"
+                :key="curList.targetWord + curList.allWords"
+                :letter="curList.targetWord"
                 :letterPressed="finishedLetterHint"
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
@@ -18,7 +18,7 @@
                 v-if="showList"
                 ref="listRef"
                 :finish-narration="finishNarration"
-                :list="curList.list"
+                :list="curList.allWords"
                 :word-pressed="wordPressed"
                 :narrating="narrating"
                 :setManuallyReading="setManuallyReading"
@@ -65,7 +65,7 @@ export default {
     data () {
         return {
             narrating: false,
-            curList: {list: [], targetWord: "", letter: "", pic: null},
+            curList: {allWords: [], targetWord: ""},
             manuallyReading: false,
             firstReading: true,
             tutorial: true,
@@ -156,7 +156,7 @@ export default {
                     }
                     // just speak it
                     else {
-                        this.afterSpeak({ word: this.curList.letter, callback: this.finishedLetterHint })
+                        this.afterSpeak({ word: this.curList.targetWord, callback: this.finishedLetterHint })
                     }
                 }, letterAnimateTime)
             //})
@@ -207,7 +207,7 @@ export default {
                 }
                 // in normal mode we just read it
                 else {
-                    this.afterSpeak({ word: this.curList.letter, callback: this.finishedLetterHint })
+                    this.afterSpeak({ word: this.curList.targetWord, callback: this.finishedLetterHint })
                 }
             }, 350)
         },
@@ -215,7 +215,7 @@ export default {
         // User clicked a word, if they clicked the right one, move on to the next list
         // if we're on hard mode, they must have clicked the right letter
         wordPressed (word, index, letter) {
-            if ((word === this.curList.targetWord) && (!this.shouldClickLetters || letter === this.curList.letter)) {
+            if ((word.toLowerCase().includes(this.curList.targetWord)) && (!this.shouldClickLetters || letter.toLowerCase() === this.curList.targetWord)) {
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true
                 this.manuallyReading = true

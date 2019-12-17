@@ -73,7 +73,7 @@ export default {
         },
 
         difficultyTextSpelling () {
-            if (this.difficultyReading === difficulty.VERY_EASY) return "Reading: Very Easy"
+            if (this.difficultySpelling === difficulty.VERY_EASY) return "Spelling: Very Easy"
             else if (this.difficultySpelling === difficulty.EASY) return "Spelling: Easy"
             else if (this.difficultySpelling === difficulty.MEDIUM) return "Spelling: Medium"
             else if (this.difficultySpelling === difficulty.HARD) return "Spelling: Hard"
@@ -127,7 +127,7 @@ export default {
             if (diff > difficulty.HARD) {
                 diff = difficulty.VERY_EASY
             }
-            this.setDifficultyReading(diff)
+            this.setDifficultySpelling(diff)
         },
 
         cycleAllowAutoAdjust () {

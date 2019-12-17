@@ -11,8 +11,8 @@
             :word-pressed="wordPressed"
             :manually-reading="manuallyReading"
             :set-manually-reading="setManuallyReading"
-            :tutorialHighlight="tutorial && word === targetWord"
-            :tutorialFade="tutorial && word !== targetWord" />
+            :tutorialHighlight="tutorial && word.toLowerCase() === targetWord"
+            :tutorialFade="tutorial && word.toLowerCase() !== targetWord" />
     </view>
 </template>
 
