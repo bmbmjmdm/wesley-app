@@ -31,7 +31,8 @@
             <image
                 v-if="pic"
                 :style="{height: 248 * sizeFactor, width: 139 * sizeFactor, resizeMode: 'stretch', marginTop: paddingSizeSmall, opacity: tutorialFade ? 0.33 : 1}"
-                :source="pic">
+                :source="pic.source"
+                :onError="() => invalidatePhoto(pic.name)">
         </view>
     </touchable-opacity>
 </template>
@@ -74,8 +75,8 @@ export default {
             type: Boolean,
             default: false
         },
-        pic: {
-            type: Number,
+        picName: {
+            type: String,
             default: undefined
         },
         unhighlightDuringNarration: {
@@ -122,19 +123,30 @@ export default {
     },
 
     computed: {
+        pic () {
+            if (this.picName) {
+                return this.getPicture(this.picName)
+            }
+            else {
+                return null
+            }
+        },
+
         ...mapGetters([
             'roundBox',
             'sizeFactor',
             'highlightSpeed',
             'fontSize',
             'paddingSize',
-            'paddingSizeSmall'
+            'paddingSizeSmall',
+            'getPicture'
         ]),
     },
 
     methods: {
         ...mapActions([
-            'afterSpeak'
+            'afterSpeak',
+            'invalidatePhoto'
         ]),
         
         animateGrowth (max, padding) {            

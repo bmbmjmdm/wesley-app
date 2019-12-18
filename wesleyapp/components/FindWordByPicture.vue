@@ -60,7 +60,7 @@ export default {
     data () {
         return {
             narrating: false,
-            curWords: {targetWord: "", allWords: [{targetWord: "", pic: null}, {targetWord: "", pic: null}, {targetWord: "", pic: null}, {targetWord: "", pic: null}] },
+            curWords: {targetWord: "", allWords: [{targetWord: ""}, {targetWord: ""}, {targetWord: ""}, {targetWord: ""}] },
             manuallyReading: false,
             firstReading: true,
             tutorial: true,

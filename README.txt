@@ -13,7 +13,7 @@ https://github.com/facebook/react-native/issues/21168#issuecomment-422431294
 If ANDROID is giving you trouble because it can't create or delete some random path, try deleting the cache at wesleyapp\android\build\intermediates\dex-cache
 
 When NPM installing:
--you'll probably need to change node_modules/react-native-gesture-handler/android/build.gradle where it uses the word "compileOnly" and change it to "compile"
+-you'll probably need to change node_modules/react-native-sound/android/build.gradle where it uses the word "compileOnly" and change it to "compile"
 -update this function in node_modules\react-native-audio\android\src\main\java\com\rnim\rn\audio\AudioRecorderManager.java
   private void startTimer(){
     timer = new Timer();

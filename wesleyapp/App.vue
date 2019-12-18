@@ -1,13 +1,16 @@
 <template>
     <ImageBackground
-        :source="bgImageBack"
+        v-if="loaded"
+        :source="bgImageBack.source"
+        :onError="() => invalidatePhoto(bgImageBack.name)"
         :imageStyle="{resizeMode: 'stretch'}"
         class="full-flex">
         <animated:view
             :style="{opacity: backgroundOpacity}"
             class="full-flex">
             <ImageBackground
-                :source="bgImageFront"
+                :source="bgImageFront.source"
+                :onError="() => invalidatePhoto(bgImageFront.name)"
                 :imageStyle="{resizeMode: 'stretch'}"
                 class="full-flex">
 
@@ -89,14 +92,13 @@ import SpellWord from './components/SpellWord';
 import SpeakWord from './components/SpeakWord';
 import Home from './components/Home';
 import Options from './components/Options';
-import bgDefault from './assets/home.jpg';
 import Sound  from 'react-native-sound'
 import Sentence from './components/Sentence'
 import { Animated, Easing } from "react-native";
 import store  from './components/store'
 import { difficulty } from './components/store'
 import Vue from 'vue-native-core'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 Vue.prototype.$store = store
 
 export default {
@@ -114,14 +116,15 @@ export default {
 
     data () {
         return {
-            bgImageBack: bgDefault,
-            bgImageFront: bgDefault,
+            bgImageBackName: 'bgDefault',
+            bgImageFrontName: 'bgDefault',
             showGJ: false,
             gjSentence: "",
             gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job", "Wow wow", "Oh yeah"],
             gjCallback: null,
             backgroundOpacity: new Animated.Value(1),
             appState: "active",
+            loaded: false,
         }
     },
 
@@ -134,6 +137,9 @@ export default {
             data = JSON.parse(data)
             this.setUserData(data)
         }
+        
+        let pictures = await AsyncStorage.getItem("WesleyApp-pictures")
+        this.loadPictures(pictures)
 
         // setup listeners for app closing to save user data
         AppState.addEventListener('change', this.handleAppStateChange)
@@ -142,17 +148,28 @@ export default {
         let screenHeight = Dimensions.get('window').height
         this.setSizeFactor(screenHeight/960)
         
+        this.loaded = true
+
         // ask for permissions
         await this.askForPermissions()
     },
 
     computed: {
+        bgImageBack () {
+            return this.getPicture(this.bgImageBackName)
+        },
+
+        bgImageFront () {
+            return this.getPicture(this.bgImageFrontName)
+        },
+
         ...mapGetters([
             'getUserData',
             'allowedTopics',
             'curActivity',
             'textToSpeech',
-            'difficultyReading'
+            'difficultyReading',
+            'getPicture'
         ]),
     },
 
@@ -160,7 +177,12 @@ export default {
         ...mapMutations([
             'setSizeFactor',
             'setUserData',
-            'setActivity'
+            'setActivity',
+        ]),
+
+        ...mapActions([
+            'loadPictures',
+            'invalidatePhoto'
         ]),
 
         randomActivity (changeBackground = true) {
@@ -200,14 +222,14 @@ export default {
         },
 
         // fades in the new background
-        changeBackground (newImage, callback) {
+        changeBackground (newImageName, callback) {
             this.backgroundOpacity = new Animated.Value(0)
-            this.bgImageFront = newImage
+            this.bgImageFrontName = newImageName
             Animated.timing(this.backgroundOpacity, {
                 toValue: 1,
                 duration: 600,
             }).start(() => {
-                this.bgImageBack = newImage
+                this.bgImageBackName = newImageName
                 callback()
             })
         },

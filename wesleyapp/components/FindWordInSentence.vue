@@ -60,7 +60,7 @@ export default {
     data () {
         return {
             narrating: false,
-            curSentence: {sentence: "", targetWord: "", pic: null},
+            curSentence: {sentence: "", targetWord: ""},
             manuallyReading: false,
             firstReading: true,
             tutorial: true,
@@ -129,7 +129,7 @@ export default {
         },
 
         fadeNewBackground () {
-            this.changeBackground(this.curSentence.pic, () => {
+            this.changeBackground(this.curSentence.targetWord, () => {
                 // new image is now displayed as background, animate in target word
                 this.showWord = true
                 var wordAnimateTime = 700

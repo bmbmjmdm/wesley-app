@@ -24,13 +24,9 @@ function lowercase(string) {
 
 //change wordList to be wordList.mjs
 //change letterList to be letterList.mjs
-//comment out the imports in wordList.mjs
-//run following regex-find and replace in wordList.mjs
-//rejex: pic: .*
-//replace: },
 //run with node, example:
 //node --experimental-modules countWordsScript.mjs
-//undo all above changes
+//undo mjs change
 
 var words = {
     'a': [],
