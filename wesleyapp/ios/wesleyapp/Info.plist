@@ -52,6 +52,12 @@
 		</dict>
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app records speech at times for playback and self improvement</string>
+	<string>This app allows users to records speech for self improvement</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app allows users to customize content with their own photos</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app allows users to customize content with their own photos</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app allows users to customize content with their own photos</string>
 </dict>
 </plist>

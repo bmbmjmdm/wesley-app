@@ -79,11 +79,8 @@ export default new Vuex.Store({
 
     },
     getters: {
-        getPicture: state => name => {
-            console.log(state.pictures)
-            return state.pictures[name]
-        },
-        getUserPictures: state => {
+        getPicture: state => name => state.pictures[name],
+        getUserPictures: state => () => {
             let userPics = {}
             for (var index in state.pictures) {
                 if (state.pictures[index].user) {
@@ -92,6 +89,7 @@ export default new Vuex.Store({
             }
             return userPics
         },
+        getPictureNames: state => Object.keys(state.pictures),
         highlightSpeed: state => state.highlightSpeed,
         textToSpeech: state => state.textToSpeech,
         shadow: state => state.shadow,
@@ -263,8 +261,8 @@ export default new Vuex.Store({
         // slightly dangerous, we dont wait here to save. should be fine as long as we dont try to save two very fast
         savePicture({getters, commit}, {name, source}) {
             commit('setPicture', {name, source, user: true})
-            let stringFile = JSON.stringify(getters.getUserPictures)
-            AsyncStorage.setItem("WesleyApp-pictures", stringFile);
+            let stringFile = JSON.stringify(getters.getUserPictures())
+            AsyncStorage.setItem("WesleyApp-pictures", stringFile).then
         },
 
         loadPictures({commit, state}, savedPictures) {
@@ -285,7 +283,7 @@ export default new Vuex.Store({
         // slightly dangerous, we dont wait here to save. should be fine as long as we dont try to save two very fast
         invalidatePicture({commit, getters}, name) {
             commit('setPicture', {name, source: allDefaultPictures[name], user: false})
-            let stringFile = JSON.stringify(getters.getUserPictures)
+            let stringFile = JSON.stringify(getters.getUserPictures())
             AsyncStorage.setItem("WesleyApp-pictures", stringFile);
         },
     }

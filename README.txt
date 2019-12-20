@@ -33,3 +33,6 @@ When NPM installing:
       }
     }, 0, 100);
   }
+-fix this file's imports: react-native-audio\android\src\main\java\com\rnim\rn\audio\AudioRecorderManager.java
+  line 30: import android.support.v4.app.ActivityCompat -> import androidx.core.app.ActivityCompat
+  line 31:import android.support.v4.content.ContextCompat -> import androidx.core.content.ContextCompat
