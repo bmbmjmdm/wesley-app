@@ -79,10 +79,7 @@ export default new Vuex.Store({
 
     },
     getters: {
-        getPicture: state => name => {
-            console.log(state.pictures)
-            return state.pictures[name]
-        },
+        getPicture: state => name => state.pictures[name],
         getUserPictures: state => {
             let userPics = {}
             for (var index in state.pictures) {
@@ -92,6 +89,7 @@ export default new Vuex.Store({
             }
             return userPics
         },
+        getPictureNames: state => Object.keys(state.pictures),
         highlightSpeed: state => state.highlightSpeed,
         textToSpeech: state => state.textToSpeech,
         shadow: state => state.shadow,

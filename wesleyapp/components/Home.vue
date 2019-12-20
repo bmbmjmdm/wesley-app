@@ -24,6 +24,16 @@
                 Options
             </text>
         </touchable-opacity>
+        <touchable-opacity
+            class="mt-4 white-box"
+            :style="[{padding: paddingSizeSmall}, roundBox]"
+            :onPress="() => setActivity({name: 'personalize'})">
+            <text 
+                :style="{fontSize: fontSizeSmall}"
+                class="link-text">
+                Personalize
+            </text>
+        </touchable-opacity>
     </view>
 </template>
 
@@ -79,6 +89,10 @@ export default {
     
     .mt-6 {
         margin-top: 30
+    }
+    
+    .mt-4 {
+        margin-top: 20
     }
 
     .white-box {

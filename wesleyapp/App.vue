@@ -35,6 +35,9 @@
                 <Options
                     v-else-if="curActivity.name === 'options'"
                 />
+                <Personalize
+                    v-else-if="curActivity.name === 'personalize'"
+                />
                 <FindWordInSentence
                     v-else-if="curActivity.name === 'findWordInSentence'"
                     :random-activity="randomActivity"
@@ -92,6 +95,7 @@ import SpellWord from './components/SpellWord';
 import SpeakWord from './components/SpeakWord';
 import Home from './components/Home';
 import Options from './components/Options';
+import Personalize from './components/Personalize'
 import Sound  from 'react-native-sound'
 import Sentence from './components/Sentence'
 import { Animated, Easing } from "react-native";
@@ -111,7 +115,8 @@ export default {
         FindWordByLetter,
         FindLetterByAlliteration,
         Sentence,
-        SpeakWord
+        SpeakWord,
+        Personalize
     },
 
     data () {
