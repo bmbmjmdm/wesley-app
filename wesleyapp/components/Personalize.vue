@@ -56,7 +56,7 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-picker/lib/commonjs';
 
 export default {
     data () {
@@ -122,7 +122,7 @@ export default {
 
         ...mapActions([
             'savePicture'
-        ],
+        ]),
     },
 }
 </script>
