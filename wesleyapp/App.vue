@@ -37,6 +37,7 @@
                 />
                 <Personalize
                     v-else-if="curActivity.name === 'personalize'"
+                    :change-background="changeBackground"
                 />
                 <FindWordInSentence
                     v-else-if="curActivity.name === 'findWordInSentence'"
@@ -235,7 +236,7 @@ export default {
                 duration: 600,
             }).start(() => {
                 this.bgImageBackName = newImageName
-                callback()
+                if (callback) callback()
             })
         },
 

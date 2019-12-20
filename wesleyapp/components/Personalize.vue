@@ -56,9 +56,17 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { Alert } from 'react-native'
 import ImagePicker from 'react-native-image-picker/lib/commonjs';
 
 export default {
+    props: {
+        changeBackground: {
+            type: Function,
+            required: true
+        },
+    },
+
     data () {
         return {
             filterText: "",
@@ -95,24 +103,26 @@ export default {
                     path: 'wordPictures',
                 },
             }
+            // open the image picker so they can override the word's picture
             ImagePicker.launchImageLibrary(options, (response) => {
-                console.log('Response = ', response)
-
                 if (response.didCancel) {
                     console.log('User cancelled image picker')
                 } else if (response.error || !response) {
-                    console.log('ImagePicker Error: ', response.error)
-                    // TODO show error dialog 
+                    Alert.alert(
+                        'Upload Failed: Please try again',
+                        [
+                            {text: 'OK', onPress: () => {}},
+                        ],
+                        {cancelable: true},
+                    )
                 }
                 else {
-                    if (response.isVertical) {
-                        const source = { uri: response.uri }
-                        this.savePicture({name: word, source, user: true})
-                    }
-                    else {
-                        // TODO show vertical error dialog 
-                    }
+                    // success!
+                    const source = { uri: response.uri }
+                    this.savePicture({name: word, source, user: true})
                 }
+                // now show the user what the word's picture is, whether it changed or not
+                setTimeout(() => this.changeBackground(word), 250)
             })
         },
 

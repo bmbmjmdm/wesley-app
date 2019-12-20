@@ -73,7 +73,7 @@ import trains from '../assets/trains.jpg';
 import trampoline from '../assets/trampoline.jpg';
 import turtle from '../assets/turtle.jpg';
 import vegetables from '../assets/vegetables.jpg';
-import bgDefault from '../assets/home.jpg';
+import bgDefault from '../assets/bgDefault.jpg';
 
 export default {
     bgDefault,
