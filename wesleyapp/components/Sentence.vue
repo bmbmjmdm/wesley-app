@@ -12,7 +12,8 @@
             :manually-reading="manuallyReading"
             :set-manually-reading="setManuallyReading"
             :tutorialHighlight="tutorial && word.toLowerCase() === targetWord"
-            :tutorialFade="tutorial && word.toLowerCase() !== targetWord" />
+            :tutorialFade="tutorial && word.toLowerCase() !== targetWord"
+            :finishedAnimating="finishedAnimating" />
     </view>
 </template>
 
@@ -61,12 +62,17 @@ export default {
         fadeAnimations: {
           type: Boolean,
           default: false
+        },
+        queuedCallback: {
+            type: Function,
+            default: () => {},
         }
     },
 
     data () {
         return {
             readThisMany: 0,
+            finishedAnimatingCount: 0,
         }
     },
 
@@ -109,10 +115,21 @@ export default {
         },
 
         animateOut () {
+            this.finishedAnimatingCount = 0
             this.readThisMany = this.words.length
             while (this.readThisMany > 0) {
                 this.$refs.wordRef[this.$refs.wordRef.length-this.readThisMany].animateOut()
                 this.readThisMany--
+            }
+        },
+
+        finishedAnimating () {
+            this.finishedAnimatingCount++
+            if (this.finishedAnimatingCount >= this.words.length) {
+                this.finishedAnimatingCount = 0
+                if (this.queuedCallback) {
+                    this.queuedCallback()
+                }
             }
         },
     }

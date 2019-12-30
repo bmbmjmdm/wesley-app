@@ -86,6 +86,10 @@ export default {
         fadeAnimations: {
             type: Boolean,
             default: false
+        },
+        finishedAnimating: {
+            type: Function,
+            default: () => {},
         }
     },
 
@@ -99,6 +103,7 @@ export default {
             minGrowth: new Animated.Value(0),
             paddingGrowth: new Animated.Value(0),
             opacityGrowth: new Animated.Value(0),
+            stuff: 0,
         }
     },
 
@@ -149,7 +154,7 @@ export default {
             'invalidatePhoto'
         ]),
         
-        animateGrowth (max, padding) {            
+        animateGrowth (max, padding) {
             var time = 500
             if (this.pic) {
                 time = 800
@@ -164,7 +169,7 @@ export default {
                     toValue: padding,
                     duration: time,
                 })
-            ]).start()
+            ]).start(this.finishedAnimating)
         },
         
         animateOpacity (value) {
@@ -175,7 +180,7 @@ export default {
                     toValue: value,
                     duration: time,
                 })
-            ]).start()
+            ]).start(this.finishedAnimating)
         },
 
         animateOut () {
@@ -225,25 +230,27 @@ export default {
             }
         },
 
-        finishReading () {
+        finishReading (callback) {
             if (!this.reading && !this.highlighting) {
                 if (this.unhighlightDuringNarration) {
                     this.clearHighlight()
                 }
-                this.continueSentence()
+                if (callback) callback()
+                else this.continueSentence()
             }
         },
 
-        finishReadingPress () {
+        finishReadingPress (callback) {
             if (!this.reading && !this.highlighting) {
                 this.normalText = this.highlightedText
                 this.highlightedText = ""
                 this.setManuallyReading(false)
-                this.wordPressed(this.normalText)
+                if (callback) callback()
+                else this.wordPressed(this.normalText)
             }
         },
 
-        readWord () {
+        readWord (callback) {
             this.reading = true
             this.highlighting = true
             this.highlightWord()
@@ -252,10 +259,10 @@ export default {
                 callback: () => {
                     this.reading = false
                     if (this.narrating) {
-                        this.finishReading()
+                        this.finishReading(callback)
                     }
                     else {
-                        this.finishReadingPress()
+                        this.finishReadingPress(callback)
                     }
                 }
             })

@@ -97,6 +97,10 @@ export default {
             type: Boolean,
             default: false
         },
+        finishedAnimating: {
+            type: Function,
+            default: () => {},
+        }
     },
 
     data () {
@@ -174,7 +178,7 @@ export default {
                     toValue: value,
                     duration: time,
                 })
-            ]).start()
+            ]).start(this.finishedAnimating)
         },
 
         animateOut () {
@@ -212,7 +216,7 @@ export default {
                     duration: time,
                     easing: Easing.linear
                 })
-            ]).start()
+            ]).start(this.finishedAnimating)
         },
 
         // This is called when the letter is part of a WordMadeOfLetters, and the parent wants this letter to revert to its original look
@@ -265,7 +269,7 @@ export default {
                     duration: time,
                     easing: Easing.linear
                 })
-            ]).start()
+            ]).start(this.finishedAnimating)
         },
 
         readLetter (callback, unhighlight) {

@@ -6,11 +6,12 @@
                 ref="targetWordRef"
                 :key="curWords.targetWord + curWords.allWords"
                 :word="curWords.targetWord"
-                :wordPressed="finishedTargetWord"
+                :wordPressed="() => {}"
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
-                :continueSentence="()=>{}" />
+                :continueSentence="()=>{}"
+                :finishedAnimating="queuedCallback" />
         </view>
         <WordGrid
             v-if="showGrid"
@@ -22,7 +23,8 @@
             :setManuallyReading="setManuallyReading"
             :manuallyReading="manuallyReading"
             :tutorial="tutorial"
-            :targetWord="curWords.targetWord" />
+            :targetWord="curWords.targetWord"
+            :queuedCallback="queuedCallback" />
     </view>
 </template>
 
@@ -31,6 +33,7 @@ import Word from './Word'
 import WordGrid from './WordGrid'
 import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import Vue from 'vue-native-core'
 
 export default {
     props: {
@@ -69,6 +72,8 @@ export default {
             wordsFound: 0,
             needsWordRead: true,
             correctOnFirstTry: true,
+            queuedCallback: null,
+            callbackCount: 0,
         }
     },
 
@@ -128,19 +133,12 @@ export default {
         },
 
         fadeNewBackground () {
-            // no new background for this activity, moving on
-            // animate in target word
-            this.showTarget = true
-            var wordAnimateTime = 700
-            if (!this.shouldShowTargetWord) {
-                wordAnimateTime = 0
-            }
-            // timeout is to allow word animation to finish
-            // if were in easy mode theres no animation so timeout time is 0
-            setTimeout(() => {
+            // no new background for this activity, moving 
+            // prepare the callback for after animation finishes
+            this.queuedCallback = () => {
                 // speak and highlight the word
                 if (this.shouldShowTargetWord) {
-                    this.$refs.targetWordRef.readWord()
+                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                 }
                 // we don't read the word here because:
                 // its not easy mode so target word isnt displayed
@@ -152,14 +150,19 @@ export default {
                     this.needsWordRead = true
                     this.finishedTargetWord("", 0)
                 }
-            }, wordAnimateTime)
+            }
+
+            // animate in target word
+            this.showTarget = true
+            // if were in easy mode theres no animation
+            if (!this.shouldShowTargetWord) {
+                this.queuedCallback()
+            }
         },
 
         finishedTargetWord (event, timeout = 350) {
             // if we already showed the grid we dont wait for it
-            var secondTimeout = 700
             if (this.showGrid) {
-                secondTimeout = 0
                 timeout = 0
             }
             // callback to move on to reading the word grid after target word is read
@@ -170,11 +173,8 @@ export default {
                     this.manuallyReading = true
                     // timeout is to pause between reading word and displaying word grid
                     setTimeout( () => {
-                        // now animate in word grid
-                        this.firstReading = false
-                        this.showGrid = true
-                        // timeout is to allow word grid animation in to finish 
-                        setTimeout( () => {
+                        // prepare the callback for after animation finishes
+                        this.queuedCallback = () => {
                             // we displayed and read the target word, so we can move on to reading the grid
                             if (this.shouldShowTargetWord) {
                                 this.$refs.wordGrid.beginNarration()
@@ -196,7 +196,12 @@ export default {
                                     this.finishedTargetWord()
                                 }
                             }
-                        }, secondTimeout)
+                        }
+                        // now animate in word grid
+                        this.firstReading = false
+                        if (!this.showGrid) this.showGrid = true
+                        // we already animated it
+                        else this.queuedCallback()
                     }, timeout)
                 }
                 // second time word is read, let the user interact now
@@ -206,7 +211,6 @@ export default {
                     this.manuallyReading = false
                 }
             }
-            // else would be for when the user clicks the target word at top of screen, which we dont do anything for
         },
 
         // We finished reading/highlighting the word grid, now repeat the word to be found
@@ -215,7 +219,7 @@ export default {
             setTimeout( () => {
                 // in easy mode we highlight the word as we read it
                 if (this.shouldShowTargetWord) {
-                    this.$refs.targetWordRef.readWord()
+                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                 }
                 // in normal mode we just read it
                 else {
@@ -231,24 +235,35 @@ export default {
                 this.narrating = true
                 this.manuallyReading = true
                 // play a pleasant sound before moving on
-                this.playRandomSound((success) => {
-                    // animate out our word grid and target word
-                    this.$refs.wordGrid.animateOut()
-                    if (this.shouldShowTargetWord) {
-                        this.$refs.targetWordRef.animateOut()
-                    }
-                    
-                    // timeout to allow animations to finish
-                    setTimeout(() => {
-                        this.updateData({ word, right: this.correctOnFirstTry })
-                        if (this.difficultyReading > difficulty.VERY_EASY) {
-                            this.tutorial = false
+                this.playRandomSound(() => {
+                    // prepare the callback for after animation finishes
+                    this.callbackCount = 0
+                    this.queuedCallback = () => {
+                        this.callbackCount++
+                        if (this.callbackCount >= 2) {
+                            this.updateData({ word, right: this.correctOnFirstTry })
+                            if (this.difficultyReading > difficulty.VERY_EASY) {
+                                this.tutorial = false
+                            }
+                            this.showWord = false
+                            this.wordsFound ++
+                            // next word/grid
+                            this.sayGJ(this.getNext)
                         }
-                        this.showWord = false
-                        this.wordsFound ++
-                        // next word/grid
-                        this.sayGJ(this.getNext)
-                    }, 825)
+                    }
+
+                    // next tick so everything picks up the queuedCallback
+                    Vue.nextTick(() => {
+                        // animate out our word grid and target word
+                        this.$refs.wordGrid.animateOut()
+                        if (this.shouldShowTargetWord) {
+                            this.$refs.targetWordRef.animateOut()
+                        }
+                        else {
+                            // we're not animating word so count it as finished
+                            this.callbackCount++
+                        }
+                    })
                 })
             }
             else {

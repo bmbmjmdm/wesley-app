@@ -17,9 +17,8 @@
             :tutorialHighlightWord="tutorial && word === targetWord"
             :tutorialFadeWord="tutorial && word !== targetWord"
             :fadeIn="true"
-            :doneSplitting="()=>{}"
-            :doneJoining="()=>{}"
-            :finishNarration="finishLetters" />
+            :finishNarration="finishLetters"
+            :queuedCallback="finishedAnimating" />
     </view>
 </template>
 
@@ -73,11 +72,16 @@ export default {
             type: Boolean,
             default: false
         },
+        queuedCallback: {
+            type: Function,
+            default: () => {},
+        }
     },
 
     data () {
         return {
             readThisMany: 0,
+            finishedAnimatingCount: 0,
         }
     },
 
@@ -109,6 +113,7 @@ export default {
         },
 
         animateOut () {
+            this.finishedAnimatingCount = 0
             this.readThisMany = this.list.length
             while (this.readThisMany > 0) {
                 this.$refs.wordRef[this.$refs.wordRef.length-this.readThisMany].animateOut()
@@ -116,7 +121,18 @@ export default {
             }
         },
 
+        finishedAnimating () {
+            this.finishedAnimatingCount++
+            if (this.finishedAnimatingCount >= this.list.length) {
+                this.finishedAnimatingCount = 0
+                if (this.queuedCallback) {
+                    this.queuedCallback()
+                }
+            }
+        },
+
         readLettersOfWord(index) {
+            this.finishedAnimatingCount = 0
             this.$refs.wordRef[this.$refs.wordRef.length-(this.list.length-index)].readLetters()
         },
     }

@@ -25,7 +25,8 @@
                         :narrating="true"
                         :setManuallyReading="() => {}"
                         :manuallyReading="true"
-                        :tutorial="false" />
+                        :tutorial="false"
+                        :queuedCallback="queuedCallback" />
                 </View>
 
                 <Home
@@ -131,6 +132,7 @@ export default {
             backgroundOpacity: new Animated.Value(1),
             appState: "active",
             loaded: false,
+            queuedCallback: null,
         }
     },
 
@@ -195,7 +197,7 @@ export default {
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
                 activityList.push({name: 'spellWord', topic: 'Spelling', changeChance: 0})
-                activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.33})
+                activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.25})
                 activityList.push({name: 'findLetterByAlliteration', topic: 'Spelling', changeChance: 0.33})
             }
             if (this.allowedTopics.includes('reading')) {
@@ -241,7 +243,7 @@ export default {
         },
 
         defaultBackground (callback) {
-            this.changeBackground(bgDefault, callback)
+            this.changeBackground('bgDefault', callback)
         },
 
         needsDefaultBackground (activity) {
@@ -292,19 +294,20 @@ export default {
             this.gjCallback = callback
             var ran = Math.floor(Math.random() * this.gjList.length)
             this.gjSentence = this.gjList[ran]
-            this.showGJ = true
-            // timeout is to allow sentence to animate in
-            setTimeout(() => {
+            // prepare the callback for after animation finishes
+            this.queuedCallback = () => {
                 this.$refs.gjSentence.beginNarration()
-            }, 700)
+            }
+            this.showGJ = true
         },
 
         finishGJ () {
             this.$refs.gjSentence.animateOut()
-            setTimeout(() => {
+            // prepare the callback for after animation finishes
+            this.queuedCallback = () => {
                 this.showGJ = false
                 this.gjCallback()
-            }, 525)
+            }
         },
 
         

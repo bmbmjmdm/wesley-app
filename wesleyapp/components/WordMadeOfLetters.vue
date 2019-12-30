@@ -19,7 +19,8 @@
             :transparent="transparent"
             :start-split="startSplit"
             :fade-in="fadeIn"
-            :disabled="true" />
+            :disabled="true"
+            :finishedAnimating="finishedAnimating" />
     </touchable-opacity>
     <view
         v-else
@@ -39,7 +40,8 @@
             :position="index === 0 ? 'left' : index === word.length-1 ? 'right' : 'center'"
             :transparent="transparent"
             :start-split="startSplit"
-            :fade-in="fadeIn" />
+            :fade-in="fadeIn"
+            :finishedAnimating="finishedAnimating" />
     </view>
 </template>
 
@@ -85,14 +87,6 @@ export default {
             type: Boolean,
             default: false
         },
-        doneSplitting: {
-            type: Function,
-            required: true
-        },
-        doneJoining: {
-            type: Function,
-            required: true
-        },
         startSplit: {
             type: Boolean,
             default: false
@@ -125,6 +119,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        queuedCallback: {
+            type: Function,
+            default: () => {},
+        }
     },
 
     data () {
@@ -133,6 +131,8 @@ export default {
             doneHighlighting: false,
             doneSpeaking: false,
             pressed: false,
+            finishedAnimatingCount: 0,
+            animateOne: false,
         }
     },
 
@@ -187,21 +187,38 @@ export default {
         },
 
         splitLetters () {
+            this.finishedAnimatingCount = 0
             this.readThisMany = this.letters.length
             while (this.readThisMany > 0) {
                 this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].becomeSeperated()
                 this.readThisMany--
             }
-            setTimeout(() => { this.doneSplitting() }, 1000)
         },
 
         joinLetters () {
+            this.finishedAnimatingCount = 0
             this.readThisMany = this.letters.length
             while (this.readThisMany > 0) {
                 this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].reverseSeperation()
                 this.readThisMany--
             }
-            setTimeout(() => { this.doneJoining() }, 1000)
+        },
+
+        finishedAnimating () {
+            // if we're only showing/hiding one letter, we dont need a callback
+            if (this.animateOne) {
+              this.animateOne = false
+              return
+            }
+            // otherwise, wait until all letters are done before callback
+            this.finishedAnimatingCount++
+            if (this.finishedAnimatingCount >= this.letters.length) {
+                this.animateOne = false
+                this.finishedAnimatingCount = 0
+                if (this.queuedCallback) {
+                    this.queuedCallback()
+                }
+            }
         },
 
         readLetter (position, callback) {
@@ -209,10 +226,12 @@ export default {
         },
 
         hideLetter (position) {
+            this.animateOne = true
             this.$refs.letterRef[this.$refs.letterRef.length-this.letters.length+position].animateOpacity(0)
         },
 
         showLetter (position) {
+            this.animateOne = true
             this.$refs.letterRef[this.$refs.letterRef.length-this.letters.length+position].animateOpacity(1)
         },
 

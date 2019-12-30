@@ -6,18 +6,20 @@
                 ref="letterRef"
                 :key="curList.targetWord + curList.allWords"
                 :letter="curList.targetWord"
-                :letterPressed="finishedLetterHint"
+                :letterPressed="() => {}"
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
                 :continueSequence="()=>{}"
-                :fadeIn="true" />
+                :fadeIn="true"
+                :finishedAnimating="queuedCallback" />
         </view>
         <view :class="{'mt-10': sizeFactor < 1}">
             <WordList
                 v-if="showList"
                 ref="listRef"
                 :finish-narration="finishNarration"
+                :finishLetters="doneSpelling"
                 :list="curList.allWords"
                 :word-pressed="wordPressed"
                 :narrating="narrating"
@@ -25,8 +27,8 @@
                 :manuallyReading="manuallyReading"
                 :tutorial="tutorial"
                 :targetWord="curList.targetWord"
-                :finishLetters="doneSpelling"
-                :lettersClickable="shouldClickLetters" />
+                :lettersClickable="shouldClickLetters"
+                :queuedCallback="queuedCallback" />
         </view>
     </view>
 </template>
@@ -36,6 +38,7 @@ import WordList from './WordList'
 import Letter from './Letter'
 import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import Vue from 'vue-native-core'
 
 export default {
     props: {
@@ -74,6 +77,8 @@ export default {
             firstList: true,
             listsRead: 0,
             correctOnFirstTry: true,
+            queuedCallback: null,
+            callbackCount: 0,
         }
     },
 
@@ -133,68 +138,61 @@ export default {
                 this.showLetter = false
                 // move on to next list/word
                 this.curList = this.getNextWord()
-                // show image and change background
-                this.fadeNewBackground()
+                // show letter
+                this.animateLetter()
             }
         },
 
-        fadeNewBackground () {
-            // currently not using the pic / changing the background
-            //this.changeBackground(this.curList.pic, () => {
-                // new image is now displayed as background, animate in letter hint
-                this.showLetter = true
-                var letterAnimateTime = 1000
-                if (!this.shouldShowLetter) {
-                    letterAnimateTime = 0
+        animateLetter () {
+            // prepare the callback for after animation finishes
+            this.queuedCallback = () => {
+                // speak and highlight the letter
+                if (this.shouldShowLetter) {
+                    this.$refs.letterRef.readLetter(this.finishedLetterHint)
                 }
-                // timeout is to allow letter animation to finish
-                // if were in easy mode theres no animation so timeout time is 0
-                setTimeout(() => {
-                    // speak and highlight the letter
-                    if (this.shouldShowLetter) {
-                        this.$refs.letterRef.readLetter()
-                    }
-                    // just speak it
-                    else {
-                        this.afterSpeak({ word: this.curList.targetWord, callback: this.finishedLetterHint })
-                    }
-                }, letterAnimateTime)
-            //})
+                // just speak it
+                else {
+                    this.afterSpeak({ word: this.curList.targetWord, callback: this.finishedLetterHint })
+                }
+            }
+
+            // animate in the letter
+            this.showLetter = true
+            // if were in easy mode theres no animation
+            if (!this.shouldShowLetter) {
+                this.queuedCallback()
+            }
         },
 
         finishedLetterHint () {
-            // callback to move on to reading the list after letter hint is read
-            if (this.narrating) {
-                // The first time the letter is read, move on to animating and reading list
-                if (this.firstReading) {
-                    // Keep this true even if the letter hint tries to set it false
-                    this.manuallyReading = true
-                    // timeout is to pause between reading letter and displaying list
-                    setTimeout( () => {
-                        // now animate in list
-                        this.firstReading = false
-                        this.showList = true
-                        // timeout is to allow list animation in to finish 
-                        setTimeout( () => {
-                            // now begin reading list
-                            if (this.shouldReadList) {
-                                this.$refs.listRef.beginNarration()
-                            }
-                            // we're on hard mode and not reading the list, recall this function to finish
-                            else {
-                                this.finishedLetterHint()
-                            }
-                        }, 1000)
-                    }, 350)
-                }
-                // second time letter is read, let the user interact now
-                else {
-                    this.narrating = false
-                    // normal mode needs this set explicitly
-                    this.manuallyReading = false
-                }
+            // The first time the letter is read, move on to animating and reading list
+            if (this.firstReading) {
+                // Keep this true even if the letter hint tries to set it false
+                this.manuallyReading = true
+                // timeout is to pause between reading letter and displaying list
+                setTimeout( () => {
+                    // prepare the callback for after animation finishes
+                    this.queuedCallback = () => {
+                        // now begin reading list
+                        if (this.shouldReadList) {
+                            this.$refs.listRef.beginNarration()
+                        }
+                        // we're on hard mode and not reading the list, recall this function to finish
+                        else {
+                            this.finishedLetterHint()
+                        }
+                    }
+                    // now animate in list
+                    this.firstReading = false
+                    this.showList = true
+                }, 350)
             }
-            // else would be for when the user clicks the letter hint at top of screen, which we dont do anything for
+            // second time letter is read, let the user interact now
+            else {
+                this.narrating = false
+                // normal mode needs this set explicitly
+                this.manuallyReading = false
+            }
         },
 
         // We finished reading/highlighting the list, now repeat the letter hint
@@ -203,7 +201,7 @@ export default {
             setTimeout( () => {
                 // in easy mode we highlight the letter as we read it
                 if (this.shouldShowLetter) {
-                    this.$refs.letterRef.readLetter()
+                    this.$refs.letterRef.readLetter(this.finishedLetterHint)
                 }
                 // in normal mode we just read it
                 else {
@@ -219,7 +217,8 @@ export default {
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true
                 this.manuallyReading = true
-                this.$refs.listRef.readLettersOfWord(index)
+                this.queuedCallback = this.doneSpelling
+                Vue.nextTick(() => this.$refs.listRef.readLettersOfWord(index))
             }
             else {
                 this.correctOnFirstTry = false
@@ -230,23 +229,34 @@ export default {
         doneSpelling () {
             // play a pleasant sound before moving on
             this.playRandomSound((success) => {
-                // animate out our list and letter
-                this.$refs.listRef.animateOut()
-                if (this.shouldShowLetter) {
-                    this.$refs.letterRef.animateOut()
+                // prepare the callback for after animation finishes
+                this.callbackCount = 0
+                this.queuedCallback = () => {
+                    this.callbackCount++
+                    if (this.callbackCount >= 2) {
+                        this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
+                        this.showLetter = false
+                        if (this.difficultySpelling > difficulty.VERY_EASY) {
+                            this.tutorial = false
+                        }
+                        this.listsRead ++
+                        // next word/list
+                        this.sayGJ(this.getNext)
+                    }
                 }
 
-                // timeout to allow animations to finish
-                setTimeout(() => {
-                    this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
-                    this.showLetter = false
-                    if (this.difficultySpelling > difficulty.VERY_EASY) {
-                        this.tutorial = false
+                // next tick so everything picks up the queuedCallback
+                Vue.nextTick(() => {
+                    // animate out our list and letter
+                    this.$refs.listRef.animateOut()
+                    if (this.shouldShowLetter) {
+                        this.$refs.letterRef.animateOut()
                     }
-                    this.listsRead ++
-                    // next word/list
-                    this.sayGJ(this.getNext)
-                }, 1000)
+                    else {
+                        // we're not animating letter so count it as finished
+                        this.callbackCount++
+                    }
+                })
             })
         },
 

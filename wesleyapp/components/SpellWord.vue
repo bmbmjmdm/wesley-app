@@ -6,12 +6,13 @@
                 ref="targetWordRef"
                 :key="curWord.targetWord + 'word'"
                 :word="curWord.targetWord"
-                :wordPressed="finishedTargetWord"
+                :wordPressed="() => {}"
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
                 :continueSentence="()=>{}"
-                :fadeAnimations="true" />
+                :fadeAnimations="true"
+                :finishedAnimating="queuedCallback" />
             <WordMadeOfLetters
                 v-if="shouldShowWordMadeOfLetters && showWord"
                 ref="targetWordRef"
@@ -23,10 +24,9 @@
                 :letterPressed="() => {}"
                 :manuallyReading="manuallyReading"
                 :tutorial="false"
-                :doneSplitting="showLetterOptions"
                 :doneReading="finishedTargetWord"
-                :doneJoining="() => {}"
-                :fadeIn="true" />
+                :fadeIn="true"
+                :queuedCallback="queuedCallback" />
         </view>
         <view class="one-third">
             <WordMadeOfLetters
@@ -39,11 +39,10 @@
                 :letterPressed="() => {}"
                 :manuallyReading="manuallyReading"
                 :tutorial="false"
-                :doneSplitting="() => {}"
-                :doneJoining="doneJoining"
                 :doneReading="doneFinalReading"
                 :startSplit="true"
-                :transparent="true" />
+                :transparent="true"
+                :queuedCallback="queuedCallback" />
         </view>
         <view class="one-third">
             <WordMadeOfLetters 
@@ -58,11 +57,10 @@
                 :manuallyReading="manuallyReading"
                 :tutorial="tutorial1 || tutorial2"
                 :targetLetter="curWord.targetWord.charAt(spellingLetter)"
-                :doneSplitting="() => {}"
-                :doneJoining="() => {}"
                 :doneReading="() => {}"
                 :startSplit="true"
-                :fadeIn="true" />
+                :fadeIn="true"
+                :queuedCallback="queuedCallback" />
         </view>
     </view>
 </template>
@@ -115,6 +113,8 @@ export default {
             // represents the current letter they're spelling (index)
             spellingLetter: 0,
             correctOnFirstTry: true,
+            queuedCallback: null, 
+            callbackCount: 0,
         }
     },
 
@@ -184,26 +184,23 @@ export default {
         fadeNewBackground () {
             this.changeBackground(this.curWord.targetWord, () => {
                 // new image is now displayed as background, animate in target word
-                this.showWord = true
-                var wordAnimateTime = 0
-                if (this.shouldShowWordNormal) {
-                    wordAnimateTime = 700
-                }
-                else if (this.shouldShowWordMadeOfLetters) {
-                    wordAnimateTime = 1000
-                }
-                // timeout is to allow word animation to finish
-                // if were in hard mode theres no animation so timeout time is 0
-                setTimeout(() => {
+                // prepare the callback for after animation finishes
+                this.queuedCallback = () => {
                     // speak and highlight the word
                     if (this.shouldShowWordNormal || this.shouldShowWordMadeOfLetters) {
-                        this.$refs.targetWordRef.readWord()
+                        this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                     }
                     // just speak it
                     else {
                         this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
                     }
-                }, wordAnimateTime)
+                }
+                // initiate animation
+                this.showWord = true
+                // if were in hard mode theres no animation
+                if (!(this.shouldShowWordNormal || this.shouldShowWordMadeOfLetters)) {
+                    this.queuedCallback()
+                }
             })
         },
 
@@ -216,7 +213,8 @@ export default {
                 setTimeout( () => {
                     // if we're in easy mode, split the word up
                     if (this.shouldShowWordMadeOfLetters) {
-                        this.$refs.targetWordRef.splitLetters()
+                        this.queuedCallback = this.showLetterOptions
+                        Vue.nextTick(() => { this.$refs.targetWordRef.splitLetters() })
                     }
                     else {
                         this.showLetterOptions()
@@ -226,10 +224,8 @@ export default {
         },
 
         showLetterOptions() {
-            // now animate in letters
-            this.showLetters = true
-            // timeout is to allow letters animation in to finish 
-            setTimeout( () => {
+            // prepare the callback for after animation finishes
+            this.queuedCallback = () => {
                 if (this.shouldShowWordMadeOfLetters) {
                      this.$refs.targetWordRef.readLetter(this.spellingLetter, () => {
                         this.narrating = false
@@ -241,7 +237,9 @@ export default {
                     this.narrating = false
                     this.manuallyReading = false
                 }
-            }, 1000)
+            }
+            // now animate in letters
+            this.showLetters = true
         },
 
         // User clicked a letter, if they clicked the right one, move on to the letter
@@ -302,29 +300,41 @@ export default {
             // ATM only joining the spelt word. if I do both it causes performance issues, though I could solve this by doing both words' animations in parallel here.
             // however now idk if i really wanna join both target and spelt words, so leaving as is
             //this.$refs.targetWordRef.joinLetters()
-            this.$refs.speltWordRef.joinLetters()
+            this.queuedCallback = this.doneJoining
+            Vue.nextTick(() => { this.$refs.speltWordRef.joinLetters() })
         },
 
         doneJoining () {
             // read the word a final time
-            this.$refs.speltWordRef.readWord()
+            this.$refs.speltWordRef.readWord(this.doneFinalReading)
         },
 
         doneFinalReading () {
-            // Then animate out the word to spell and the word we just made
-            if (this.shouldShowWordNormal || this.shouldShowWordMadeOfLetters) {
-                this.$refs.targetWordRef.animateOut()
+            // prepare the callback for after animation finishes
+            this.callbackCount = 0
+            this.queuedCallback = () => {
+                this.callbackCount++
+                if (this.callbackCount >= 2) {
+                    this.showWord = false
+                    this.updateData({ word: this.curWord.targetWord, right: this.correctOnFirstTry, multiplier: 2 })
+                    this.wordsSpelt ++
+                    // next word
+                    this.sayGJ(this.getNext)
+                }
             }
-            this.$refs.speltWordRef.animateOut()
-            this.showWord = false
-
-            // timeout to allow animations to finish
-            setTimeout(() => {
-                this.updateData({ word: this.curWord.targetWord, right: this.correctOnFirstTry, multiplier: 2 })
-                this.wordsSpelt ++
-                // next word
-                this.sayGJ(this.getNext)
-            }, 1000)
+            
+            // next tick so everything picks up the queuedCallback
+            Vue.nextTick(() => {
+                // Then animate out the word to spell and the word we just made
+                if (this.shouldShowWordNormal || this.shouldShowWordMadeOfLetters) {
+                    this.$refs.targetWordRef.animateOut()
+                }
+                else {
+                // target word isnt displayed so count it as done
+                this.callbackCount++
+                }
+                this.$refs.speltWordRef.animateOut()
+            })
         },
 
         setManuallyReading (val) {

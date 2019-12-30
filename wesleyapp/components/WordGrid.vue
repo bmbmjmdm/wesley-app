@@ -14,7 +14,8 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[0].targetWord === targetWord"
                 :tutorialFade="tutorial && words[0].targetWord !== targetWord"
-                :unhighlightDuringNarration="true" /> 
+                :unhighlightDuringNarration="true"
+                :finishedAnimating="finishedAnimating" /> 
             <Word
                 :style="wordMargin"
                 :key="words[1].targetWord + 1 + words"
@@ -28,7 +29,8 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[1].targetWord === targetWord"
                 :tutorialFade="tutorial && words[1].targetWord !== targetWord"
-                :unhighlightDuringNarration="true" />
+                :unhighlightDuringNarration="true"
+                :finishedAnimating="finishedAnimating" />
         </view>
         <view class="word-container-inner">
             <Word
@@ -44,7 +46,8 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[2].targetWord === targetWord"
                 :tutorialFade="tutorial && words[2].targetWord !== targetWord"
-                :unhighlightDuringNarration="true" />
+                :unhighlightDuringNarration="true"
+                :finishedAnimating="finishedAnimating" />
             <Word
                 :style="wordMargin"
                 :key="words[3].targetWord + 3 + words"
@@ -58,7 +61,8 @@
                 :set-manually-reading="setManuallyReading"
                 :tutorialHighlight="tutorial && words[3].targetWord === targetWord"
                 :tutorialFade="tutorial && words[3].targetWord !== targetWord"
-                :unhighlightDuringNarration="true" />
+                :unhighlightDuringNarration="true"
+                :finishedAnimating="finishedAnimating" />
         </view>
     </view>
 </template>
@@ -106,11 +110,16 @@ export default {
             type: Boolean,
             default: false
         },
+        queuedCallback: {
+            type: Function,
+            default: () => {},
+        }
     },
 
     data () {
         return {
             readThisMany: 0,
+            finishedAnimatingCount: 0,
         }
     },
 
@@ -157,6 +166,17 @@ export default {
                 this.readThisMany--
             }
         },
+
+        finishedAnimating () {
+            this.finishedAnimatingCount++
+            if (this.finishedAnimatingCount >= this.words.length) {
+                this.finishedAnimatingCount = 0
+                if (this.queuedCallback) {
+                    this.queuedCallback()
+                }
+            }
+        },
+
     }
 
 

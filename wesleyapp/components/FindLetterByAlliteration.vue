@@ -14,7 +14,8 @@
                 :manuallyReading="manuallyReading"
                 :tutorial="tutorial"
                 :fadeAnimations="true"
-                targetWord="" />
+                targetWord=""
+                :queuedCallback="queuedCallback" />
             </view>
         <view class="half-container">
             <WordMadeOfLetters 
@@ -33,7 +34,8 @@
                 :doneJoining="() => {}"
                 :doneReading="() => {}"
                 :startSplit="true"
-                :fadeIn="true" />
+                :fadeIn="true"
+                :queuedCallback="queuedCallback" />
         </view>
     </view>
 </template>
@@ -43,6 +45,7 @@ import Sentence from './Sentence'
 import WordMadeOfLetters from './WordMadeOfLetters'
 import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import Vue from 'vue-native-core'
 
 export default {
     props: {
@@ -81,6 +84,8 @@ export default {
             sentencesRead: 0,
             correctOnFirstTry: true,
             firstReading: false,
+            queuedCallback: null,
+            callbackCount: 0,
         }
     },
 
@@ -164,15 +169,8 @@ export default {
         },
 
         introduceSentence () {
-          // animate in sentence if not on hard
-          this.showSentence = true
-          var sentenceAnimateTime = 1000
-          if (!this.shouldShowSentence) {
-              sentenceAnimateTime = 0
-          }
-          // timeout is to allow sentence animation to finish
-          // if were in hard mode theres no animation so timeout time is 0
-          setTimeout(() => {
+          // prepare the callback for after animation finishes
+          this.queuedCallback = () => {
               // speak and highlight the sentence
               if (this.shouldShowSentence && this.shouldReadSentence) {
                   this.$refs.sentenceRef.beginNarration()
@@ -184,7 +182,15 @@ export default {
               else {
                   this.sentenceDone()
               }
-          }, sentenceAnimateTime)
+          }
+          
+          // animate in sentence if not on hard
+          this.showSentence = true
+          
+          // hardmode has no sentence to animate
+          if (!this.shouldShowSentence) {
+              this.queuedCallback()
+          }
         },
 
         sentenceDone () {
@@ -193,10 +199,10 @@ export default {
           if (this.firstReading) {
               // Keep this true even if the sentence tries to set it false (dunno if necessary)
               this.manuallyReading = true
+              // prepare the callback for after animation finishes
+              this.queuedCallback = this.finishLetters
               // animate in letters
               this.showLetters = true
-              // timeout is to allow letter animation in to finish 
-              setTimeout(this.finishLetters, 1000)
           }
           else {
               // Sentence was just read as part of exit repetition
@@ -234,27 +240,38 @@ export default {
         },
 
         finishOutro() {
-          // play a pleasant sound before moving on
-          this.playRandomSound((success) => {
-              // animate out our sentence and letters
-              this.$refs.letterOptionsRef.animateOut()
-              if (this.shouldShowSentence) {
-                  this.$refs.sentenceRef.animateOut()
-              }
+            // play a pleasant sound before moving on
+            this.playRandomSound((success) => {
+                // prepare the callback for after animation finishes
+                this.callbackCount = 0
+                this.queuedCallback = () => {
+                    this.callbackCount++
+                    if (this.callbackCount >= 2) {
+                        this.updateData({ word: this.curSentence.targetWord, right: this.correctOnFirstTry })
+                        if (this.difficultySpelling > difficulty.VERY_EASY) {
+                        this.tutorial = false
+                        }
+                        this.showSentence = false
+                        this.showLetters = false
+                        this.sentencesRead ++
+                        // next word/sentence
+                        this.sayGJ(this.getNext)
+                    }
+                }
 
-              // timeout to allow animations to finish
-              setTimeout(() => {
-                  this.updateData({ word: this.curSentence.targetWord, right: this.correctOnFirstTry })
-                  if (this.difficultySpelling > difficulty.VERY_EASY) {
-                    this.tutorial = false
-                  }
-                  this.showSentence = false
-                  this.showLetters = false
-                  this.sentencesRead ++
-                  // next word/sentence
-                  this.sayGJ(this.getNext)
-              }, 1000)
-          })
+                // next tick so everything picks up the queuedCallback
+                Vue.nextTick(() => {
+                    // animate out our sentence and letters
+                    this.$refs.letterOptionsRef.animateOut()
+                    if (this.shouldShowSentence) {
+                        this.$refs.sentenceRef.animateOut()
+                    }
+                    else {
+                        // we're not animating sentence so assume it callbacked
+                        this.callbackCount++
+                    }
+                })
+            })
         },
 
         setManuallyReading (val) {

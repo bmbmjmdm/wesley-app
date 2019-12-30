@@ -6,11 +6,12 @@
                 ref="targetWordRef"
                 :key="curWord.targetWord"
                 :word="curWord.targetWord"
-                :wordPressed="finishedTargetWord"
+                :wordPressed="() => {}"
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :narrating="false"
-                :continueSentence="()=>{}" />
+                :continueSentence="()=>{}"
+                :finishedAnimating="queuedCallback" />
         </view>
         <animated:image
             v-if="showMic"
@@ -30,6 +31,7 @@ import micNormal from '../assets/mic.png'
 import micReady from '../assets/micReady.png'
 import micRecording from '../assets/micRecording.png'
 import { difficulty } from './store'
+import Vue from 'vue-native-core'
 
 export default {
     props: {
@@ -71,6 +73,7 @@ export default {
             showMic: true,
             silenceDuration: 999,
             maxGrowth: new Animated.Value(0),
+            queuedCallback: null,
         }
     },
 
@@ -142,24 +145,28 @@ export default {
         fadeNewBackground () {
             this.changeBackground(this.curWord.targetWord, () => {
                 // new image is now displayed as background, animate in target word
-                this.showWord = true
-                this.animateGrowth(true)
-                var wordAnimateTime = 700
-                if (!this.shouldShowTargetWord) {
-                    wordAnimateTime = 0
-                }
-                // timeout is to allow word animation to finish
-                // if were in hard mode theres no animation so timeout time is 0
-                setTimeout(() => {
+                // prepare the callback for after animation finishes
+                this.queuedCallback = () => {
                     // speak and highlight the word
                     if (this.shouldReadTargetWord) {
-                        this.$refs.targetWordRef.readWord()
+                        this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                     }
                     // just speak it
                     else {
                         this.finishedTargetWord()
                     }
-                }, wordAnimateTime)
+                }
+                //initiate animation
+                this.showWord = true
+                if (this.shouldShowTargetWord) {
+                    // we dont care if the mic doesnt finish animating before reading the word, so no need for queuedCallbacks
+                    this.animateGrowth(true)
+                }
+                // if were in hard mode theres no word shown, so add the callback
+                // to this animation instead
+                else {
+                    this.animateGrowth(true, this.queuedCallback)
+                }
             })
         },
 
@@ -178,7 +185,7 @@ export default {
                                 console.log('failed to load the sound', error)
                                 this.reinforced = true
                                 if (this.shouldShowTargetWord) {
-                                    this.$refs.targetWordRef.readWord()
+                                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                                 }
                                 else {
                                     this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
@@ -192,7 +199,7 @@ export default {
                                 recording.release()
                                 this.reinforced = true
                                 if (this.shouldShowTargetWord) {
-                                    this.$refs.targetWordRef.readWord()
+                                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                                 }
                                 else {
                                     this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
@@ -277,7 +284,7 @@ export default {
                 this.userSpoke = true
                 //read the target word to reinforce and let user self-learn
                 if (this.shouldShowTargetWord) {
-                    this.$refs.targetWordRef.readWord()
+                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                 }
                 else {
                     this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
@@ -293,19 +300,25 @@ export default {
         doneReinforcing () {
             // play a pleasant sound before moving on
             this.playRandomSound((success) => {
-                // animate out our word
-                if (this.shouldShowTargetWord) {
-                    this.$refs.targetWordRef.animateOut()
-                }
-                this.animateGrowth(false)
-
-                // timeout to allow animations to finish
-                setTimeout(() => {
+                // prepare the callback for after animation finishes
+                this.queuedCallback = () => {
                     this.showWord = false
                     this.wordsSpoken ++
                     // next word/sentence
                     this.sayGJ(this.getNext)
-                }, 525)
+                }
+
+                // next tick so everything picks up the queuedCallback
+                Vue.nextTick(() => {
+                    // animate out our word if it exists
+                    if (this.shouldShowTargetWord) {
+                        this.$refs.targetWordRef.animateOut()
+                        this.animateGrowth(false)
+                    }
+                    else {
+                        this.animateGrowth(false, queuedCallback)
+                    }
+                })
             })
         },
 
@@ -315,7 +328,7 @@ export default {
         
         // true = grow it
         // false = shrink it
-        animateGrowth (grow) {
+        animateGrowth (grow, callback = () => {}) {
             let max = 0
             if (grow) {
                 max =  250 * this.sizeFactor
@@ -326,7 +339,7 @@ export default {
                     toValue: max,
                     duration: 500,
                 }),
-            ]).start()
+            ]).start(callback)
         },
     }
 
