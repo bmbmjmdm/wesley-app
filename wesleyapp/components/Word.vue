@@ -193,13 +193,13 @@ export default {
             }
         },
 
-        highlightWord () {
+        highlightWord (callback) {
             // recursive call to highlight each letter in turn
             if (this.normalText) {
                 setTimeout(() => {
                     this.highlightedText = this.highlightedText + this.normalText.charAt(0)
                     this.normalText = this.normalText.slice(1, this.normalText.length)
-                    this.highlightWord()
+                    this.highlightWord(callback)
                 }, this.highlightSpeed)
             }
             else {
@@ -207,22 +207,22 @@ export default {
                 if (this.narrating) {
                     setTimeout(() => {
                         this.highlighting = false
-                        this.finishReading()
+                        this.finishReading(callback)
                     }, this.highlightSpeed)
                 }
                 // we're reading just this word, clean up
                 else {
                     setTimeout(() => {
-                        this.clearHighlight()
+                        this.clearHighlight(callback)
                     }, this.highlightSpeed*2)
                 }
             }
         },
 
-        clearHighlight () {
+        clearHighlight (callback) {
             this.highlighting = false
             if (!this.narrating) {
-                this.finishReadingPress()
+                this.finishReadingPress(callback)
             }
             else {
                 this.normalText = this.highlightedText
@@ -253,7 +253,7 @@ export default {
         readWord (callback) {
             this.reading = true
             this.highlighting = true
-            this.highlightWord()
+            this.highlightWord(callback)
             this.afterSpeak({
                 word: this.word,
                 callback: () => {

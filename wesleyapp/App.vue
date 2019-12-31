@@ -212,13 +212,13 @@ export default {
                 activityList.push({name: 'findWordInSentence', topic: 'Reading', changeChance: 0})
                 activityList.push({name: 'speakWord', topic: 'Reading', changeChance: 0})
             }
-
-            let newActivity = activityList[Math.floor(Math.random() * activityList.length)]
-            let random = Math.random()
-            while (this.curActivity.name === newActivity.name || newActivity.changeChance > random || !this.canPlay(newActivity)) {
-              newActivity = activityList[Math.floor(Math.random() * activityList.length)]
-              random = Math.random()
+            let newActivity
+            let random
+            do {
+                newActivity = activityList[Math.floor(Math.random() * activityList.length)]
+                random = Math.random()
             }
+            while (this.curActivity.name === newActivity.name || newActivity.changeChance > random || !this.canPlay(newActivity))
             this.setActivity({name: '', topic: ''})
 
             if (!this.needsDefaultBackground(newActivity)) {
