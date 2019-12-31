@@ -70,6 +70,7 @@ export default {
     data () {
         return {
             filterText: "",
+            saidPrompt: 0,
         }
     },
 
@@ -95,6 +96,10 @@ export default {
 
     methods: {
         changeWord (word) {
+            if(this.saidPrompt < 2) {
+                this.afterSpeak({word: 'Select a picture for ' + word, callback: () => {}})
+                this.saidPrompt++
+            }
             const options = {
                 title: 'Select vertical picture of: ' + word,
                 mediaType: 'photo',
@@ -131,7 +136,8 @@ export default {
         ]),
 
         ...mapActions([
-            'savePicture'
+            'savePicture',
+            'afterSpeak'
         ]),
     },
 }

@@ -388,7 +388,12 @@ function getWordOptions(nextWord) {
     // fwbl uses words/letterList, fwbp uses nextWord as is/wordList
     if (nextWord.words) {
         list = letterList
-        allWords.push(nextWord.words[Math.floor(Math.random() * nextWord.words.length)])
+        let wordStartingWithLetter
+        do {
+            wordStartingWithLetter = nextWord.words[Math.floor(Math.random() * nextWord.words.length)]
+        }
+        while (wordStartingWithLetter.length === 1)
+        allWords.push(wordStartingWithLetter)
     }
     else {
         list = wordList
@@ -399,7 +404,12 @@ function getWordOptions(nextWord) {
         let randomWord = list[Math.floor(Math.random() * list.length)]
         // if we were given a letterList, we need to extract the word from the given letter's words
         if (randomWord.words) {
-            randomWord = randomWord.words[Math.floor(Math.random() * randomWord.words.length)]
+            let randomWordSelected
+            do {
+                randomWordSelected = randomWord.words[Math.floor(Math.random() * randomWord.words.length)]
+            }
+            while (randomWordSelected.length === 1)
+            randomWord = randomWordSelected
         }
         // this second part of the check is to make sure we dont add a word containing the target letter for fwbl
         // the !randomWord.includes part is to check to make sure we're looking at a string, not an object

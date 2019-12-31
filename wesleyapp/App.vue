@@ -204,8 +204,8 @@ export default {
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
                 activityList.push({name: 'spellWord', topic: 'Spelling', changeChance: 0})
-                activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.25})
-                activityList.push({name: 'findLetterByAlliteration', topic: 'Spelling', changeChance: 0.33})
+                activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.15})
+                activityList.push({name: 'findLetterByAlliteration', topic: 'Spelling', changeChance: 0.3})
             }
             if (this.allowedTopics.includes('reading')) {
                 activityList.push({name: 'findWordByPicture', topic: 'Reading', changeChance: 0})
@@ -346,7 +346,7 @@ export default {
                     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
                         {
                         title: 'Permissions for write access',
-                        message: 'Give permission to write files',
+                        message: "To save progress and personalization",
                         buttonPositive: 'ok',
                         },
                     )
@@ -365,7 +365,7 @@ export default {
                     PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
                         {
                         title: 'Permissions for mic access',
-                        message: 'Give permission to use mic',
+                        message: 'One activity involves reading outloud!',
                         buttonPositive: 'ok',
                         },
                     )
