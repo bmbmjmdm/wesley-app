@@ -302,27 +302,25 @@ export default {
         },
 
         doneReinforcing () {
-            // play a pleasant sound before moving on
-            this.playRandomSound((success) => {
-                // prepare the callback for after animation finishes
-                this.queuedCallback = () => {
-                    this.showWord = false
-                    this.wordsSpoken ++
-                    // next word/sentence
-                    this.sayGJ(this.getNext)
+            // prepare the callback for after animation finishes
+            this.queuedCallback = () => {
+                this.showWord = false
+                this.wordsSpoken ++
+                // next word/sentence
+                this.sayGJ(this.getNext)
+            }
+            // next tick so everything picks up the queuedCallback
+            Vue.nextTick(() => {
+                // play a pleasant sound before moving on
+                this.playRandomSound()
+                // animate out our word if it exists
+                if (this.shouldShowTargetWord) {
+                    this.$refs.targetWordRef.animateOut()
+                    this.animateGrowth(false)
                 }
-
-                // next tick so everything picks up the queuedCallback
-                Vue.nextTick(() => {
-                    // animate out our word if it exists
-                    if (this.shouldShowTargetWord) {
-                        this.$refs.targetWordRef.animateOut()
-                        this.animateGrowth(false)
-                    }
-                    else {
-                        this.animateGrowth(false, queuedCallback)
-                    }
-                })
+                else {
+                    this.animateGrowth(false, queuedCallback)
+                }
             })
         },
 

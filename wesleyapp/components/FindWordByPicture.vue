@@ -238,41 +238,40 @@ export default {
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true
                 this.manuallyReading = true
-                // play a pleasant sound before moving on
-                this.playRandomSound(() => {
-                    // prepare the callback for after animation finishes
-                    this.callbackCount = 0
-                    this.queuedCallback = async () => {
-                        this.callbackCount++
-                        if (this.callbackCount >= 2) {
-                            let levelUp = await this.updateData({ word, right: this.correctOnFirstTry })
-                            if (this.difficultyReading > difficulty.VERY_EASY) {
-                                this.tutorial = false
-                            }
-                            this.showWord = false
-                            this.wordsFound ++
-                            // next word/grid
-                            if (levelUp) {
-                                this.sayLevelUp(this.getNext)
-                            }
-                            else {
-                                this.sayGJ(this.getNext)
-                            }
+                // prepare the callback for after animation finishes
+                this.callbackCount = 0
+                this.queuedCallback = async () => {
+                    this.callbackCount++
+                    if (this.callbackCount >= 2) {
+                        let levelUp = await this.updateData({ word, right: this.correctOnFirstTry })
+                        if (this.difficultyReading > difficulty.VERY_EASY) {
+                            this.tutorial = false
                         }
-                    }
-
-                    // next tick so everything picks up the queuedCallback
-                    Vue.nextTick(() => {
-                        // animate out our word grid and target word
-                        this.$refs.wordGrid.animateOut()
-                        if (this.shouldShowTargetWord) {
-                            this.$refs.targetWordRef.animateOut()
+                        this.showWord = false
+                        this.wordsFound ++
+                        // next word/grid
+                        if (levelUp) {
+                            this.sayLevelUp(this.getNext)
                         }
                         else {
-                            // we're not animating word so count it as finished
-                            this.callbackCount++
+                            this.sayGJ(this.getNext)
                         }
-                    })
+                    }
+                }
+
+                // next tick so everything picks up the queuedCallback
+                Vue.nextTick(() => {
+                    // play a pleasant sound before moving on
+                    this.playRandomSound()
+                    // animate out our word grid and target word
+                    this.$refs.wordGrid.animateOut()
+                    if (this.shouldShowTargetWord) {
+                        this.$refs.targetWordRef.animateOut()
+                    }
+                    else {
+                        // we're not animating word so count it as finished
+                        this.callbackCount++
+                    }
                 })
             }
             else {

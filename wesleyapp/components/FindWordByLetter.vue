@@ -239,41 +239,40 @@ export default {
 
         // correct word finished spelling after being pressed
         async doneSpelling () {
-            // play a pleasant sound before moving on
-            this.playRandomSound((success) => {
-                // prepare the callback for after animation finishes
-                this.callbackCount = 0
-                this.queuedCallback = async () => {
-                    this.callbackCount++
-                    if (this.callbackCount >= 2) {
-                        let levelUp = await this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
-                        this.showLetter = false
-                        if (this.difficultySpelling > difficulty.VERY_EASY) {
-                            this.tutorial = false
-                        }
-                        this.listsRead ++
-                        // next word/list
-                        if (levelUp) {
-                            this.sayLevelUp(this.getNext)
-                        }
-                        else {
-                            this.sayGJ(this.getNext)
-                        }
+            // prepare the callback for after animation finishes
+            this.callbackCount = 0
+            this.queuedCallback = async () => {
+                this.callbackCount++
+                if (this.callbackCount >= 2) {
+                    let levelUp = await this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
+                    this.showLetter = false
+                    if (this.difficultySpelling > difficulty.VERY_EASY) {
+                        this.tutorial = false
                     }
-                }
-
-                // next tick so everything picks up the queuedCallback
-                Vue.nextTick(() => {
-                    // animate out our list and letter
-                    this.$refs.listRef.animateOut()
-                    if (this.shouldShowLetter) {
-                        this.$refs.letterRef.animateOut()
+                    this.listsRead ++
+                    // next word/list
+                    if (levelUp) {
+                        this.sayLevelUp(this.getNext)
                     }
                     else {
-                        // we're not animating letter so count it as finished
-                        this.callbackCount++
+                        this.sayGJ(this.getNext)
                     }
-                })
+                }
+            }
+
+            // next tick so everything picks up the queuedCallback
+            Vue.nextTick(() => {
+                // play a pleasant sound before moving on
+                this.playRandomSound()
+                // animate out our list and letter
+                this.$refs.listRef.animateOut()
+                if (this.shouldShowLetter) {
+                    this.$refs.letterRef.animateOut()
+                }
+                else {
+                    // we're not animating letter so count it as finished
+                    this.callbackCount++
+                }
             })
         },
 

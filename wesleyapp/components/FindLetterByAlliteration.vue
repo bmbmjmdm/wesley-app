@@ -244,42 +244,41 @@ export default {
         },
 
         async finishOutro() {
-            // play a pleasant sound before moving on
-            this.playRandomSound((success) => {
-                // prepare the callback for after animation finishes
-                this.callbackCount = 0
-                this.queuedCallback = async () => {
-                    this.callbackCount++
-                    if (this.callbackCount >= 2) {
-                        let levelUp = await this.updateData({ word: this.curSentence.targetWord, right: this.correctOnFirstTry })
-                        if (this.difficultySpelling > difficulty.VERY_EASY) {
-                            this.tutorial = false
-                        }
-                        this.showSentence = false
-                        this.showLetters = false
-                        this.sentencesRead ++
-                        // next word/sentence
-                        if (levelUp) {
-                            this.sayLevelUp(this.getNext)
-                        }
-                        else {
-                            this.sayGJ(this.getNext)
-                        }
+            // prepare the callback for after animation finishes
+            this.callbackCount = 0
+            this.queuedCallback = async () => {
+                this.callbackCount++
+                if (this.callbackCount >= 2) {
+                    let levelUp = await this.updateData({ word: this.curSentence.targetWord, right: this.correctOnFirstTry })
+                    if (this.difficultySpelling > difficulty.VERY_EASY) {
+                        this.tutorial = false
                     }
-                }
-
-                // next tick so everything picks up the queuedCallback
-                Vue.nextTick(() => {
-                    // animate out our sentence and letters
-                    this.$refs.letterOptionsRef.animateOut()
-                    if (this.shouldShowSentence) {
-                        this.$refs.sentenceRef.animateOut()
+                    this.showSentence = false
+                    this.showLetters = false
+                    this.sentencesRead ++
+                    // next word/sentence
+                    if (levelUp) {
+                        this.sayLevelUp(this.getNext)
                     }
                     else {
-                        // we're not animating sentence so assume it callbacked
-                        this.callbackCount++
+                        this.sayGJ(this.getNext)
                     }
-                })
+                }
+            }
+
+            // next tick so everything picks up the queuedCallback
+            Vue.nextTick(() => {
+                // play a pleasant sound before moving on
+                this.playRandomSound()
+                // animate out our sentence and letters
+                this.$refs.letterOptionsRef.animateOut()
+                if (this.shouldShowSentence) {
+                    this.$refs.sentenceRef.animateOut()
+                }
+                else {
+                    // we're not animating sentence so assume it callbacked
+                    this.callbackCount++
+                }
             })
         },
 

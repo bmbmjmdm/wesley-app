@@ -15,12 +15,12 @@
                 class="full-flex">
 
                 <View
-                    v-if="showGJ"
+                    v-if="showReinforce"
                     class="container">
                     <Sentence
-                        ref="gjSentence"
-                        :finish-narration="finishGJ"
-                        :sentence="gjSentence"
+                        ref="reinforceSentence"
+                        :finish-narration="finishReinforcement"
+                        :sentence="reinforceSentence"
                         :word-pressed="() => {}"
                         :narrating="true"
                         :setManuallyReading="() => {}"
@@ -131,15 +131,17 @@ export default {
         return {
             bgImageBackName: 'bgDefault',
             bgImageFrontName: 'bgDefault',
-            showGJ: false,
-            gjSentence: "",
+            showReinforce: false,
+            reinforceentence: "",
             gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job", "Wow wow", "Oh yeah"],
             levelUpList: ["Level Up! Woah!", "Level up! Way to go!", "Level up! Amazing!", "Level up! Look at you!"],
-            gjCallback: null,
+            reinforceCallback: null,
             backgroundOpacity: new Animated.Value(1),
             appState: "active",
             loaded: false,
             queuedCallback: null,
+            playingSound: false,
+            postRandomSound: null
         }
     },
 
@@ -282,12 +284,19 @@ export default {
         },
 
         playRandomSound(callback) {
+            this.playingSound = true
             var ran = Math.floor(Math.random() * 29)
             console.log("loading success_"+ran)
             var sound = new Sound("success_" + ran + ".wav", Sound.MAIN_BUNDLE, (error) => {
                 let realCallback = () => {
-                  sound.release()
-                  callback()
+                    this.playingSound = false
+                    sound.release()
+                    if (callback) callback()
+                    // saying reinforcement after sound 
+                    if (this.postRandomSound) {
+                        this.postRandomSound()
+                        this.postRandomSound = null
+                    }
                 }
                 if (error) {
                     console.log('failed to load sound #' + ran, error)
@@ -298,35 +307,40 @@ export default {
         },
 
         sayGJ (callback) {
-            this.gjCallback = callback
             var ran = Math.floor(Math.random() * this.gjList.length)
-            this.gjSentence = this.gjList[ran]
-            // prepare the callback for after animation finishes
-            this.queuedCallback = () => {
-                this.$refs.gjSentence.beginNarration()
-            }
-            this.showGJ = true
+            let sentence = this.gjList[ran]
+            this.sayReinforcement(sentence, callback)
         },
 
-        finishGJ () {
-            // prepare the callback for after animation finishes
-            this.queuedCallback = () => {
-                this.showGJ = false
-                this.gjCallback()
-            }
-            Vue.nextTick(() => {this.$refs.gjSentence.animateOut()})
-        },
-
-        // we piggy back off of gj component for this, should refactor name
         sayLevelUp (callback) {
-            this.gjCallback = callback
             var ran = Math.floor(Math.random() * this.levelUpList.length)
-            this.gjSentence = this.levelUpList[ran]
+            let sentence = this.levelUpList[ran]
+            this.sayReinforcement(sentence, callback)
+        },
+
+        sayReinforcement (sentence, callback) {
+            this.reinforceCallback = callback
+            this.reinforceSentence = sentence
             // prepare the callback for after animation finishes
             this.queuedCallback = () => {
-                this.$refs.gjSentence.beginNarration()
+                // dont read it until random sound stops playing
+                if (this.playingSound) {
+                    this.postRandomSound = this.$refs.reinforceSentence.beginNarration
+                }
+                else {
+                    this.$refs.reinforceSentence.beginNarration()
+                }
             }
-            this.showGJ = true
+            this.showReinforce = true
+        },
+
+        finishReinforcement () {
+            // prepare the callback for after animation finishes
+            this.queuedCallback = () => {
+                this.showReinforce = false
+                this.reinforceCallback()
+            }
+            Vue.nextTick(this.$refs.reinforceSentence.animateOut)
         },
         
         //save child progress data when app is put into background/closed 
