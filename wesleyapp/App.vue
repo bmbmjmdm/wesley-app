@@ -13,6 +13,11 @@
                 :onError="() => invalidatePicture(bgImageFront.name)"
                 :imageStyle="{resizeMode: 'stretch'}"
                 class="full-flex">
+                <SpecialEffects
+                    v-if="showReinforce"
+                    ref="reinforceSparkles"
+                    class="screen-filter"
+                />
 
                 <View
                     v-if="showReinforce"
@@ -111,6 +116,7 @@ import store  from './components/store'
 import { difficulty } from './components/store'
 import Vue from 'vue-native-core'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import SpecialEffects from './components/SpecialEffects'
 Vue.prototype.$store = store
 
 export default {
@@ -124,7 +130,8 @@ export default {
         FindLetterByAlliteration,
         Sentence,
         SpeakWord,
-        Personalize
+        Personalize,
+        SpecialEffects
     },
 
     data () {
@@ -340,7 +347,11 @@ export default {
                 this.showReinforce = false
                 this.reinforceCallback()
             }
-            Vue.nextTick(this.$refs.reinforceSentence.animateOut)
+            Vue.nextTick(() => {
+                // we dont bother checking to make sure both finish because the sparkles dont matter too much
+                this.$refs.reinforceSparkles.animateOut()
+                this.$refs.reinforceSentence.animateOut()
+            })
         },
         
         //save child progress data when app is put into background/closed 
@@ -414,5 +425,12 @@ export default {
         flex-shrink: 1;
         flex: 1;
         flex-direction: row;
+    }
+
+    .screen-filter {
+        position: absolute;
+        z-index: 999;
+        width: 100%;
+        height: 100%;
     }
 </style>
