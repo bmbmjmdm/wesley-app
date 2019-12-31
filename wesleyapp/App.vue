@@ -2,7 +2,7 @@
     <ImageBackground
         v-if="loaded"
         :source="bgImageBack.source"
-        :onError="() => invalidatePhoto(bgImageBack.name)"
+        :onError="() => invalidatePicture(bgImageBack.name)"
         :imageStyle="{resizeMode: 'stretch'}"
         class="full-flex">
         <animated:view
@@ -10,7 +10,7 @@
             class="full-flex">
             <ImageBackground
                 :source="bgImageFront.source"
-                :onError="() => invalidatePhoto(bgImageFront.name)"
+                :onError="() => invalidatePicture(bgImageFront.name)"
                 :imageStyle="{resizeMode: 'stretch'}"
                 class="full-flex">
 
@@ -46,6 +46,7 @@
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
+                    :sayLevelUp="sayLevelUp"
                 />
                 <FindWordByPicture
                     v-else-if="curActivity.name === 'findWordByPicture'"
@@ -53,6 +54,7 @@
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
+                    :sayLevelUp="sayLevelUp"
                 />
                 <FindWordByLetter
                     v-else-if="curActivity.name === 'findWordByLetter'"
@@ -60,6 +62,7 @@
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
+                    :sayLevelUp="sayLevelUp"
                 />
                 <SpellWord
                     v-else-if="curActivity.name === 'spellWord'"
@@ -67,6 +70,7 @@
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
+                    :sayLevelUp="sayLevelUp"
                 />
                 <SpeakWord
                     v-else-if="curActivity.name === 'speakWord'"
@@ -74,6 +78,7 @@
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
+                    :sayLevelUp="sayLevelUp"
                 />
                 <FindLetterByAlliteration
                     v-else-if="curActivity.name === 'findLetterByAlliteration'"
@@ -81,6 +86,7 @@
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
+                    :sayLevelUp="sayLevelUp"
                 />
             </ImageBackground>
         </view>
@@ -128,6 +134,7 @@ export default {
             showGJ: false,
             gjSentence: "",
             gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job", "Wow wow", "Oh yeah"],
+            levelUpList: ["Level Up! Woah!", "Level up! Way to go!", "Level up! Amazing!", "Level up! Look at you!"],
             gjCallback: null,
             backgroundOpacity: new Animated.Value(1),
             appState: "active",
@@ -190,7 +197,7 @@ export default {
 
         ...mapActions([
             'loadPictures',
-            'invalidatePhoto'
+            'invalidatePicture'
         ]),
 
         randomActivity (changeBackground = true) {
@@ -302,14 +309,25 @@ export default {
         },
 
         finishGJ () {
-            this.$refs.gjSentence.animateOut()
             // prepare the callback for after animation finishes
             this.queuedCallback = () => {
                 this.showGJ = false
                 this.gjCallback()
             }
+            Vue.nextTick(() => {this.$refs.gjSentence.animateOut()})
         },
 
+        // we piggy back off of gj component for this, should refactor name
+        sayLevelUp (callback) {
+            this.gjCallback = callback
+            var ran = Math.floor(Math.random() * this.levelUpList.length)
+            this.gjSentence = this.levelUpList[ran]
+            // prepare the callback for after animation finishes
+            this.queuedCallback = () => {
+                this.$refs.gjSentence.beginNarration()
+            }
+            this.showGJ = true
+        },
         
         //save child progress data when app is put into background/closed 
         handleAppStateChange (nextAppState) {

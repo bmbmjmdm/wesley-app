@@ -50,6 +50,10 @@ export default {
         sayGJ: {
             type: Function,
             required: true
+        },
+        sayLevelUp: {
+            type: Function,
+            required: true
         }
     },
     

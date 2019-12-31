@@ -52,6 +52,10 @@ export default {
         sayGJ: {
             type: Function,
             required: true
+        },
+        sayLevelUp: {
+            type: Function,
+            required: true
         }
     },
     
@@ -100,10 +104,10 @@ export default {
 
     methods: {
         ...mapMutations([
-            'updateData'
         ]),
         ...mapActions([
-            'afterSpeak'
+            'afterSpeak',
+            'updateData'
         ]),
 
         // Move on to the next sentence/target word. This does the following in order:
@@ -204,7 +208,7 @@ export default {
         },
 
         // User clicked a word, if they clicked the right one, move on to the next sentence
-        wordPressed (word) {
+        async wordPressed (word) {
             if (word.toLowerCase() === this.curSentence.targetWord) {
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true
@@ -213,17 +217,22 @@ export default {
                 this.playRandomSound((success) => {
                     // prepare the callback for after animation finishes
                     this.callbackCount = 0
-                    this.queuedCallback = () => {
+                    this.queuedCallback = async () => {
                         this.callbackCount++
                         if (this.callbackCount >= 2) {
-                            this.updateData({ word, right: this.correctOnFirstTry })
+                            let levelUp = await this.updateData({ word, right: this.correctOnFirstTry })
                             if (this.difficultyReading > difficulty.VERY_EASY) {
                                 this.tutorial = false
                             }
                             this.showWord = false
                             this.sentencesRead ++
                             // next word/sentence
-                            this.sayGJ(this.getNext)
+                            if (levelUp) {
+                                this.sayLevelUp(this.getNext)
+                            }
+                            else {
+                                this.sayGJ(this.getNext)
+                            }
                         }
                     }
                     

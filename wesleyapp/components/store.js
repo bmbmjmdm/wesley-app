@@ -163,7 +163,7 @@ export default new Vuex.Store({
     },
     mutations: {
         setPicture(state, {name, source, user}) {
-            state.pictures[name] = {name, source, user}
+            Vue.set(state.pictures, name, {name, source, user})
         },
 
         // used when loading app
@@ -181,47 +181,6 @@ export default new Vuex.Store({
 
         setSizeFactor(state, size) {
             Vue.set(state, 'sizeFactor', size)
-        },
-
-        // right is a boolean
-        // REMEMBER this can update difficulty, do not call if you haven't cleaned up the screen yet
-        updateData(state, { word, right, multiplier = 1 }) {
-            // make sure the word exists in our history
-            if (!state.wordHistory[word]) {
-                Vue.set(state.wordHistory, word, {
-                    total: 0,
-                    right: 0,
-                    wrong: 0
-                })
-            }
-
-            let rightStreek = 'rightStreek' + state.curActivity.topic
-            let wrongStreek = 'wrongStreek' + state.curActivity.topic
-
-            if (right) {
-                Vue.set(state, rightStreek, state[rightStreek] + multiplier)
-                Vue.set(state, wrongStreek, 0)
-                Vue.set(state.wordHistory[word], 'total', state.wordHistory[word].total + 1)
-                Vue.set(state.wordHistory[word], 'right', state.wordHistory[word].right + 1)
-            }
-            else {
-                Vue.set(state, wrongStreek, state[wrongStreek] + multiplier)
-                Vue.set(state, rightStreek, 0)
-                Vue.set(state.wordHistory[word], 'total', state.wordHistory[word].total + 1)
-                Vue.set(state.wordHistory[word], 'wrong', state.wordHistory[word].wrong + 1)
-            }
-
-            // Update difficulty
-            if (state.allowAutoAdjust) {
-                if (state[rightStreek] >= 8) {
-                    Vue.set(state, rightStreek, 0)
-                    increaseDifficulty(state)
-                }
-                else if (state[wrongStreek] >= 5) {
-                    Vue.set(state, wrongStreek, 0)
-                    decreaseDifficulty(state)
-                }
-            }
         },
 
         setDifficultyReading(state, value) {
@@ -256,6 +215,51 @@ export default new Vuex.Store({
                 sound.play(callback)
             })
         */
+        },
+
+        // right is a boolean
+        // REMEMBER this can update difficulty, do not call if you haven't cleaned up the screen yet
+        updateData({ state }, { word, right, multiplier = 1 }) {
+            let levelUp = false
+
+            // make sure the word exists in our history
+            if (!state.wordHistory[word]) {
+                Vue.set(state.wordHistory, word, {
+                    total: 0,
+                    right: 0,
+                    wrong: 0
+                })
+            }
+
+            let rightStreek = 'rightStreek' + state.curActivity.topic
+            let wrongStreek = 'wrongStreek' + state.curActivity.topic
+
+            if (right) {
+                Vue.set(state, rightStreek, state[rightStreek] + multiplier)
+                Vue.set(state, wrongStreek, 0)
+                Vue.set(state.wordHistory[word], 'total', state.wordHistory[word].total + 1)
+                Vue.set(state.wordHistory[word], 'right', state.wordHistory[word].right + 1)
+            }
+            else {
+                Vue.set(state, wrongStreek, state[wrongStreek] + multiplier)
+                Vue.set(state, rightStreek, 0)
+                Vue.set(state.wordHistory[word], 'total', state.wordHistory[word].total + 1)
+                Vue.set(state.wordHistory[word], 'wrong', state.wordHistory[word].wrong + 1)
+            }
+
+            // Update difficulty
+            if (state.allowAutoAdjust) {
+                if (state[rightStreek] >= 4) {
+                    Vue.set(state, rightStreek, 0)
+                    increaseDifficulty(state)
+                    levelUp = true
+                }
+                else if (state[wrongStreek] >= 4) {
+                    Vue.set(state, wrongStreek, 0)
+                    decreaseDifficulty(state)
+                }
+            }
+            return levelUp
         },
 
         // slightly dangerous, we dont wait here to save. should be fine as long as we dont try to save two very fast

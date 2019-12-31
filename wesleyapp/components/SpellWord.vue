@@ -90,6 +90,10 @@ export default {
         sayGJ: {
             type: Function,
             required: true
+        },
+        sayLevelUp: {
+            type: Function,
+            required: true
         }
     },
     
@@ -147,10 +151,10 @@ export default {
 
     methods: {
         ...mapMutations([
-            'updateData'
         ]),
         ...mapActions([
-            'afterSpeak'
+            'afterSpeak',
+            'updateData'
         ]),
 
         // Move on to the next word to spell. This does the following in order:
@@ -309,17 +313,22 @@ export default {
             this.$refs.speltWordRef.readWord(this.doneFinalReading)
         },
 
-        doneFinalReading () {
+        async doneFinalReading () {
             // prepare the callback for after animation finishes
             this.callbackCount = 0
-            this.queuedCallback = () => {
+            this.queuedCallback = async () => {
                 this.callbackCount++
                 if (this.callbackCount >= 2) {
                     this.showWord = false
-                    this.updateData({ word: this.curWord.targetWord, right: this.correctOnFirstTry, multiplier: 2 })
+                    let levelUp = await this.updateData({ word: this.curWord.targetWord, right: this.correctOnFirstTry, multiplier: 2 })
                     this.wordsSpelt ++
                     // next word
-                    this.sayGJ(this.getNext)
+                    if (levelUp) {
+                        this.sayLevelUp(this.getNext)
+                    }
+                    else {
+                        this.sayGJ(this.getNext)
+                    }
                 }
             }
             

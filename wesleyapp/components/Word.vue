@@ -32,7 +32,7 @@
                 v-if="pic"
                 :style="{height: 248 * sizeFactor, width: 139 * sizeFactor, resizeMode: 'stretch', marginTop: paddingSizeSmall, opacity: tutorialFade ? 0.33 : 1}"
                 :source="pic.source"
-                :onError="() => invalidatePhoto(pic.name)">
+                :onError="() => invalidatePicture(pic.name)">
         </view>
     </touchable-opacity>
 </template>
@@ -151,7 +151,7 @@ export default {
     methods: {
         ...mapActions([
             'afterSpeak',
-            'invalidatePhoto'
+            'invalidatePicture'
         ]),
         
         animateGrowth (max, padding) {

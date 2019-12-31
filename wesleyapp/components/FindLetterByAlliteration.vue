@@ -64,6 +64,10 @@ export default {
         sayGJ: {
             type: Function,
             required: true
+        },
+        sayLevelUp: {
+            type: Function,
+            required: true
         }
     },
     
@@ -136,10 +140,10 @@ export default {
 
     methods: {
         ...mapMutations([
-            'updateData'
         ]),
         ...mapActions([
-            'afterSpeak'
+            'afterSpeak',
+            'updateData'
         ]),
 
         // Move on to the next sentence/letter. This does the following in order:
@@ -239,23 +243,28 @@ export default {
             }
         },
 
-        finishOutro() {
+        async finishOutro() {
             // play a pleasant sound before moving on
             this.playRandomSound((success) => {
                 // prepare the callback for after animation finishes
                 this.callbackCount = 0
-                this.queuedCallback = () => {
+                this.queuedCallback = async () => {
                     this.callbackCount++
                     if (this.callbackCount >= 2) {
-                        this.updateData({ word: this.curSentence.targetWord, right: this.correctOnFirstTry })
+                        let levelUp = await this.updateData({ word: this.curSentence.targetWord, right: this.correctOnFirstTry })
                         if (this.difficultySpelling > difficulty.VERY_EASY) {
-                        this.tutorial = false
+                            this.tutorial = false
                         }
                         this.showSentence = false
                         this.showLetters = false
                         this.sentencesRead ++
                         // next word/sentence
-                        this.sayGJ(this.getNext)
+                        if (levelUp) {
+                            this.sayLevelUp(this.getNext)
+                        }
+                        else {
+                            this.sayGJ(this.getNext)
+                        }
                     }
                 }
 

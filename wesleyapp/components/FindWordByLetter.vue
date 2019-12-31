@@ -26,7 +26,7 @@
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
                 :tutorial="tutorial"
-                :targetWord="curList.targetWord"
+                :targetWord="curWord"
                 :lettersClickable="shouldClickLetters"
                 :queuedCallback="queuedCallback" />
         </view>
@@ -55,6 +55,10 @@ export default {
             required: true
         },
         sayGJ: {
+            type: Function,
+            required: true
+        },
+        sayLevelUp: {
             type: Function,
             required: true
         }
@@ -100,6 +104,14 @@ export default {
         shouldClickLetters () {
             return this.difficultySpelling >= difficulty.HARD
         },
+
+        curWord () {
+            for (let word of this.curList.allWords) {
+                if (word.toLowerCase().includes(this.curList.targetWord)) {
+                    return word
+                }
+            }
+        },
         
         ...mapGetters([
             'difficultySpelling',
@@ -110,10 +122,10 @@ export default {
 
     methods: {
         ...mapMutations([
-            'updateData'
         ]),
         ...mapActions([
-            'afterSpeak'
+            'afterSpeak',
+            'updateData'
         ]),
 
         // Move on to the next list/target word. This does the following in order:
@@ -226,22 +238,27 @@ export default {
         },
 
         // correct word finished spelling after being pressed
-        doneSpelling () {
+        async doneSpelling () {
             // play a pleasant sound before moving on
             this.playRandomSound((success) => {
                 // prepare the callback for after animation finishes
                 this.callbackCount = 0
-                this.queuedCallback = () => {
+                this.queuedCallback = async () => {
                     this.callbackCount++
                     if (this.callbackCount >= 2) {
-                        this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
+                        let levelUp = await this.updateData({ word: this.curList.targetWord, right: this.correctOnFirstTry })
                         this.showLetter = false
                         if (this.difficultySpelling > difficulty.VERY_EASY) {
                             this.tutorial = false
                         }
                         this.listsRead ++
                         // next word/list
-                        this.sayGJ(this.getNext)
+                        if (levelUp) {
+                            this.sayLevelUp(this.getNext)
+                        }
+                        else {
+                            this.sayGJ(this.getNext)
+                        }
                     }
                 }
 
