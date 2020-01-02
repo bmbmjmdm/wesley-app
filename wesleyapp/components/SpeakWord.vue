@@ -319,7 +319,7 @@ export default {
                     this.animateGrowth(false)
                 }
                 else {
-                    this.animateGrowth(false, queuedCallback)
+                    this.animateGrowth(false, this.queuedCallback)
                 }
             })
         },
