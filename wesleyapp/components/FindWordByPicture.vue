@@ -210,9 +210,12 @@ export default {
                 }
                 // second time word is read, let the user interact now
                 else {
-                    this.narrating = false
-                    // normal mode needs this set explicitly
-                    this.manuallyReading = false
+                    // set timeout to allow shrinking animation to finish
+                    setTimeout(() => {
+                        this.narrating = false
+                        // normal mode needs this set explicitly
+                        this.manuallyReading = false
+                    }, 300)
                 }
             }
         },
@@ -280,7 +283,9 @@ export default {
         },
 
         setManuallyReading (val) {
-            this.manuallyReading = val
+            if (!this.narrating) {
+                this.manuallyReading = val
+            }
         },
     }
 

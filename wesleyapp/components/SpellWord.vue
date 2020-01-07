@@ -232,8 +232,11 @@ export default {
             this.queuedCallback = () => {
                 if (this.shouldShowWordMadeOfLetters) {
                      this.$refs.targetWordRef.readLetter(this.spellingLetter, () => {
-                        this.narrating = false
-                        this.manuallyReading = false
+                        // set timeout to allow shrinking animation to finish
+                        setTimeout(() => {
+                            this.narrating = false
+                            this.manuallyReading = false
+                        }, 300)
                     })
                 }
                 else {
@@ -249,42 +252,51 @@ export default {
         // User clicked a letter, if they clicked the right one, move on to the letter
         letterPressed (letter, index) {
             if (letter === this.curWord.targetWord.charAt(this.spellingLetter)) {
-                // the user gets 2 letters of tutorial, then has to spell everything else on their own
-                if (this.tutorial1) {
-                    this.tutorial1 = false
-                }
-                else {
-                  if (this.difficultySpelling > difficulty.VERY_EASY) {
-                    this.tutorial2 = false
-                  }
-                }
-                // set this to prevent the user from pressing buttons during transition
-                this.narrating = true
-                this.manuallyReading = true
-                // play a pleasant sound and animate the chosen letter into position
-                this.$refs.letterOptionsRef.hideLetter(index)
-                this.$refs.speltWordRef.showLetter(this.spellingLetter)
-                this.playRandomSound((success) => {
-                    // finished the sound and we assume we finished moving the letter
-                    this.spellingLetter ++
-                    if (this.spellingLetter === this.curWord.targetWord.length) {
-                        // we finished the word
-                        this.finishSpelling()
+                // set timeout to allow shrinking animation to finish
+                setTimeout(() => {
+                    // the user gets 2 letters of tutorial, then has to spell everything else on their own
+                    if (this.tutorial1) {
+                        this.tutorial1 = false
                     }
                     else {
-                        // move on to the next letter
-                        if (this.shouldShowWordMadeOfLetters) {
-                            this.$refs.targetWordRef.readLetter(this.spellingLetter, () => {
-                                this.narrating = false
-                                this.manuallyReading = false
-                            })
+                    if (this.difficultySpelling > difficulty.VERY_EASY) {
+                        this.tutorial2 = false
+                    }
+                    }
+                    // set this to prevent the user from pressing buttons during transition
+                    this.narrating = true
+                    this.manuallyReading = true
+                    this.preventManualReadingChange = true
+                    // play a pleasant sound and animate the chosen letter into position
+                    this.$refs.letterOptionsRef.hideLetter(index)
+                    this.$refs.speltWordRef.showLetter(this.spellingLetter)
+                    this.playRandomSound((success) => {
+                        // finished the sound and we assume we finished moving the letter
+                        this.spellingLetter ++
+                        if (this.spellingLetter === this.curWord.targetWord.length) {
+                            // we finished the word
+                            this.finishSpelling()
                         }
                         else {
-                            this.narrating = false
-                            this.manuallyReading = false
+                            // move on to the next letter
+                            if (this.shouldShowWordMadeOfLetters) {
+                                this.$refs.targetWordRef.readLetter(this.spellingLetter, () => {
+                                    // set timeout to allow shrinking animation to finish
+                                    setTimeout(() => {
+                                        this.preventManualReadingChange = false
+                                        this.narrating = false
+                                        this.manuallyReading = false
+                                    }, 300)
+                                })
+                            }
+                            else {
+                                this.preventManualReadingChange = false
+                                this.narrating = false
+                                this.manuallyReading = false
+                            }
                         }
-                    }
-                })
+                    })
+                }, 300)
             }
             else {
                 this.correctOnFirstTry = false
@@ -300,12 +312,15 @@ export default {
         },
 
         finishLetterReading () {
-            // push the words together
-            // ATM only joining the spelt word. if I do both it causes performance issues, though I could solve this by doing both words' animations in parallel here.
-            // however now idk if i really wanna join both target and spelt words, so leaving as is
-            //this.$refs.targetWordRef.joinLetters()
-            this.queuedCallback = this.doneJoining
-            Vue.nextTick(() => { this.$refs.speltWordRef.joinLetters() })
+            // set timeout to allow shrinking animation to finish
+            setTimeout(() => {
+                // push the words together
+                // ATM only joining the spelt word. if I do both it causes performance issues, though I could solve this by doing both words' animations in parallel here.
+                // however now idk if i really wanna join both target and spelt words, so leaving as is
+                //this.$refs.targetWordRef.joinLetters()
+                this.queuedCallback = this.doneJoining
+                Vue.nextTick(() => { this.$refs.speltWordRef.joinLetters() })
+            }, 300)
         },
 
         doneJoining () {
@@ -347,7 +362,9 @@ export default {
         },
 
         setManuallyReading (val) {
-            this.manuallyReading = val
+            if (!this.narrating) {
+                this.manuallyReading = val
+            }
         },
     }
 

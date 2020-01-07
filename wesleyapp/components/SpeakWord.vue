@@ -325,7 +325,9 @@ export default {
         },
 
         setManuallyReading (val) {
-            this.manuallyReading = val
+            if (!this.narrating) {
+                this.manuallyReading = val
+            }
         },
         
         // true = grow it

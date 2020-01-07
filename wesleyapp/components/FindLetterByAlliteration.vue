@@ -114,18 +114,16 @@ export default {
             let letters = ""
             // lol shutup i dont have internet atm
             let alphabet = "abcdefghijklmnopqrstuvwxyz"
-            let tlAdded = false
             while (letters.length < 5) {
                 // random chance target letter is added if not there yet
                 // if we're on the last letter, we have to add it
-                if ((Math.random() < 0.5 || letters.length == 4) && !tlAdded) {
-                    tlAdded = true
+                if ((Math.random() < 0.5 || letters.length == 4) && !letters.includes(targetLetter)) {
                     letters = letters + targetLetter
                     continue
                 }
                 // normal random letter
                 let potLet = alphabet.charAt(Math.floor(Math.random() * alphabet.length))
-                if (potLet != targetLetter) {
+                if (potLet != targetLetter && !letters.includes(potLet)) {
                     letters = letters + potLet
                 }
             }
@@ -201,12 +199,15 @@ export default {
           // Sentence was just read as part of introduction
           // display letter options now that sentence is done animating/reading
           if (this.firstReading) {
-              // Keep this true even if the sentence tries to set it false (dunno if necessary)
-              this.manuallyReading = true
-              // prepare the callback for after animation finishes
-              this.queuedCallback = this.finishLetters
-              // animate in letters
-              this.showLetters = true
+              // set timeout to allow shrinking animation to finish
+              setTimeout(() => {
+                // Keep this true even if the sentence tries to set it false (dunno if necessary)
+                this.manuallyReading = true
+                // prepare the callback for after animation finishes
+                this.queuedCallback = this.finishLetters
+                // animate in letters
+                this.showLetters = true
+              }, 300)
           }
           else {
               // Sentence was just read as part of exit repetition
@@ -226,17 +227,20 @@ export default {
         // User clicked a letter option, see if its the one we're looking for
         letterPressed (letter) {
             if (letter === this.curSentence.targetWord.charAt(0)) {
-                // set this to prevent the user from pressing buttons during transition
-                this.narrating = true
-                this.manuallyReading = true
-                // speak and highlight the sentence
-                if (this.shouldShowSentence) {
-                    this.$refs.sentenceRef.beginNarration()
-                }
-                // just speak it
-                else {
-                    this.afterSpeak({ word: this.curSentence.alliteration, callback: this.sentenceDone })
-                }
+                // set timeout to allow shrinking animation to finish
+                setTimeout(() => {
+                    // set this to prevent the user from pressing buttons during transition
+                    this.narrating = true
+                    this.manuallyReading = true
+                    // speak and highlight the sentence
+                    if (this.shouldShowSentence) {
+                        this.$refs.sentenceRef.beginNarration()
+                    }
+                    // just speak it
+                    else {
+                        this.afterSpeak({ word: this.curSentence.alliteration, callback: this.sentenceDone })
+                    }
+                }, 300)
             }
             else {
                 this.correctOnFirstTry = false
@@ -283,7 +287,9 @@ export default {
         },
 
         setManuallyReading (val) {
-            this.manuallyReading = val
+            if (!this.narrating) {
+                this.manuallyReading = val
+            }
         },
     }
 

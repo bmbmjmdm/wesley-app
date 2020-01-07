@@ -6,8 +6,8 @@
                     borderTopRightRadius: radiusRightGrowth,
                     borderBottomLeftRadius: radiusLeftGrowth,
                     borderBottomRightRadius: radiusRightGrowth,
-                    paddingTop: paddingSize, 
-                    paddingBottom: paddingSize,
+                    paddingTop: paddingMod,
+                    paddingBottom: paddingMod,
                     paddingLeft: paddingLeftGrowth,
                     paddingRight: paddingRightGrowth,
                     marginLeft: marginGrowth,
@@ -33,6 +33,7 @@
 <script>
 import { Animated, Easing } from "react-native"
 import { mapGetters, mapActions } from 'vuex'
+import Vue from 'vue-native-core'
 
 export default {    
     props: {
@@ -100,6 +101,10 @@ export default {
         finishedAnimating: {
             type: Function,
             default: () => {},
+        },
+        noExpand: {
+            type: Boolean,
+            default: false,
         }
     },
 
@@ -113,11 +118,17 @@ export default {
             radiusLeftGrowth: new Animated.Value(0),
             radiusRightGrowth: new Animated.Value(0),
             marginGrowth: new Animated.Value(0),
-            hidden: false
+            paddingMod: new Animated.Value(0),
+            hidden: false,
+            animated: Animated,
+            finishedAnimation: false,
+            queuedAnimation: null,
         }
     },
 
     created () {
+        this.paddingMod.setValue(this.paddingSize)
+
         // we assume letters constructing a word are opaque unless specified
         if (!this.transparent && !this.fadeIn) {
             this.opacityGrowth.setValue(1)
@@ -271,12 +282,62 @@ export default {
                 })
             ]).start(this.finishedAnimating)
         },
+        
+        widenLetter () {
+            Vue.nextTick(() => {
+                var time = 300
+                // Animate the letter as we read it, making it inflate
+                Animated.parallel([
+                    Animated.timing(this.paddingMod, {
+                        toValue: this.paddingSize + 20,
+                        duration: time,
+                    }),
+                ]).start(this.finishWiden)
+            })
+        },
+        
+        shrinkLetter (keepManualReading) {
+            shrinkAnimation = () => {
+                Vue.nextTick(() => {
+                    var time = 300
+                    // Animate the letter after we read it, making it deflate
+                    Animated.parallel([
+                        Animated.timing(this.paddingMod, {
+                            toValue: this.paddingSize + 0,
+                            duration: time,
+                        }),
+                    ])
+                    .start(() => { 
+                        if (!keepManualReading) this.setManuallyReading(false)
+                    })
+                })
+            }
+            if (this.finishedAnimation) {
+                this.finishedAnimation = false
+                shrinkAnimation()
+            }
+            else {
+                this.queuedAnimation = shrinkAnimation
+            }
+        },
+
+        finishWiden () {
+            if (this.queuedAnimation) {
+                this.queuedAnimation()
+                this.queuedAnimation = null
+            }
+            else {
+                this.finishedAnimation = true
+            }
+        },
 
         readLetter (callback, unhighlight) {
             this.highlighted = true
+            if (!this.noExpand) this.widenLetter()
             this.afterSpeak({
                 word: this.letter,
                 callback: () => {
+                    if (!this.noExpand) this.shrinkLetter(this.narrating)
                     if (this.narrating) {
                         if (this.unhighlightDuringNarration || unhighlight) {
                           this.highlighted = false
@@ -286,7 +347,6 @@ export default {
                     }
                     else {
                         this.highlighted = false
-                        this.setManuallyReading(false)
                         if (callback) callback()
                         else this.letterPressed(this.letter)
                     }

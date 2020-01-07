@@ -5,8 +5,8 @@
                     maxWidth: maxGrowth,
                     minWidth: minGrowth,
                     minHeight: minGrowth,
-                    paddingTop: paddingGrowth,
-                    paddingBottom: pic ? 0 : paddingGrowth,
+                    paddingTop: animated.add(paddingGrowth, paddingMod),
+                    paddingBottom: pic ? paddingMod : animated.add(paddingGrowth, paddingMod),
                     paddingRight: pic ? 0 : paddingGrowth,
                     paddingLeft: pic ? 0 : paddingGrowth,
                     opacity: opacityGrowth,},
@@ -103,7 +103,9 @@ export default {
             minGrowth: new Animated.Value(0),
             paddingGrowth: new Animated.Value(0),
             opacityGrowth: new Animated.Value(0),
+            paddingMod: new Animated.Value(0),
             stuff: 0,
+            animated: Animated,
         }
     },
 
@@ -172,6 +174,28 @@ export default {
             ]).start(this.finishedAnimating)
         },
         
+        widenWord () {
+            var time = 300
+            // Animate the word as we read it, making it inflate
+            Animated.parallel([
+                Animated.timing(this.paddingMod, {
+                    toValue: 20,
+                    duration: time,
+                }),
+            ]).start()
+        },
+        
+        shrinkWord (callback) {
+            var time = 300
+            // Animate the word after we read it, making it deflate
+            Animated.parallel([
+                Animated.timing(this.paddingMod, {
+                    toValue: 0,
+                    duration: time,
+                }),
+            ]).start(callback)
+        },
+        
         animateOpacity (value) {
             var time = 1000
             // Fade the letter in/out
@@ -232,6 +256,7 @@ export default {
 
         finishReading (callback) {
             if (!this.reading && !this.highlighting) {
+                this.shrinkWord()
                 if (this.unhighlightDuringNarration) {
                     this.clearHighlight()
                 }
@@ -242,9 +267,9 @@ export default {
 
         finishReadingPress (callback) {
             if (!this.reading && !this.highlighting) {
+                this.shrinkWord(() => { this.setManuallyReading(false) })
                 this.normalText = this.highlightedText
                 this.highlightedText = ""
-                this.setManuallyReading(false)
                 if (callback) callback()
                 else this.wordPressed(this.normalText)
             }
@@ -253,6 +278,7 @@ export default {
         readWord (callback) {
             this.reading = true
             this.highlighting = true
+            this.widenWord()
             this.highlightWord(callback)
             this.afterSpeak({
                 word: this.word,

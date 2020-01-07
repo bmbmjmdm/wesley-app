@@ -20,7 +20,8 @@
             :start-split="startSplit"
             :fade-in="fadeIn"
             :disabled="true"
-            :finishedAnimating="finishedAnimating" />
+            :finishedAnimating="finishedAnimating"
+            :noExpand="true" />
     </touchable-opacity>
     <view
         v-else
