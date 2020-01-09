@@ -74,9 +74,11 @@ import trampoline from '../assets/trampoline.jpg';
 import turtle from '../assets/turtle.jpg';
 import vegetables from '../assets/vegetables.jpg';
 import bgDefault from '../assets/bgDefault.jpg';
+import levelUpGif from '../assets/levelUpGif.gif';
 
 export default {
     bgDefault,
+    levelUpGif,
     dog,
     park,
     reading,

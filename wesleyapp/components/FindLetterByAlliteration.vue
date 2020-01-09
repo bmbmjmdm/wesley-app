@@ -12,7 +12,7 @@
                 :narrating="narrating"
                 :setManuallyReading="setManuallyReading"
                 :manuallyReading="manuallyReading"
-                :tutorial="tutorial"
+                :tutorial="false"
                 :fadeAnimations="true"
                 targetWord=""
                 :queuedCallback="queuedCallback" />

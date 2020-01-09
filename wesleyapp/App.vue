@@ -14,7 +14,7 @@
                 :imageStyle="{resizeMode: 'stretch'}"
                 class="full-flex">
                 <SpecialEffects
-                    v-if="showReinforce"
+                    v-if="showGjGif"
                     ref="reinforceSparkles"
                     class="screen-filter"
                 />
@@ -139,6 +139,7 @@ export default {
             bgImageBackName: 'bgDefault',
             bgImageFrontName: 'bgDefault',
             showReinforce: false,
+            showGjGif: false,
             reinforceentence: "",
             gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job", "Wow wow", "Oh yeah"],
             levelUpList: ["Level Up! Woah!", "Level up! Way to go!", "Level up! Amazing!", "Level up! Look at you!"],
@@ -314,12 +315,14 @@ export default {
         },
 
         sayGJ (callback) {
+            this.showGjGif = true
             var ran = Math.floor(Math.random() * this.gjList.length)
             let sentence = this.gjList[ran]
             this.sayReinforcement(sentence, callback)
         },
 
         sayLevelUp (callback) {
+            this.changeBackground("levelUpGif")
             var ran = Math.floor(Math.random() * this.levelUpList.length)
             let sentence = this.levelUpList[ran]
             this.sayReinforcement(sentence, callback)
@@ -345,6 +348,7 @@ export default {
             // prepare the callback for after animation finishes
             this.queuedCallback = () => {
                 this.showReinforce = false
+                this.showGjGif = false
                 this.reinforceCallback()
             }
             Vue.nextTick(() => {
