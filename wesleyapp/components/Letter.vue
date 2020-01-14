@@ -296,7 +296,7 @@ export default {
             })
         },
         
-        shrinkLetter (keepManualReading) {
+        shrinkLetter (keepManualReading, shouldUnhighlight) {
             shrinkAnimation = () => {
                 Vue.nextTick(() => {
                     var time = 300
@@ -309,6 +309,7 @@ export default {
                     ])
                     .start(() => { 
                         if (!keepManualReading) this.setManuallyReading(false)
+                        if (shouldUnhighlight) this.highlighted = false
                     })
                 })
             }
@@ -337,19 +338,26 @@ export default {
             this.afterSpeak({
                 word: this.letter,
                 callback: () => {
-                    if (!this.noExpand) this.shrinkLetter(this.narrating)
+                    let shouldUnhighlight = false
                     if (this.narrating) {
                         if (this.unhighlightDuringNarration || unhighlight) {
-                          this.highlighted = false
+                          shouldUnhighlight = true
+                          if (this.noExpand) {
+                            this.highlighted = false
+                          }
                         }
                         if (callback) callback()
                         else this.continueSequence()
                     }
                     else {
-                        this.highlighted = false
+                        shouldUnhighlight = true
+                        if (this.noExpand) {
+                          this.highlighted = false
+                        }
                         if (callback) callback()
                         else this.letterPressed(this.letter)
                     }
+                    if (!this.noExpand) this.shrinkLetter(this.narrating, shouldUnhighlight)
                 }
             })
         },

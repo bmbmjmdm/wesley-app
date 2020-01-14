@@ -256,9 +256,19 @@ export default {
 
         finishReading (callback) {
             if (!this.reading && !this.highlighting) {
-                this.shrinkWord()
+                this.shrinkWord(() => {
+                  if (this.unhighlightDuringNarration) {
+                      if (this.narrating) {
+                          this.normalText = this.highlightedText
+                          this.highlightedText = ""
+                      }
+                  }
+                })
                 if (this.unhighlightDuringNarration) {
-                    this.clearHighlight()
+                    this.highlighting = false
+                    if (!this.narrating) {
+                        this.finishReadingPress(callback)
+                    }
                 }
                 if (callback) callback()
                 else this.continueSentence()
@@ -267,11 +277,13 @@ export default {
 
         finishReadingPress (callback) {
             if (!this.reading && !this.highlighting) {
-                this.shrinkWord(() => { this.setManuallyReading(false) })
-                this.normalText = this.highlightedText
-                this.highlightedText = ""
+                this.shrinkWord(() => { 
+                  this.setManuallyReading(false)
+                  this.normalText = this.highlightedText
+                  this.highlightedText = ""
+                })
                 if (callback) callback()
-                else this.wordPressed(this.normalText)
+                else this.wordPressed(this.word)
             }
         },
 
