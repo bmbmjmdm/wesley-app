@@ -46,7 +46,7 @@ export default {
             type: Function,
             required: true
         },
-        changeBackground: {
+        defaultBackground: {
             type: Function,
             required: true
         },
@@ -140,6 +140,8 @@ export default {
             }
             // still in this activity, go on to next list
             else {
+                // incase the background changed during a level up, reset it
+                this.defaultBackground()
                 this.correctOnFirstTry = true
                 // disable interaction
                 this.manuallyReading = true

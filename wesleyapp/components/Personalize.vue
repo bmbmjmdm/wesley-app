@@ -1,5 +1,47 @@
 <template>
     <view class="container">
+        <modal
+            animationType="fade"
+            :transparent="true"
+            :visible="showModal"
+            :onRequestClose="() => {}">
+            <touchable-opacity
+                :class="'full-flex modal-background'"
+                :activeOpacity="1"
+                :onPress="modalCancel">
+                <touchable-opacity
+                    class="bottom-menu"
+                    :activeOpacity="1"
+                    :onPress="() => {}">
+                    <touchable-opacity
+                        :onPress="modalSelectNew"
+                        :style="{marginBottom: paddingSize*1.5}">
+                        <text
+                            class="link-text"
+                            :style="{fontSize: fontSize / 1.5}">
+                            Select new pic
+                        </text>
+                    </touchable-opacity>
+                    <touchable-opacity
+                        :onPress="modalRestoreDefault"
+                        :style="{marginBottom: paddingSize*1.5}">
+                        <text
+                            class="link-text"
+                            :style="{fontSize: fontSize / 1.5}">
+                            Restore default pic
+                        </text>
+                    </touchable-opacity>
+                    <touchable-opacity :onPress="modalCancel">
+                        <text
+                            class="link-text"
+                            :style="{fontSize: fontSize / 1.5}">
+                            Cancel
+                        </text>
+                    </touchable-opacity>
+                </touchable-opacity>
+            </touchable-opacity>
+        </modal>
+    
         <touchable-opacity
             :onPress="() => setActivity({name: 'home'})"
             class="blue-box my-3"
@@ -33,7 +75,7 @@
             <view class="grid-list">
                 <touchable-opacity
                     v-for="word in filteredWords"
-                    :onPress="() => changeWord(word)"
+                    :onPress="() => clickWord(word)"
                     class="m-2">
                     <view
                         :style="[{paddingTop: paddingSize,
@@ -71,6 +113,8 @@ export default {
         return {
             filterText: "",
             saidPrompt: 0,
+            showModal: false,
+            modalWord: "",
         }
     },
 
@@ -90,11 +134,22 @@ export default {
             'fontSizeSmall',
             'fontSize',
             'sizeFactor',
-            'getPictureNames'
+            'getPictureNames',
+            'hasUserPicture',
         ]),
     },
 
     methods: {
+        clickWord (word) {
+            if (this.hasUserPicture(word)) {
+                this.modalWord = word
+                this.showModal = true
+            }
+            else {
+                this.changeWord(word)
+            }
+        },
+
         changeWord (word) {
             if(this.saidPrompt < 2) {
                 this.afterSpeak({word: 'Select a picture for ' + word, callback: () => {}})
@@ -131,13 +186,30 @@ export default {
             })
         },
 
+        modalSelectNew () {
+            this.showModal = false
+            this.changeWord(this.modalWord)
+        },
+
+        modalRestoreDefault () {
+            this.showModal = false
+            this.invalidatePicture(this.modalWord)
+            setTimeout(() => this.changeBackground(this.modalWord), 250)
+        },
+
+        modalCancel () {
+            this.showModal = false
+            this.changeBackground(this.modalWord)
+        },
+
         ...mapMutations([
             'setActivity',
         ]),
 
         ...mapActions([
             'savePicture',
-            'afterSpeak'
+            'afterSpeak',
+            'invalidatePicture'
         ]),
     },
 }
@@ -186,5 +258,27 @@ export default {
 
     .m-2 {
         margin: 10
+    }
+
+    .full-flex {
+        flex: 1;
+    }
+    
+    .modal-background {
+        background-color:'rgba(0,0,0,0.3)';
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-end;
+    }
+
+    .bottom-menu {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 25px;
+        width: 100%;
+        background-color:'rgb(255,255,255)';
     }
 </style>

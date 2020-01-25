@@ -27,7 +27,12 @@
         <touchable-opacity
             class="mt-4 white-box"
             :style="[{padding: paddingSizeSmall}, roundBox]"
-            :onPress="() => setActivity({name: 'personalize'})">
+            :onPress="viewPersonalize">
+            <ActivityIndicator
+                v-if="loading"
+                size="large"
+                class="overlay"
+            />
             <text 
                 :style="{fontSize: fontSizeSmall}"
                 class="link-text">
@@ -39,13 +44,24 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import Vue from 'vue-native-core'
+import { ActivityIndicator } from 'react-native'
 
 export default {
+    components: {
+        ActivityIndicator
+    },
     props: {
         randomActivity: {
             type: Function,
             required: true
         }
+    },
+
+    data () {
+      return {
+        loading: false
+      }
     },
 
     computed: {
@@ -58,6 +74,16 @@ export default {
         ])
     },
     methods: {
+        // dont know why nextTick isn't enough, but we need the setTimeout to make the loading indicator appear
+        viewPersonalize () {
+            this.loading = true
+            setTimeout(() => {
+                Vue.nextTick(() => {
+                    this.setActivity({name: 'personalize'})
+                })
+            }, 10)
+        },
+
         ...mapMutations([
             'setActivity'
         ])
@@ -97,5 +123,9 @@ export default {
 
     .white-box {
         background-color: 'rgb(255, 255, 255)';
+    }
+
+    .overlay {
+        position: absolute
     }
 </style>

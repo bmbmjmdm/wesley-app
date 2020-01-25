@@ -41,7 +41,7 @@ export default {
             type: Function,
             required: true
         },
-        changeBackground: {
+        defaultBackground: {
             type: Function,
             required: true
         },
@@ -121,6 +121,8 @@ export default {
             }
             // still in this activity, go on to next word
             else {
+                // incase the background changed during a level up, reset it
+                this.defaultBackground()
                 this.correctOnFirstTry = true
                 // disable interaction
                 this.manuallyReading = true
@@ -131,13 +133,12 @@ export default {
                 this.showTarget = false
                 // move on to next word grid/target word
                 this.curWords = this.getNextWord()
-                // show image and change background
-                this.fadeNewBackground()
+                // show/read target word and begin animations
+                this.startTargetWord()
             }
         },
 
-        fadeNewBackground () {
-            // no new background for this activity, moving 
+        startTargetWord () {
             // prepare the callback for after animation finishes
             this.queuedCallback = () => {
                 // speak and highlight the word

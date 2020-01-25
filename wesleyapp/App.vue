@@ -4,15 +4,15 @@
         :source="bgImageBack.source"
         :onError="() => invalidatePicture(bgImageBack.name)"
         :imageStyle="{resizeMode: 'stretch'}"
-        class="full-flex">
+        :class="'full-flex'">
         <animated:view
             :style="{opacity: backgroundOpacity}"
-            class="full-flex">
+            :class="'full-flex'">
             <ImageBackground
                 :source="bgImageFront.source"
                 :onError="() => invalidatePicture(bgImageFront.name)"
                 :imageStyle="{resizeMode: 'stretch'}"
-                class="full-flex">
+                :class="'full-flex'">
                 <SpecialEffects
                     v-if="showGjGif"
                     ref="reinforceSparkles"
@@ -56,7 +56,7 @@
                 <FindWordByPicture
                     v-else-if="curActivity.name === 'findWordByPicture'"
                     :random-activity="randomActivity"
-                    :change-background="changeBackground"
+                    :default-background="defaultBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                     :sayLevelUp="sayLevelUp"
@@ -64,7 +64,7 @@
                 <FindWordByLetter
                     v-else-if="curActivity.name === 'findWordByLetter'"
                     :random-activity="randomActivity"
-                    :change-background="changeBackground"
+                    :default-background="defaultBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                     :sayLevelUp="sayLevelUp"
@@ -88,7 +88,7 @@
                 <FindLetterByAlliteration
                     v-else-if="curActivity.name === 'findLetterByAlliteration'"
                     :random-activity="randomActivity"
-                    :change-background="changeBackground"
+                    :default-background="defaultBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                     :sayLevelUp="sayLevelUp"
@@ -260,7 +260,12 @@ export default {
         },
 
         defaultBackground (callback) {
-            this.changeBackground('bgDefault', callback)
+            if (!(this.bgImageBackName === 'bgDefault' && this.bgImageFrontName === 'bgDefault')) {
+                this.changeBackground('bgDefault', callback)
+            }
+            else {
+                if (callback) callback()
+            }
         },
 
         needsDefaultBackground (activity) {

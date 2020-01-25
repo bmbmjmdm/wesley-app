@@ -89,6 +89,7 @@ export default new Vuex.Store({
             }
             return userPics
         },
+        hasUserPicture: state => (word) => state.pictures[word].user,
         getPictureNames: state => Object.keys(state.pictures),
         highlightSpeed: state => state.highlightSpeed,
         textToSpeech: state => state.textToSpeech,
