@@ -87,9 +87,10 @@ export default {
     },
 
     computed: {
-        // we show target word on easy/medium
+        // currently we show the target word on all difficulties
         shouldShowTargetWord () {
-            return this.difficultyReading < difficulty.HARD
+            //return this.difficultyReading < difficulty.HARD
+            return true
         },
         // we read target word on easy
         shouldReadTargetWord () {

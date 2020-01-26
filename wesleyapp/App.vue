@@ -290,7 +290,7 @@ export default {
         canPlay (activity) {
             switch(activity.name) {
             case 'speakWord':
-                return this.difficultyReading > difficulty.EASY
+                return this.difficultyReading > difficulty.VERY_EASY
             default:
                 return true
             } 
