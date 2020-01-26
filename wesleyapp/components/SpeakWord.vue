@@ -7,11 +7,12 @@
                 :key="curWord.targetWord"
                 :word="curWord.targetWord"
                 :wordPressed="() => {}"
-                :setManuallyReading="setManuallyReading"
-                :manuallyReading="manuallyReading"
+                :setManuallyReading="() => {}"
+                :manuallyReading="true"
                 :narrating="false"
                 :continueSentence="()=>{}"
-                :finishedAnimating="queuedCallback" />
+                :finishedAnimating="queuedCallback"
+                :skipShrink="!narrating" />
         </view>
         <animated:image
             v-if="showMic"
@@ -263,6 +264,7 @@ export default {
                 word: prompt,
                 callback: () => {
                     this.narrating = false
+                    this.$refs.targetWordRef.startHighlightRepeating()
                     this.manuallyReading = false
                     AudioRecorder.startRecording()
                     setTimeout(this.stopRecording, 5000)
@@ -279,6 +281,7 @@ export default {
 
         // The recording time is done, stop recording and either re-prompt the user or move on to the next word
         finishRecording () {
+            this.$refs.targetWordRef.stopHighlightRepeating()
             if (this.hasAudio) {
                 // set this to prevent the user from pressing buttons during transition
                 this.narrating = true

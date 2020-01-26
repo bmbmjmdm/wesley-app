@@ -90,6 +90,10 @@ export default {
         finishedAnimating: {
             type: Function,
             default: () => {},
+        },
+        skipShrink: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -104,7 +108,6 @@ export default {
             paddingGrowth: new Animated.Value(0),
             opacityGrowth: new Animated.Value(0),
             paddingMod: new Animated.Value(0),
-            stuff: 0,
             animated: Animated,
         }
     },
@@ -249,21 +252,23 @@ export default {
                 this.finishReadingPress(callback)
             }
             else {
-                this.normalText = this.highlightedText
+                this.normalText = this.word
                 this.highlightedText = ""
             }
         },
 
         finishReading (callback) {
             if (!this.reading && !this.highlighting) {
-                this.shrinkWord(() => {
-                  if (this.unhighlightDuringNarration) {
-                      if (this.narrating) {
-                          this.normalText = this.highlightedText
-                          this.highlightedText = ""
-                      }
-                  }
-                })
+                if (!this.skipShrink) {
+                    this.shrinkWord(() => {
+                        if (this.unhighlightDuringNarration) {
+                            if (this.narrating) {
+                                this.normalText = this.word
+                                this.highlightedText = ""
+                            }
+                        }
+                    })
+                }
                 if (this.unhighlightDuringNarration) {
                     this.highlighting = false
                     if (!this.narrating) {
@@ -277,11 +282,13 @@ export default {
 
         finishReadingPress (callback) {
             if (!this.reading && !this.highlighting) {
-                this.shrinkWord(() => { 
-                  this.setManuallyReading(false)
-                  this.normalText = this.highlightedText
-                  this.highlightedText = ""
-                })
+                if (!this.skipShrink) {
+                    this.shrinkWord(() => { 
+                        this.setManuallyReading(false)
+                        this.normalText = this.word
+                        this.highlightedText = ""
+                    })
+                }
                 if (callback) callback()
                 else this.wordPressed(this.word)
             }
@@ -311,6 +318,25 @@ export default {
                 this.setManuallyReading(true)
                 this.readWord()
             }
+        },
+
+        startHighlightRepeating () {
+            this.highlightRepeatingOn = true
+            this.highlightRepeating()
+        },
+
+        highlightRepeating () {
+            setTimeout(() => {
+                this.normalText = this.word
+                this.highlightedText = ""
+                if (this.highlightRepeatingOn) {
+                    this.highlightWord(this.highlightRepeating)
+                }
+            }, 250)
+        },
+
+        stopHighlightRepeating () {
+            this.highlightRepeatingOn = false
         }
     }
 
