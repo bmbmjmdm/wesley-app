@@ -76,7 +76,7 @@ export default new Vuex.Store({
             name: 'home',
             topic: '',
         },
-
+        showIntro: true,
     },
     getters: {
         getPicture: state => name => state.pictures[name],
@@ -107,6 +107,7 @@ export default new Vuex.Store({
         previousWord: state => state.previousWord,
         allowedTopics: state => state.allowedTopics,
         curActivity: state => state.curActivity,
+        showIntro: state => state.showIntro,
         // used for saving app
         getUserData: state => {
             return {
@@ -114,7 +115,8 @@ export default new Vuex.Store({
                 difficultyReading: state.difficultyReading,
                 difficultySpelling: state.difficultySpelling,
                 allowAutoAdjust: state.allowAutoAdjust,
-                allowedTopics: state.allowedTopics
+                allowedTopics: state.allowedTopics,
+                showIntro: state.showIntro
             }
         },
 
@@ -174,6 +176,7 @@ export default new Vuex.Store({
             Vue.set(state, 'difficultyReading', data.difficultyReading)
             Vue.set(state, 'allowedTopics', data.allowedTopics)
             Vue.set(state, 'allowAutoAdjust', data.allowAutoAdjust)
+            Vue.set(state, 'showIntro', data.showIntro)
         },
 
         setActivity(state, activity) {
@@ -195,6 +198,10 @@ export default new Vuex.Store({
         },
         setAllowedTopics(state, value) {
             Vue.set(state, 'allowedTopics', value)
+        },
+
+        finishIntro(state) {
+            Vue.set(state, 'showIntro', false)
         },
 
     },
