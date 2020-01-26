@@ -108,8 +108,8 @@ export default {
             narrating: false,
             curWord: {targetWord: ""},
             manuallyReading: false,
-            tutorial1: true,
-            tutorial2: true,
+            tutorial1: false,
+            tutorial2: false,
             showWord: false,
             showLetters: false,
             firstWord: true,
@@ -123,6 +123,10 @@ export default {
     },
 
     mounted () {
+        if (this.difficultySpelling < difficulty.HARD) {
+            this.tutorial1 = true
+            this.tutorial2 = true
+        }
         this.getNext()
     },
 

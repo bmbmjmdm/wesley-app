@@ -75,7 +75,7 @@ export default {
             curList: {allWords: [], targetWord: ""},
             manuallyReading: false,
             firstReading: true,
-            tutorial: true,
+            tutorial: false,
             showList: false,
             showLetter: false,
             firstList: true,
@@ -87,6 +87,9 @@ export default {
     },
 
     mounted () {
+        if (this.difficultySpelling < difficulty.HARD) {
+            this.tutorial = true
+        }
         this.getNext()
     },
 

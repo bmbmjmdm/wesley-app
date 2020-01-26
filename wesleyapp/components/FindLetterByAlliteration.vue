@@ -81,7 +81,7 @@ export default {
             narrating: false,
             curSentence: {alliteration: "", targetWord: ""},
             manuallyReading: false,
-            tutorial: true,
+            tutorial: false,
             showLetters: false,
             showSentence: false,
             firstSentence: true,
@@ -94,6 +94,9 @@ export default {
     },
 
     mounted () {
+        if (this.difficultySpelling < difficulty.HARD) {
+            this.tutorial = true
+        }
         this.getNext()
     },
 

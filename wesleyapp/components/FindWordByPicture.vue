@@ -70,7 +70,7 @@ export default {
             curWords: {targetWord: "", allWords: [{targetWord: ""}, {targetWord: ""}, {targetWord: ""}, {targetWord: ""}] },
             manuallyReading: false,
             firstReading: true,
-            tutorial: true,
+            tutorial: false,
             showGrid: false,
             showTarget: false,
             wordsFound: 0,
@@ -82,6 +82,9 @@ export default {
     },
 
     mounted () {
+        if (this.difficultyReading < difficulty.HARD) {
+            this.tutorial = true
+        }
         this.getNext()
     },
 

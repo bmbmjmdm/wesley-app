@@ -70,7 +70,7 @@ export default {
             curSentence: {sentence: "", targetWord: ""},
             manuallyReading: false,
             firstReading: true,
-            tutorial: true,
+            tutorial: false,
             showSentence: false,
             showWord: false,
             firstSentence: true,
@@ -82,6 +82,9 @@ export default {
     },
 
     mounted () {
+        if (this.difficultyReading < difficulty.HARD) {
+            this.tutorial = true
+        }
         this.getNext()
     },
 
