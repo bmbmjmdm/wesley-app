@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.LaPlanteApps.wesley</string>
+	<string>org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -41,6 +41,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSAppTransportSecurity</key>
+	<!--See http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/ -->
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
@@ -51,13 +52,5 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app allows users to records speech for self improvement</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app allows users to customize content with their own photos</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>This app allows users to customize content with their own photos</string>
-	<key>NSCameraUsageDescription</key>
-	<string>This app allows users to customize content with their own photos</string>
 </dict>
 </plist>
