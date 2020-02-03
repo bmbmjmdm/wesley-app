@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)</string>
+	<string>>com.LaPlanteApps.wesley/string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -52,5 +52,13 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app allows users to records speech for self improvement</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app allows users to customize content with their own photos</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app allows users to customize content with their own photos</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app allows users to customize content with their own photos</string>
 </dict>
 </plist>

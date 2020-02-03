@@ -3,28 +3,31 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
     "test": "jest"
   },
   "dependencies": {
     "@babel/runtime": "^7.7.7",
-    "react": "16.3.1",
-    "react-native": "0.55.4",
-    "stacktrace-parser": "0.1.4",
+    "react": "16.11.0",
+    "react-native": "0.62.0-rc.1",
     "react-native-audio": "^4.3.0",
     "react-native-image-picker": "^1.1.0",
     "react-native-sound": "^0.11.0",
     "react-native-tts": "^3.0.0",
     "vue-native-core": "0.0.8",
     "vue-native-helper": "0.0.11",
-    "vuex": "^3.1.1",
-    "uglify-es": "3.1.8"
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
-    "babel-jest": "24.8.0",
-    "babel-preset-react-native": "4.0.1",
-    "jest": "24.8.0",
-    "react-test-renderer": "16.3.1",
+    "@babel/core": "^7.6.2",
+    "@babel/runtime": "^7.6.2",
+    "@react-native-community/eslint-config": "^0.0.5",
+    "babel-jest": "^24.9.0",
+    "jest": "^24.9.0",
+    "metro-react-native-babel-preset": "^0.56.0",
+    "react-test-renderer": "16.11.0",
     "vue-native-scripts": "0.0.16"
   },
   "jest": {
