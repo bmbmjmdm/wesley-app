@@ -70,6 +70,7 @@ export default {
                 Animated.timing(this.opacityGrowth, {
                     toValue: value,
                     duration: time,
+                    useNativeDriver: false,
                 })
             ]).start()
         },

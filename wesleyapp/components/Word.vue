@@ -169,10 +169,12 @@ export default {
                 Animated.timing(this.maxGrowth, {
                     toValue: max,
                     duration: time,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.paddingGrowth, {
                     toValue: padding,
                     duration: time,
+                    useNativeDriver: false,
                 })
             ]).start(this.finishedAnimating)
         },
@@ -184,6 +186,7 @@ export default {
                 Animated.timing(this.paddingMod, {
                     toValue: 20,
                     duration: time,
+                    useNativeDriver: false,
                 }),
             ]).start()
         },
@@ -195,6 +198,7 @@ export default {
                 Animated.timing(this.paddingMod, {
                     toValue: 0,
                     duration: time,
+                    useNativeDriver: false,
                 }),
             ]).start(callback)
         },
@@ -206,6 +210,7 @@ export default {
                 Animated.timing(this.opacityGrowth, {
                     toValue: value,
                     duration: time,
+                    useNativeDriver: false,
                 })
             ]).start(this.finishedAnimating)
         },

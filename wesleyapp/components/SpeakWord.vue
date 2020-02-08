@@ -346,6 +346,7 @@ export default {
                 Animated.timing(this.maxGrowth, {
                     toValue: max,
                     duration: 500,
+                    useNativeDriver: false,
                 }),
             ]).start(callback)
         },

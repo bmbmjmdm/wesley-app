@@ -188,6 +188,7 @@ export default {
                 Animated.timing(this.opacityGrowth, {
                     toValue: value,
                     duration: time,
+                    useNativeDriver: false,
                 })
             ]).start(this.finishedAnimating)
         },
@@ -205,27 +206,32 @@ export default {
                 Animated.timing(this.paddingLeftGrowth, {
                     toValue: this.paddingSize,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.paddingRightGrowth, {
                     toValue: this.paddingSize,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.radiusLeftGrowth, {
                     toValue: this.radiusSize,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.radiusRightGrowth, {
                     toValue: this.radiusSize,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.marginGrowth, {
                     toValue: 10,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 })
             ]).start(this.finishedAnimating)
         },
@@ -258,27 +264,32 @@ export default {
                 Animated.timing(this.paddingLeftGrowth, {
                     toValue: paddingLeft,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.paddingRightGrowth, {
                     toValue: paddingRight,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.radiusLeftGrowth, {
                     toValue: radiusLeft,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.radiusRightGrowth, {
                     toValue: radiusRight,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 }),
                 Animated.timing(this.marginGrowth, {
                     toValue: 0,
                     duration: time,
-                    easing: Easing.linear
+                    easing: Easing.linear,
+                    useNativeDriver: false,
                 })
             ]).start(this.finishedAnimating)
         },
@@ -291,6 +302,7 @@ export default {
                     Animated.timing(this.paddingMod, {
                         toValue: this.paddingSize + 20,
                         duration: time,
+                        useNativeDriver: false,
                     }),
                 ]).start(this.finishWiden)
             })
@@ -305,6 +317,7 @@ export default {
                         Animated.timing(this.paddingMod, {
                             toValue: this.paddingSize + 0,
                             duration: time,
+                            useNativeDriver: false,
                         }),
                     ])
                     .start(() => { 

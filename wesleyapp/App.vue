@@ -253,6 +253,7 @@ export default {
             Animated.timing(this.backgroundOpacity, {
                 toValue: 1,
                 duration: 600,
+                useNativeDriver: false,
             }).start(() => {
                 this.bgImageBackName = newImageName
                 if (callback) callback()
