@@ -214,8 +214,8 @@ export default {
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
                 activityList.push({name: 'spellWord', topic: 'Spelling', changeChance: 0})
-                activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.15})
-                activityList.push({name: 'findLetterByAlliteration', topic: 'Spelling', changeChance: 0.3})
+                activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.2})
+                activityList.push({name: 'findLetterByAlliteration', topic: 'Spelling', changeChance: 0.2})
             }
             if (this.allowedTopics.includes('reading')) {
                 activityList.push({name: 'findWordByPicture', topic: 'Reading', changeChance: 0})
@@ -359,7 +359,9 @@ export default {
             }
             Vue.nextTick(() => {
                 // we dont bother checking to make sure both finish because the sparkles dont matter too much
-                this.$refs.reinforceSparkles.animateOut()
+                if (this.showGjGif) {
+                    this.$refs.reinforceSparkles.animateOut()
+                }
                 this.$refs.reinforceSentence.animateOut()
             })
         },

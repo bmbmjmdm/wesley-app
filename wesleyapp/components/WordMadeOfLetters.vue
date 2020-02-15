@@ -153,19 +153,20 @@ export default {
             'afterSpeak'
         ]),
 
-        readLetters () {
+        readLetters (forceHighlight) {
             this.readThisMany = this.letters.length
-            this.continueReadLetters()
+            this.continueReadLetters(forceHighlight)
         },
 
+        // forceHighlight is for findWordByLetter, so the first letter that is about to be unhighlighted gets relit
         // Hey dale, this is wierd TODO=========================================
         // the v-for apparently retains all old references, so we are currently
         // counting cumulatively, but this is bad because it'll make the logic way more
         // complicated and may cause poor performance
-        continueReadLetters () {
+        continueReadLetters (forceHighlight = false) {
             // recursive call to highlight each letter in turn
             if (this.readThisMany > 0) {
-                this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].readLetter()
+                this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].readLetter(null, null, forceHighlight)
                 this.readThisMany--
             }
             // cleanup

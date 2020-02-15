@@ -128,7 +128,8 @@ export default {
         ]),
         ...mapActions([
             'afterSpeak',
-            'updateData'
+            'updateData',
+            'finishLevelUp'
         ]),
 
         // Move on to the next list/target word. This does the following in order:
@@ -136,7 +137,9 @@ export default {
         // Loads the new image and sets it as the background
         // Reads the new letter hint (and displays it if in easy mode)
         // Displays the new list (and reads it if in easy/normal mode)
-        getNext () {
+        async getNext () {
+            this.queuedCallback = null
+            await this.finishLevelUp()
             // after 4 lists are read, go on to next activity
             if (this.listsRead >= 4) {
                 this.randomActivity()
@@ -238,7 +241,7 @@ export default {
                 this.narrating = true
                 this.manuallyReading = true
                 this.queuedCallback = this.doneSpelling
-                Vue.nextTick(() => this.$refs.listRef.readLettersOfWord(index))
+                Vue.nextTick(() => this.$refs.listRef.readLettersOfWord(index, true))
             }
             else {
                 this.correctOnFirstTry = false

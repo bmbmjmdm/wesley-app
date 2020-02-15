@@ -110,7 +110,8 @@ export default {
         ]),
         ...mapActions([
             'afterSpeak',
-            'updateData'
+            'updateData',
+            'finishLevelUp'
         ]),
 
         // Move on to the next sentence/target word. This does the following in order:
@@ -118,7 +119,9 @@ export default {
         // Loads the new image and sets it as the background
         // Reads the new target word (and displays it if in easy mode)
         // Displays the new sentence (and reads it if in easy/normal mode)
-        getNext () {
+        async getNext () {
+            this.queuedCallback = null
+            await this.finishLevelUp()
             // after 4 sentences are read, go on to next activity
             if (this.sentencesRead >= 4) {
                 this.randomActivity()

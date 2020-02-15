@@ -144,14 +144,17 @@ export default {
         ]),
         ...mapActions([
             'afterSpeak',
-            'updateData'
+            'updateData',
+            'finishLevelUp'
         ]),
 
         // Move on to the next sentence/letter. This does the following in order:
         // Animates out the current letter options (and example sentence if on easy/medium mode)
         // Displays the new sentence if on easy/medium (and reads it if on easy/hard)
         // Displays the letter options
-        getNext () {
+        async getNext () {
+            this.queuedCallback = null
+            await this.finishLevelUp()
             // after 4 sentences are read, go on to next activity
             if (this.sentencesRead >= 4) {
                 this.randomActivity()

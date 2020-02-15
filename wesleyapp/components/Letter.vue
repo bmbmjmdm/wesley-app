@@ -123,6 +123,7 @@ export default {
             animated: Animated,
             finishedAnimation: false,
             queuedAnimation: null,
+            forceHighlight: false
         }
     },
 
@@ -322,7 +323,7 @@ export default {
                     ])
                     .start(() => { 
                         if (!keepManualReading) this.setManuallyReading(false)
-                        if (shouldUnhighlight) this.highlighted = false
+                        if (shouldUnhighlight && !this.forceHighlight) this.highlighted = false
                     })
                 })
             }
@@ -345,7 +346,8 @@ export default {
             }
         },
 
-        readLetter (callback, unhighlight) {
+        readLetter (callback, unhighlight, forceHighlight) {
+            if (forceHighlight) this.forceHighlight = true
             this.highlighted = true
             if (!this.noExpand) this.widenLetter()
             this.afterSpeak({
@@ -361,6 +363,7 @@ export default {
                         }
                         if (callback) callback()
                         else this.continueSequence()
+                        this.forceHighlight = false
                     }
                     else {
                         shouldUnhighlight = true
@@ -371,6 +374,7 @@ export default {
                         else this.letterPressed(this.letter)
                     }
                     if (!this.noExpand) this.shrinkLetter(this.narrating, shouldUnhighlight)
+                    this.forceHighlight = false
                 }
             })
         },

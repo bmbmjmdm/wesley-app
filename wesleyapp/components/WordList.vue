@@ -131,9 +131,9 @@ export default {
             }
         },
 
-        readLettersOfWord(index) {
+        readLettersOfWord(index, forceHighlight) {
             this.finishedAnimatingCount = 0
-            this.$refs.wordRef[this.$refs.wordRef.length-(this.list.length-index)].readLetters()
+            this.$refs.wordRef[this.$refs.wordRef.length-(this.list.length-index)].readLetters(forceHighlight)
         },
     }
 

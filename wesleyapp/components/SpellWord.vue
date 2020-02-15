@@ -158,7 +158,8 @@ export default {
         ]),
         ...mapActions([
             'afterSpeak',
-            'updateData'
+            'updateData',
+            'finishLevelUp'
         ]),
 
         // Move on to the next word to spell. This does the following in order:
@@ -167,7 +168,9 @@ export default {
             // Reads the new target word (and displays it if in easy/medium mode)
             // Splits up the word into letters and reads each of them (if in easy mode)
             // Animates in the letter options
-        getNext () {
+        async getNext () {
+            this.queuedCallback = null
+            await this.finishLevelUp()
             // after 4 sentences are read, go on to next activity
             if (this.wordsSpelt >= 2) {
                 this.randomActivity()

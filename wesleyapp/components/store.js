@@ -77,6 +77,7 @@ export default new Vuex.Store({
             topic: '',
         },
         showIntro: true,
+        adjustLevel: 0,
     },
     getters: {
         getPicture: state => name => state.pictures[name],
@@ -226,7 +227,8 @@ export default new Vuex.Store({
         },
 
         // right is a boolean
-        // REMEMBER this can update difficulty, do not call if you haven't cleaned up the screen yet
+        // this does not actually adjust the level. It used to, but now it just tells if you the level WILL increase
+        // to complete the level up/down, call finishLevelUp
         updateData({ state }, { word, right, multiplier = 1 }) {
             let levelUp = false
 
@@ -259,15 +261,26 @@ export default new Vuex.Store({
             if (state.allowAutoAdjust) {
                 if (state[rightStreek] >= 4) {
                     Vue.set(state, rightStreek, 0)
-                    increaseDifficulty(state)
+                    state.adjustLevel = 1
                     levelUp = true
                 }
                 else if (state[wrongStreek] >= 4) {
                     Vue.set(state, wrongStreek, 0)
-                    decreaseDifficulty(state)
+                    state.adjustLevel = -1
                 }
             }
             return levelUp
+        },
+
+        finishLevelUp ({ state }) {
+            if (state.adjustLevel > 0) {
+                state.adjustLevel = 0
+                increaseDifficulty(state)
+            }
+            else if (state.adjustLevel < 0) {
+                state.adjustLevel = 0
+                decreaseDifficulty(state)
+            }
         },
 
         // slightly dangerous, we dont wait here to save. should be fine as long as we dont try to save two very fast

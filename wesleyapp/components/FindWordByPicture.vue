@@ -110,14 +110,17 @@ export default {
         ]),
         ...mapActions([
             'afterSpeak',
-            'updateData'
+            'updateData',
+            'finishLevelUp'
         ]),
         
         // Move on to the next target word. This does the following in order:
         // Animates out the current words/pictures (and target word if on easy mode)
         // Reads the new target word (and displays it if in easy mode)
         // Displays the new words/pictures (and reads them if on normal/easy)
-        getNext () {
+        async getNext () {
+            this.queuedCallback = null
+            await this.finishLevelUp()
             // after 4 words are found, go on to next activity
             if (this.wordsFound >= 4) {
                 this.randomActivity()

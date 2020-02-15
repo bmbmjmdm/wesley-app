@@ -118,7 +118,8 @@ export default {
 
     methods: {
         ...mapActions([
-            'afterSpeak'
+            'afterSpeak',
+            'finishLevelUp'
         ]),
 
         // Move on to the next target word. This does the following in order:
@@ -126,7 +127,9 @@ export default {
         // Loads the new image and sets it as the background
         // Displays the new target word if on easy/medium and reads it if on easy
         // Prompts the user to begin speaking
-        getNext () {
+        async getNext () {
+            this.queuedCallback = null
+            await this.finishLevelUp()
             // after 4 words spoken, go on to next activity
             if (this.wordsSpoken >= 4) {
                 this.randomActivity()
