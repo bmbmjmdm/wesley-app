@@ -21,7 +21,8 @@
             :fade-in="fadeIn"
             :disabled="true"
             :finishedAnimating="finishedAnimating"
-            :noExpand="true" />
+            :noExpand="true"
+            :joinEntrance="joinEntrance" />
     </touchable-opacity>
     <view
         v-else
@@ -42,12 +43,14 @@
             :transparent="transparent"
             :start-split="startSplit"
             :fade-in="fadeIn"
-            :finishedAnimating="finishedAnimating" />
+            :finishedAnimating="finishedAnimating"
+            :joinEntrance="joinEntrance" />
     </view>
 </template>
 
 <script>
 import Letter from './Letter'
+import { Animated } from "react-native"
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -123,6 +126,10 @@ export default {
         queuedCallback: {
             type: Function,
             default: () => {},
+        },
+        joinEntrance: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -182,28 +189,38 @@ export default {
 
         animateOut () {
             this.readThisMany = this.letters.length
+            let animationList = []
             while (this.readThisMany > 0) {
-                this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].animateOut()
+                animationList = animationList.concat(this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].animateOut(true))
                 this.readThisMany--
             }
+            Animated.parallel(animationList).start(this.queuedCallback)
         },
 
         splitLetters () {
             this.finishedAnimatingCount = 0
             this.readThisMany = this.letters.length
+            let animationList = []
             while (this.readThisMany > 0) {
-                this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].becomeSeperated()
+                animationList = animationList.concat(this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].becomeSeperated(true))
                 this.readThisMany--
             }
+            Animated.parallel(animationList).start(this.queuedCallback)
         },
 
-        joinLetters () {
+        joinLetters (animateOpacity = false, returnList = false) {
             this.finishedAnimatingCount = 0
             this.readThisMany = this.letters.length
+            let animationList = []
             while (this.readThisMany > 0) {
-                this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].reverseSeperation()
+                animationList = animationList.concat(this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].reverseSeperation(true))
+                if (animateOpacity) {
+                    animationList = animationList.concat(this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].animateOpacity(1, true))
+                }
                 this.readThisMany--
             }
+            if (returnList) return animationList
+            Animated.parallel(animationList).start(this.queuedCallback)
         },
 
         finishedAnimating () {

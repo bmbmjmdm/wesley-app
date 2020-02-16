@@ -105,6 +105,10 @@ export default {
         noExpand: {
             type: Boolean,
             default: false,
+        },
+        joinEntrance: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -140,11 +144,15 @@ export default {
 
         // set the initial values based on position in the word (or if not in a word)
         if (this.position === 'none' || this.startSplit ) {
-            this.paddingLeftGrowth.setValue(this.paddingSize)
-            this.paddingRightGrowth.setValue(this.paddingSize)
+            let divisor = 1
+            if (this.joinEntrance) {
+                divisor = 2
+            }
+            this.paddingLeftGrowth.setValue(this.paddingSize/divisor)
+            this.paddingRightGrowth.setValue(this.paddingSize/divisor)
             this.radiusLeftGrowth.setValue(this.radiusSize)
             this.radiusRightGrowth.setValue(this.radiusSize)
-            this.marginGrowth.setValue(10)
+            this.marginGrowth.setValue(10/divisor)
         }
         else if (this.position === 'left') {
             this.paddingLeftGrowth.setValue(this.paddingSize)
@@ -157,7 +165,7 @@ export default {
     },
 
     mounted () {
-        if (this.fadeIn) {
+        if (this.fadeIn && !this.joinEntrance) {
             this.animateOpacity(1)
         }
     },
@@ -176,7 +184,7 @@ export default {
             'afterSpeak'
         ]),
         
-        animateOpacity (value) {
+        animateOpacity (value, returnList = false) {
             if (value === 0) {
                 this.hidden = true
             }
@@ -184,26 +192,31 @@ export default {
                 this.hidden = false
             }
             var time = 1000
-            // Fade the letter in/out
-            Animated.parallel([
+            let animationList = [
                 Animated.timing(this.opacityGrowth, {
                     toValue: value,
                     duration: time,
                     useNativeDriver: false,
                 })
-            ]).start(this.finishedAnimating)
+            ]
+            // Return the list of animations without starting them, allowing a parent to start more in parallel
+            if (returnList) {
+                return animationList
+            }
+            // Fade the letter in/out
+            Animated.parallel(animationList).start(this.finishedAnimating)
         },
 
-        animateOut () {
-            this.animateOpacity(0)
+        animateOut (returnList = false) {
+            return this.animateOpacity(0, returnList)
         },
 
         // This is called when the letter is part of a WordMadeOfLetters, and the parent wants this letter to seperate
         // This causes the letter to form into a normal letter, like one with position === 'none'
         // This means the letters gains border radius, padding, and margins on all sides
-        becomeSeperated () {
+        becomeSeperated (returnList = false) {
             var time = 1000
-            Animated.parallel([
+            let animationList = [
                 Animated.timing(this.paddingLeftGrowth, {
                     toValue: this.paddingSize,
                     duration: time,
@@ -234,12 +247,17 @@ export default {
                     easing: Easing.linear,
                     useNativeDriver: false,
                 })
-            ]).start(this.finishedAnimating)
+            ]
+            // Return the list of animations without starting them, allowing a parent to start more in parallel
+            if (returnList) {
+                return animationList
+            }
+            Animated.parallel(animationList).start(this.finishedAnimating)
         },
 
         // This is called when the letter is part of a WordMadeOfLetters, and the parent wants this letter to revert to its original look
         // This means the letters loses any of its gained border radius, padding, and margins on all sides
-        reverseSeperation () {
+        reverseSeperation (returnList = false) {
             var time = 1000
             var paddingRight = this.paddingSize
             var paddingLeft = this.paddingSize
@@ -261,7 +279,7 @@ export default {
                 radiusRight = 0
             }
 
-            Animated.parallel([
+            let animationList = [
                 Animated.timing(this.paddingLeftGrowth, {
                     toValue: paddingLeft,
                     duration: time,
@@ -292,7 +310,12 @@ export default {
                     easing: Easing.linear,
                     useNativeDriver: false,
                 })
-            ]).start(this.finishedAnimating)
+            ]            
+            // Return the list of animations without starting them, allowing a parent to start more in parallel
+            if (returnList) {
+                return animationList
+            }
+            Animated.parallel(animationList).start(this.finishedAnimating)
         },
         
         widenLetter () {

@@ -18,12 +18,15 @@
             :tutorialFadeWord="tutorial && word !== targetWord"
             :fadeIn="true"
             :finishNarration="finishLetters"
-            :queuedCallback="finishedAnimating" />
+            :queuedCallback="finishedAnimating"
+            :joinEntrance="joinEntrance"
+            :startSplit="joinEntrance" />
     </view>
 </template>
 
 <script>
 import WordMadeOfLetters from './WordMadeOfLetters'
+import { Animated } from "react-native"
 import { mapGetters } from 'vuex'
 
 export default {
@@ -75,6 +78,10 @@ export default {
         queuedCallback: {
             type: Function,
             default: () => {},
+        },
+        joinEntrance: {
+            type: Boolean,
+            default: false
         }
     },
 
@@ -88,6 +95,18 @@ export default {
     computed: {        
         ...mapGetters([
         ])
+    },
+
+    mounted () {
+        if (this.joinEntrance) {
+            let total = this.list.length
+            let animationList = []
+            while (total > 0) {
+                animationList = animationList.concat(this.$refs.wordRef[this.$refs.wordRef.length-total].joinLetters(true, true))
+                total--
+            }
+            Animated.parallel(animationList).start()
+        }
     },
 
     methods: {

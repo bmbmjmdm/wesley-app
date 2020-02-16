@@ -28,7 +28,8 @@
                 :tutorial="tutorial"
                 :targetWord="curWord"
                 :lettersClickable="shouldClickLetters"
-                :queuedCallback="queuedCallback" />
+                :queuedCallback="queuedCallback"
+                :joinEntrance="true" />
         </view>
     </view>
 </template>
