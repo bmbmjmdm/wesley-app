@@ -7,7 +7,7 @@ For IMAGES of words: do not exceed 1MB per picture or lag may occur in transitio
 If IOS cannot run simulator: 
 https://github.com/facebook/react-native/issues/23282#issuecomment-476439080
 
-If IOS is failing to build certain node_module files: (change the 0.3.5 to 0.3.4):
+(Might be deprecated since upgrade) If IOS is failing to build certain node_module files: (change the 0.3.5 to 0.3.4):
 https://github.com/facebook/react-native/issues/21168#issuecomment-422431294
 
 If ANDROID is giving you trouble because it can't create or delete some random path, try deleting the cache at wesleyapp\android\build\intermediates\dex-cache

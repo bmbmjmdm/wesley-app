@@ -17,6 +17,35 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* wesleyappTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* wesleyappTests.m */; };
 		37E9F8DD2399A8DD00F82F3E /* Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E9F8DC2399A8DD00F82F3E /* Swift.swift */; };
+		8ABBB70723FE427C00EB19AD /* success_9.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6EA23FE427900EB19AD /* success_9.wav */; };
+		8ABBB70823FE427C00EB19AD /* success_24.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6EB23FE427900EB19AD /* success_24.wav */; };
+		8ABBB70923FE427C00EB19AD /* success_12.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6EC23FE427900EB19AD /* success_12.wav */; };
+		8ABBB70A23FE427C00EB19AD /* success_2.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6ED23FE427900EB19AD /* success_2.wav */; };
+		8ABBB70B23FE427C00EB19AD /* success_15.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6EE23FE427900EB19AD /* success_15.wav */; };
+		8ABBB70C23FE427C00EB19AD /* success_18.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6EF23FE427A00EB19AD /* success_18.wav */; };
+		8ABBB70D23FE427C00EB19AD /* success_11.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F023FE427A00EB19AD /* success_11.wav */; };
+		8ABBB70E23FE427C00EB19AD /* success_5.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F123FE427A00EB19AD /* success_5.wav */; };
+		8ABBB70F23FE427C00EB19AD /* success_0.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F223FE427A00EB19AD /* success_0.wav */; };
+		8ABBB71023FE427C00EB19AD /* success_19.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F323FE427A00EB19AD /* success_19.wav */; };
+		8ABBB71123FE427C00EB19AD /* success_7.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F423FE427A00EB19AD /* success_7.wav */; };
+		8ABBB71223FE427C00EB19AD /* success_8.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F523FE427A00EB19AD /* success_8.wav */; };
+		8ABBB71323FE427C00EB19AD /* success_1.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F623FE427A00EB19AD /* success_1.wav */; };
+		8ABBB71423FE427C00EB19AD /* success_6.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F723FE427A00EB19AD /* success_6.wav */; };
+		8ABBB71523FE427C00EB19AD /* success_28.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F823FE427A00EB19AD /* success_28.wav */; };
+		8ABBB71623FE427C00EB19AD /* success_13.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6F923FE427A00EB19AD /* success_13.wav */; };
+		8ABBB71723FE427C00EB19AD /* success_3.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6FA23FE427A00EB19AD /* success_3.wav */; };
+		8ABBB71823FE427C00EB19AD /* success_27.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6FB23FE427B00EB19AD /* success_27.wav */; };
+		8ABBB71923FE427C00EB19AD /* success_20.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6FC23FE427B00EB19AD /* success_20.wav */; };
+		8ABBB71A23FE427C00EB19AD /* success_4.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6FD23FE427B00EB19AD /* success_4.wav */; };
+		8ABBB71B23FE427C00EB19AD /* success_22.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6FE23FE427B00EB19AD /* success_22.wav */; };
+		8ABBB71C23FE427C00EB19AD /* success_26.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB6FF23FE427B00EB19AD /* success_26.wav */; };
+		8ABBB71D23FE427C00EB19AD /* success_25.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB70023FE427B00EB19AD /* success_25.wav */; };
+		8ABBB71E23FE427C00EB19AD /* success_16.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB70123FE427B00EB19AD /* success_16.wav */; };
+		8ABBB71F23FE427C00EB19AD /* success_14.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB70223FE427B00EB19AD /* success_14.wav */; };
+		8ABBB72023FE427C00EB19AD /* success_10.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB70323FE427B00EB19AD /* success_10.wav */; };
+		8ABBB72123FE427C00EB19AD /* success_17.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB70423FE427B00EB19AD /* success_17.wav */; };
+		8ABBB72223FE427C00EB19AD /* success_23.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB70523FE427B00EB19AD /* success_23.wav */; };
+		8ABBB72323FE427C00EB19AD /* success_21.wav in Resources */ = {isa = PBXBuildFile; fileRef = 8ABBB70623FE427B00EB19AD /* success_21.wav */; };
 		B922CEEC079B64A3EB8F7CC3 /* libPods-wesleyapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C716C088B8D7A83E55CC550 /* libPods-wesleyapp.a */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +83,35 @@
 		37E9F8DC2399A8DD00F82F3E /* Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Swift.swift; sourceTree = "<group>"; };
 		3C716C088B8D7A83E55CC550 /* libPods-wesleyapp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-wesleyapp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B54887EEB2AE6544250272A /* Pods-wesleyapp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wesleyapp.release.xcconfig"; path = "Target Support Files/Pods-wesleyapp/Pods-wesleyapp.release.xcconfig"; sourceTree = "<group>"; };
+		8ABBB6EA23FE427900EB19AD /* success_9.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_9.wav; path = ../android/app/src/main/res/raw/success_9.wav; sourceTree = "<group>"; };
+		8ABBB6EB23FE427900EB19AD /* success_24.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_24.wav; path = ../android/app/src/main/res/raw/success_24.wav; sourceTree = "<group>"; };
+		8ABBB6EC23FE427900EB19AD /* success_12.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_12.wav; path = ../android/app/src/main/res/raw/success_12.wav; sourceTree = "<group>"; };
+		8ABBB6ED23FE427900EB19AD /* success_2.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_2.wav; path = ../android/app/src/main/res/raw/success_2.wav; sourceTree = "<group>"; };
+		8ABBB6EE23FE427900EB19AD /* success_15.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_15.wav; path = ../android/app/src/main/res/raw/success_15.wav; sourceTree = "<group>"; };
+		8ABBB6EF23FE427A00EB19AD /* success_18.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_18.wav; path = ../android/app/src/main/res/raw/success_18.wav; sourceTree = "<group>"; };
+		8ABBB6F023FE427A00EB19AD /* success_11.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_11.wav; path = ../android/app/src/main/res/raw/success_11.wav; sourceTree = "<group>"; };
+		8ABBB6F123FE427A00EB19AD /* success_5.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_5.wav; path = ../android/app/src/main/res/raw/success_5.wav; sourceTree = "<group>"; };
+		8ABBB6F223FE427A00EB19AD /* success_0.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_0.wav; path = ../android/app/src/main/res/raw/success_0.wav; sourceTree = "<group>"; };
+		8ABBB6F323FE427A00EB19AD /* success_19.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_19.wav; path = ../android/app/src/main/res/raw/success_19.wav; sourceTree = "<group>"; };
+		8ABBB6F423FE427A00EB19AD /* success_7.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_7.wav; path = ../android/app/src/main/res/raw/success_7.wav; sourceTree = "<group>"; };
+		8ABBB6F523FE427A00EB19AD /* success_8.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_8.wav; path = ../android/app/src/main/res/raw/success_8.wav; sourceTree = "<group>"; };
+		8ABBB6F623FE427A00EB19AD /* success_1.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_1.wav; path = ../android/app/src/main/res/raw/success_1.wav; sourceTree = "<group>"; };
+		8ABBB6F723FE427A00EB19AD /* success_6.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_6.wav; path = ../android/app/src/main/res/raw/success_6.wav; sourceTree = "<group>"; };
+		8ABBB6F823FE427A00EB19AD /* success_28.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_28.wav; path = ../android/app/src/main/res/raw/success_28.wav; sourceTree = "<group>"; };
+		8ABBB6F923FE427A00EB19AD /* success_13.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_13.wav; path = ../android/app/src/main/res/raw/success_13.wav; sourceTree = "<group>"; };
+		8ABBB6FA23FE427A00EB19AD /* success_3.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_3.wav; path = ../android/app/src/main/res/raw/success_3.wav; sourceTree = "<group>"; };
+		8ABBB6FB23FE427B00EB19AD /* success_27.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_27.wav; path = ../android/app/src/main/res/raw/success_27.wav; sourceTree = "<group>"; };
+		8ABBB6FC23FE427B00EB19AD /* success_20.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_20.wav; path = ../android/app/src/main/res/raw/success_20.wav; sourceTree = "<group>"; };
+		8ABBB6FD23FE427B00EB19AD /* success_4.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_4.wav; path = ../android/app/src/main/res/raw/success_4.wav; sourceTree = "<group>"; };
+		8ABBB6FE23FE427B00EB19AD /* success_22.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_22.wav; path = ../android/app/src/main/res/raw/success_22.wav; sourceTree = "<group>"; };
+		8ABBB6FF23FE427B00EB19AD /* success_26.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_26.wav; path = ../android/app/src/main/res/raw/success_26.wav; sourceTree = "<group>"; };
+		8ABBB70023FE427B00EB19AD /* success_25.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_25.wav; path = ../android/app/src/main/res/raw/success_25.wav; sourceTree = "<group>"; };
+		8ABBB70123FE427B00EB19AD /* success_16.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_16.wav; path = ../android/app/src/main/res/raw/success_16.wav; sourceTree = "<group>"; };
+		8ABBB70223FE427B00EB19AD /* success_14.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_14.wav; path = ../android/app/src/main/res/raw/success_14.wav; sourceTree = "<group>"; };
+		8ABBB70323FE427B00EB19AD /* success_10.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_10.wav; path = ../android/app/src/main/res/raw/success_10.wav; sourceTree = "<group>"; };
+		8ABBB70423FE427B00EB19AD /* success_17.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_17.wav; path = ../android/app/src/main/res/raw/success_17.wav; sourceTree = "<group>"; };
+		8ABBB70523FE427B00EB19AD /* success_23.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_23.wav; path = ../android/app/src/main/res/raw/success_23.wav; sourceTree = "<group>"; };
+		8ABBB70623FE427B00EB19AD /* success_21.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = success_21.wav; path = ../android/app/src/main/res/raw/success_21.wav; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F56F9ED9F403145F166956D6 /* Pods-wesleyapp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-wesleyapp.debug.xcconfig"; path = "Target Support Files/Pods-wesleyapp/Pods-wesleyapp.debug.xcconfig"; sourceTree = "<group>"; };
@@ -143,6 +201,35 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				8ABBB6F223FE427A00EB19AD /* success_0.wav */,
+				8ABBB6F623FE427A00EB19AD /* success_1.wav */,
+				8ABBB6ED23FE427900EB19AD /* success_2.wav */,
+				8ABBB6FA23FE427A00EB19AD /* success_3.wav */,
+				8ABBB6FD23FE427B00EB19AD /* success_4.wav */,
+				8ABBB6F123FE427A00EB19AD /* success_5.wav */,
+				8ABBB6F723FE427A00EB19AD /* success_6.wav */,
+				8ABBB6F423FE427A00EB19AD /* success_7.wav */,
+				8ABBB6F523FE427A00EB19AD /* success_8.wav */,
+				8ABBB6EA23FE427900EB19AD /* success_9.wav */,
+				8ABBB70323FE427B00EB19AD /* success_10.wav */,
+				8ABBB6F023FE427A00EB19AD /* success_11.wav */,
+				8ABBB6EC23FE427900EB19AD /* success_12.wav */,
+				8ABBB6F923FE427A00EB19AD /* success_13.wav */,
+				8ABBB70223FE427B00EB19AD /* success_14.wav */,
+				8ABBB6EE23FE427900EB19AD /* success_15.wav */,
+				8ABBB70123FE427B00EB19AD /* success_16.wav */,
+				8ABBB70423FE427B00EB19AD /* success_17.wav */,
+				8ABBB6EF23FE427A00EB19AD /* success_18.wav */,
+				8ABBB6F323FE427A00EB19AD /* success_19.wav */,
+				8ABBB6FC23FE427B00EB19AD /* success_20.wav */,
+				8ABBB70623FE427B00EB19AD /* success_21.wav */,
+				8ABBB6FE23FE427B00EB19AD /* success_22.wav */,
+				8ABBB70523FE427B00EB19AD /* success_23.wav */,
+				8ABBB6EB23FE427900EB19AD /* success_24.wav */,
+				8ABBB70023FE427B00EB19AD /* success_25.wav */,
+				8ABBB6FF23FE427B00EB19AD /* success_26.wav */,
+				8ABBB6FB23FE427B00EB19AD /* success_27.wav */,
+				8ABBB6F823FE427A00EB19AD /* success_28.wav */,
 				37E9F8DC2399A8DD00F82F3E /* Swift.swift */,
 				13B07FAE1A68108700A75B9A /* wesleyapp */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -173,7 +260,6 @@
 				F56F9ED9F403145F166956D6 /* Pods-wesleyapp.debug.xcconfig */,
 				5B54887EEB2AE6544250272A /* Pods-wesleyapp.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -316,8 +402,37 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8ABBB71523FE427C00EB19AD /* success_28.wav in Resources */,
+				8ABBB71A23FE427C00EB19AD /* success_4.wav in Resources */,
+				8ABBB71D23FE427C00EB19AD /* success_25.wav in Resources */,
+				8ABBB70E23FE427C00EB19AD /* success_5.wav in Resources */,
+				8ABBB70823FE427C00EB19AD /* success_24.wav in Resources */,
+				8ABBB70D23FE427C00EB19AD /* success_11.wav in Resources */,
+				8ABBB71123FE427C00EB19AD /* success_7.wav in Resources */,
+				8ABBB71F23FE427C00EB19AD /* success_14.wav in Resources */,
+				8ABBB70F23FE427C00EB19AD /* success_0.wav in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				8ABBB71B23FE427C00EB19AD /* success_22.wav in Resources */,
+				8ABBB71823FE427C00EB19AD /* success_27.wav in Resources */,
+				8ABBB70B23FE427C00EB19AD /* success_15.wav in Resources */,
+				8ABBB71923FE427C00EB19AD /* success_20.wav in Resources */,
+				8ABBB71423FE427C00EB19AD /* success_6.wav in Resources */,
+				8ABBB72023FE427C00EB19AD /* success_10.wav in Resources */,
+				8ABBB70C23FE427C00EB19AD /* success_18.wav in Resources */,
+				8ABBB72123FE427C00EB19AD /* success_17.wav in Resources */,
+				8ABBB71323FE427C00EB19AD /* success_1.wav in Resources */,
+				8ABBB70923FE427C00EB19AD /* success_12.wav in Resources */,
+				8ABBB71723FE427C00EB19AD /* success_3.wav in Resources */,
+				8ABBB71223FE427C00EB19AD /* success_8.wav in Resources */,
+				8ABBB71C23FE427C00EB19AD /* success_26.wav in Resources */,
+				8ABBB71023FE427C00EB19AD /* success_19.wav in Resources */,
+				8ABBB71623FE427C00EB19AD /* success_13.wav in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				8ABBB72323FE427C00EB19AD /* success_21.wav in Resources */,
+				8ABBB71E23FE427C00EB19AD /* success_16.wav in Resources */,
+				8ABBB72223FE427C00EB19AD /* success_23.wav in Resources */,
+				8ABBB70723FE427C00EB19AD /* success_9.wav in Resources */,
+				8ABBB70A23FE427C00EB19AD /* success_2.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
