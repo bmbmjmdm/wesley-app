@@ -34,7 +34,7 @@
             <text 
                 :style="{fontSize: fontSizeSmall}"
                 :class="{'link-text': !showIntro || introStep == 1, 'link-text-shadow': showIntro && introStep != 1}">
-                Options
+                Lesson Options
             </text>
         </touchable-opacity>
         <touchable-opacity

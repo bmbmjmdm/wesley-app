@@ -136,8 +136,8 @@ export default {
 
     data () {
         return {
-            bgImageBackName: 'bgDefault',
-            bgImageFrontName: 'bgDefault',
+            bgImageBackName: 'BackgroundImage',
+            bgImageFrontName: 'BackgroundImage',
             showReinforce: false,
             showGjGif: false,
             reinforceentence: "",
@@ -261,8 +261,8 @@ export default {
         },
 
         defaultBackground (callback) {
-            if (!(this.bgImageBackName === 'bgDefault' && this.bgImageFrontName === 'bgDefault')) {
-                this.changeBackground('bgDefault', callback)
+            if (!(this.bgImageBackName === 'BackgroundImage' && this.bgImageFrontName === 'BackgroundImage')) {
+                this.changeBackground('BackgroundImage', callback)
             }
             else {
                 if (callback) callback()
@@ -328,7 +328,7 @@ export default {
         },
 
         sayLevelUp (callback) {
-            this.changeBackground("levelUpGif")
+            this.changeBackground("LevelUpGif")
             var ran = Math.floor(Math.random() * this.levelUpList.length)
             let sentence = this.levelUpList[ran]
             this.sayReinforcement(sentence, callback)

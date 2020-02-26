@@ -73,23 +73,29 @@ import trains from '../assets/trains.jpg';
 import trampoline from '../assets/trampoline.jpg';
 import turtle from '../assets/turtle.jpg';
 import vegetables from '../assets/vegetables.jpg';
-import bgDefault from '../assets/bgDefault.jpg';
-import levelUpGif from '../assets/levelUpGif.gif';
+import BackgroundImage from '../assets/bgDefault.jpg';
+import LevelUpGif from '../assets/levelUpGif.gif';
 
 export default {
-    bgDefault,
-    levelUpGif,
+    BackgroundImage,
+    LevelUpGif,
+    mom,
+    dad,
+    home,
     dog,
+    cat,
+    grandma,
+    grandpa,
+    grandparents,
     park,
+    hug,
     reading,
     apple,
     flowers,
     clouds,
-    cat,
     grandma,
     smile,
     sheep,
-    dad,
     kitten,
     tower,
     tree,
@@ -114,13 +120,9 @@ export default {
     fire,
     fish,
     friend,
-    grandpa,
-    grandparents,
     grumpy,
     hand,
-    home,
     horse,
-    hug,
     icecream,
     laugh,
     laying,
@@ -129,7 +131,6 @@ export default {
     lightsabers,
     marker,
     mask,
-    mom,
     painting,
     pancake,
     panda,
