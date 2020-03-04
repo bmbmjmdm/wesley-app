@@ -14,27 +14,48 @@
                     :activeOpacity="1"
                     :onPress="() => {}">
                     <touchable-opacity
+                        v-if="canChangePicture"
                         :onPress="modalSelectNew"
                         :style="{marginBottom: paddingSize*1.5}">
                         <text
                             class="link-text"
-                            :style="{fontSize: fontSize / 1.5}">
-                            Select new pic
+                            :style="{fontSize: fontSize }">
+                            Select new picture
                         </text>
                     </touchable-opacity>
                     <touchable-opacity
-                        :onPress="modalRestoreDefault"
+                        :onPress="modalRecordNew"
                         :style="{marginBottom: paddingSize*1.5}">
                         <text
                             class="link-text"
-                            :style="{fontSize: fontSize / 1.5}">
-                            Restore default pic
+                            :style="{fontSize: fontSize }">
+                            Record reading voice
                         </text>
                     </touchable-opacity>
-                    <touchable-opacity :onPress="modalCancel">
+                    <touchable-opacity
+                        v-if="hasUserPicture(modalWord)"
+                        :onPress="modalRestoreDefaultPicture"
+                        :style="{marginBottom: paddingSize*1.5}">
                         <text
-                            class="link-text"
-                            :style="{fontSize: fontSize / 1.5}">
+                            class="link-text-danger"
+                            :style="{fontSize: fontSize }">
+                            Restore default picture
+                        </text>
+                    </touchable-opacity>
+                    <touchable-opacity
+                        v-if="hasUserRecording(modalWord)"
+                        :onPress="modalRestoreDefaultRecording"
+                        :style="{marginBottom: paddingSize*1.5}">
+                        <text
+                            class="link-text-danger"
+                            :style="{fontSize: fontSize }">
+                            Restore default voice
+                        </text>
+                    </touchable-opacity>
+                    <touchable-opacity class="cancel-text" :onPress="modalCancel">
+                        <text
+                            class="cancel-text"
+                            :style="{fontSize: fontSize * 1.5}">
                             Cancel
                         </text>
                     </touchable-opacity>
@@ -119,8 +140,12 @@ export default {
     },
 
     computed: {
+        canChangePicture () {
+            return this.getPictureNames.includes(this.modalWord)
+        },
+
         filteredWords () {
-            return this.getPictureNames.filter(
+            return this.getPictureNames.concat(this.getLetterNames).filter(
                 (word) => {
                     return word.toLowerCase().includes(this.filterText.toLowerCase())
                 }
@@ -135,24 +160,21 @@ export default {
             'fontSize',
             'sizeFactor',
             'getPictureNames',
+            'getLetterNames',
             'hasUserPicture',
+            'hasUserRecording'
         ]),
     },
 
     methods: {
         clickWord (word) {
-            if (this.hasUserPicture(word)) {
-                this.modalWord = word
-                this.showModal = true
-            }
-            else {
-                this.changeWord(word)
-            }
+            this.modalWord = word
+            this.showModal = true
         },
 
         changeWord (word) {
             if(this.saidPrompt < 2) {
-                this.afterSpeak({word: 'Select a picture for ' + word, callback: () => {}})
+                this.afterSpeak({word: 'Select a picture for ' + word})
                 this.saidPrompt++
             }
             const options = {
@@ -191,10 +213,29 @@ export default {
             this.changeWord(this.modalWord)
         },
 
-        modalRestoreDefault () {
+        modalRecordNew () {
             this.showModal = false
+            // TODO ???
+            // Record in batches
+            // Randomize the words so they're not in a sentence
+            // Prompt the user to unnunciate loudly in the beginning
+
+            // I'm thinking the speakword screen, doing it all in rapid succession replacing the word on screen:
+            // mic starts off and no word. Then word appears, being highlighted already and the mic now recording.
+            // once it picks up your speech, it records until you stop talking, not 50 milliseconds more(?). It writes that down (not full save) and clears the word, turns the mic off. Repeat
+            
+            // use proper directory for saving user versions of words
+            // be sure to call saveRecordings after the batch
+        },
+
+        modalRestoreDefaultPicture () {
             this.invalidatePicture(this.modalWord)
             setTimeout(() => this.changeBackground(this.modalWord), 250)
+        },
+
+        modalRestoreDefaultRecording () {
+            this.invalidateRecording(this.modalWord)
+            setTimeout(() => this.afterSpeak({word: this.modalWord}), 250)
         },
 
         modalCancel () {
@@ -203,13 +244,15 @@ export default {
         },
 
         ...mapMutations([
-            'setActivity',
+            'setActivity'
         ]),
 
         ...mapActions([
             'savePicture',
+            'saveRecordings',
             'afterSpeak',
-            'invalidatePicture'
+            'invalidatePicture',
+            'invalidateRecording'
         ]),
     },
 }
@@ -241,6 +284,16 @@ export default {
 
     .link-text {
         color: 'rgb(0, 119, 179)';
+    }
+
+    .cancel-text {
+        align-self: stretch;
+        text-align: center;
+        color: 'rgb(0, 59, 89)';
+    }
+
+    .link-text-danger {
+        color: 'rgb(207, 0, 0)';
     }
 
     .normal-text {

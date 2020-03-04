@@ -73,7 +73,7 @@ import trains from '../assets/trains.jpg';
 import trampoline from '../assets/trampoline.jpg';
 import turtle from '../assets/turtle.jpg';
 import vegetables from '../assets/vegetables.jpg';
-import BackgroundImage from '../assets/bgDefault.jpg';
+import BackgroundImage from '../assets/BackgroundImage.jpg';
 import LevelUpGif from '../assets/levelUpGif.gif';
 
 export default {

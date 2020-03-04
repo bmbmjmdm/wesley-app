@@ -2,10 +2,12 @@ import Vue from 'vue-native-core'
 import Vuex from "vuex"
 import tts from 'react-native-tts'
 import wordList from './wordList'
+import allWordsText from './allWords'
 import letterList from './letterList'
 import { AsyncStorage } from 'react-native';
 import allDefaultPictures from './allDefaultPictures'
 import Sound  from 'react-native-sound'
+import {AudioUtils} from 'react-native-audio'
 Vue.use(Vuex)
 
 
@@ -20,6 +22,9 @@ export default new Vuex.Store({
     state: {
         // maps picture names to files
         pictures: {},
+        // maps recording names to files
+        recordings: {},
+
         // Map where keys are target words and values objects that look like this: 
         // {
         //  total,
@@ -78,6 +83,7 @@ export default new Vuex.Store({
         },
         showIntro: true,
         adjustLevel: 0,
+        allWordsSaid: allWordsText.split("\n"),
     },
     getters: {
         getPicture: state => name => state.pictures[name],
@@ -90,8 +96,20 @@ export default new Vuex.Store({
             }
             return userPics
         },
-        hasUserPicture: state => (word) => state.pictures[word].user,
+        hasUserPicture: state => (word) => state.pictures[word] && state.pictures[word].user,
         getPictureNames: state => Object.keys(state.pictures),
+        getRecording: state => name => state.recordings[name],
+        getUserRecordings: state => () => {
+            let userRecs = {}
+            for (var index in state.recordings) {
+                if (state.recordings[index].user) {
+                    userRecs[index] = state.recordings[index].source
+                }
+            }
+            return userRecs
+        },
+        hasUserRecording: state => (word) => state.recordings[word] && state.recordings[word].user,
+        getLetterNames: state => letterList.map(letter => letter.targetWord),
         highlightSpeed: state => state.highlightSpeed,
         textToSpeech: state => state.textToSpeech,
         shadow: state => state.shadow,
@@ -169,15 +187,11 @@ export default new Vuex.Store({
         setPicture(state, {name, source, user}) {
             Vue.set(state.pictures, name, {name, source, user})
         },
-
-        // used when loading app
-        setUserData(state, data) {
-            Vue.set(state, 'wordHistory', data.wordHistory)
-            Vue.set(state, 'difficultySpelling', data.difficultySpelling)
-            Vue.set(state, 'difficultyReading', data.difficultyReading)
-            Vue.set(state, 'allowedTopics', data.allowedTopics)
-            Vue.set(state, 'allowAutoAdjust', data.allowAutoAdjust)
-            Vue.set(state, 'showIntro', data.showIntro)
+        setRecording(state, {name, user}) {
+            Vue.set(state.recordings, name, {name, user})
+        },
+        deleteRecording(state, name) {
+            Vue.delete(state.recordings, name)
         },
 
         setActivity(state, activity) {
@@ -208,7 +222,7 @@ export default new Vuex.Store({
     },
     actions: {
         // TODO we might be given a full sentence here, not just a word
-        afterSpeak ({ getters }, { word, callback })  {
+        afterSpeak ({ getters, dispatch }, { word, callback = () => {} })  {
             var helper = () => {
                 getters.textToSpeech.removeEventListener('tts-finish', helper)
                 callback()
@@ -216,12 +230,38 @@ export default new Vuex.Store({
             getters.textToSpeech.addEventListener('tts-finish', helper)
             getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))  
         /*
-            var sound = new Sound(String.toLowerCase(word) + '.wav', Sound.MAIN_BUNDLE, (error) => {
-                if (error) {
-                    console.log('failed to load sound: ' + word + '.wav', error)
-                    return
-                } 
-                sound.play(callback)
+            // load from the users recordings
+            let userChoice = getters.hasUserRecording(word)
+            var sound = new Sound(String.toLowerCase(word) + '.aac', userChoice ? AudioUtils.DocumentDirectoryPath : Sound.MAIN_BUNDLE, (error) => {
+                // we have a good sound
+                if (!error) {
+                    sound.play(callback)
+                }
+                // error
+                else {
+                    console.log('failed to load sound: ' + word + '.aac', error)
+                    // we failed to load a default sound, somethings very wrong, use built in voice
+                    if (!userChoice) {
+                        getters.textToSpeech.addEventListener('tts-finish', helper)
+                        getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))  
+                    }
+                    // we failed to load a user recording, invalidate it and retry with a default one
+                    else {
+                        dispatch('invalidateRecording', name)
+                        var sound = new Sound(String.toLowerCase(word) + '.aac', Sound.MAIN_BUNDLE, (error) => {
+                            // we have a good sound
+                            if (!error) {
+                                sound.play(callback)
+                            }
+                             // we failed to load a default sound, somethings very wrong, use built in voice
+                            else {
+                                console.log('failed to load sound default')
+                                getters.textToSpeech.addEventListener('tts-finish', helper)
+                                getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))  
+                            }
+                        }
+                    }
+                }
             })
         */
         },
@@ -287,7 +327,16 @@ export default new Vuex.Store({
         savePicture({getters, commit}, {name, source}) {
             commit('setPicture', {name, source, user: true})
             let stringFile = JSON.stringify(getters.getUserPictures())
-            AsyncStorage.setItem("WesleyApp-pictures", stringFile).then
+            AsyncStorage.setItem("WesleyApp-pictures", stringFile)
+        },
+
+        // slightly dangerous, we dont wait here to save. should be fine as long as we dont try to save two very fast
+        saveRecordings({getters, commit}, {names}) {
+            for (let name in names) {
+                commit('setRecording', {name, user: true})
+            }
+            let stringFile = JSON.stringify(getters.getUserRecordings())
+            AsyncStorage.setItem("WesleyApp-recordings", stringFile)
         },
 
         loadPictures({commit, state}, savedPictures) {
@@ -304,12 +353,54 @@ export default new Vuex.Store({
             }
         },
 
+        loadRecordings({commit, state}, savedRecordings) {
+            if (savedRecordings) {
+                for (var name in savedRecordings) {
+                    commit('setRecording', {name, user: true})
+                }
+            }
+            for (var name in state.allWordsSaid) {
+                if (!state.recordings[name]) {
+                    commit('setRecording', {name, user: false})
+                }
+            }
+        },
+
+        // used when loading app
+        async setUserData({dispatch, state}, { data }) {
+            if (data) {
+                Vue.set(state, 'wordHistory', data.wordHistory)
+                Vue.set(state, 'difficultySpelling', data.difficultySpelling)
+                Vue.set(state, 'difficultyReading', data.difficultyReading)
+                Vue.set(state, 'allowedTopics', data.allowedTopics)
+                Vue.set(state, 'allowAutoAdjust', data.allowAutoAdjust)
+                Vue.set(state, 'showIntro', data.showIntro)
+            }
+        
+            let pictures = await AsyncStorage.getItem("WesleyApp-pictures")
+            let recordings = await AsyncStorage.getItem("WesleyApp-recordings")
+            let loadRecordingsPromise = dispatch('loadRecordings', recordings)
+            let loadPicturesPromise = dispatch('loadPictures', pictures)
+            await loadRecordingsPromise
+            await loadPicturesPromise
+        },
+
         // if a picture fails to load, we reset to the default picture and save. 
-        // slightly dangerous, we dont wait here to save. should be fine as long as we dont try to save two very fast
+        // VERY dangerous, we dont wait here to save. Since many pictures can be invalidated at once I need to fix this
+        // TODO
         invalidatePicture({commit, getters}, name) {
             commit('setPicture', {name, source: allDefaultPictures[name], user: false})
             let stringFile = JSON.stringify(getters.getUserPictures())
             AsyncStorage.setItem("WesleyApp-pictures", stringFile);
+        },
+
+        // if a recording fails to load, we reset to the default recording and save. 
+        // VERY dangerous, we dont wait here to save. Since many recordings can be invalidated at once I need to fix this
+        // TODO
+        invalidateRecording({commit, getters}, name) {
+            commit('deleteRecording', name)
+            let stringFile = JSON.stringify(getters.getUserRecordings())
+            AsyncStorage.setItem("WesleyApp-recordings", stringFile);
         },
     }
 });

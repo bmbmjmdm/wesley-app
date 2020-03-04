@@ -160,11 +160,8 @@ export default {
         let data = await AsyncStorage.getItem("WesleyApp-childProgress")
         if (data) {
             data = JSON.parse(data)
-            this.setUserData(data)
         }
-        
-        let pictures = await AsyncStorage.getItem("WesleyApp-pictures")
-        this.loadPictures(pictures)
+        await this.setUserData({data})
 
         // setup listeners for app closing to save user data
         AppState.addEventListener('change', this.handleAppStateChange)
@@ -181,7 +178,8 @@ export default {
 
     computed: {
         bgImageBack () {
-            return this.getPicture(this.bgImageBackName)
+            let file = this.getPicture(this.bgImageBackName)
+            return file
         },
 
         bgImageFront () {
@@ -201,13 +199,13 @@ export default {
     methods: {
         ...mapMutations([
             'setSizeFactor',
-            'setUserData',
             'setActivity',
         ]),
 
         ...mapActions([
             'loadPictures',
-            'invalidatePicture'
+            'invalidatePicture',
+            'setUserData'
         ]),
 
         randomActivity (changeBackground = true) {

@@ -88,7 +88,7 @@ export default {
                     return "Press here for options. This includes changing the difficulty (we suggest doing this before you start) as well as enabling/disabling topics"
                     break;
                 case 2:
-                    return "Press here to link your own photos to words in the app! Personalize the app so your kid sees YOUR picture for \"mom\", \"dad\", \"dog\", etc!"
+                    return "Press here to add your own photos and voice to the app! Then your child will see YOUR picture and hear YOUR voice for \"mom\", \"dad\", \"dog\", etc!"
                     break;
             } 
         },
