@@ -259,16 +259,11 @@ export default {
             }))
             this.shuffleArray(this.wordsToRecord)
             this.recordingView = true
-
-            // once it picks up your speech, it records until you stop talking, not 50 milliseconds more(?). It writes that down (not full save) and clears the word, turns the mic off. Repeat
-            // use proper directory for saving user versions of words
-            // be sure to call saveRecordings after the batch
         },
 
-        modalFinishRecording () {
+        modalFinishRecording (audioStartTimes) {
             this.recordingView = false
-            this.wordsToRecord = []
-            // TODO
+            this.saveRecordings({names: this.wordsToRecord, audioStartTimes})
         },
 
         modalRestoreDefaultPicture () {

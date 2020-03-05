@@ -57,7 +57,6 @@ export default {
             manuallyReading: false,
             showWord: false,
             userSpoke: false,
-            filePath: AudioUtils.DocumentDirectoryPath + '/tempFile.aac',
             hasAudio: false,
             currentMetering: 0,
             audioBegins: 0,
@@ -66,7 +65,7 @@ export default {
             maxGrowth: new Animated.Value(0),
             queuedCallback: null,
             curWord: -1,
-            finishedWords: [],
+            wordStartTimes: [],
             reviewed: true
         }
     },
@@ -76,6 +75,11 @@ export default {
     },
 
     computed: {
+        filePath () {
+            let word = this.wordList[this.curWord].toLowerCase().replace("'", "")
+            return AudioUtils.DocumentDirectoryPath + '/' + word + '.aac'
+        },
+
         micPic () {
             if (this.narrating) {
                 return micNormal
@@ -105,7 +109,7 @@ export default {
         async getNext () {
             this.queuedCallback = null
             if (this.curWord === this.wordList.length - 1) {
-                this.allDone(this.finishedWords)
+                this.allDone(this.wordStartTimes)
             }
             // still have words left to record
             else {
@@ -194,7 +198,10 @@ export default {
                     if (this.currentMetering > levelRequired) {
                         this.hasAudio = true
                         this.silenceDuration = 0
-                        if (this.audioBegins === 0) this.audioBegins = data.currentTime
+                        if (this.audioBegins === 0) {
+                            this.audioBegins = data.currentTime
+                            this.wordStartTimes.push(this.audioBegins)
+                        }
                     }
                     else {
                         this.silenceDuration++

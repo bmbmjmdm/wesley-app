@@ -103,7 +103,7 @@ export default new Vuex.Store({
             let userRecs = {}
             for (var index in state.recordings) {
                 if (state.recordings[index].user) {
-                    userRecs[index] = state.recordings[index].source
+                    userRecs[index] = state.recordings[index].startTime
                 }
             }
             return userRecs
@@ -193,8 +193,8 @@ export default new Vuex.Store({
         setPicture(state, {name, source, user}) {
             Vue.set(state.pictures, name, {name, source, user})
         },
-        setRecording(state, {name, user}) {
-            Vue.set(state.recordings, name, {name, user})
+        setRecording(state, {name, user, startTime}) {
+            Vue.set(state.recordings, name, {name, user, startTime})
         },
         deleteRecording(state, name) {
             Vue.delete(state.recordings, name)
@@ -227,50 +227,40 @@ export default new Vuex.Store({
 
     },
     actions: {
-        // TODO we might be given a full sentence here, not just a word
+        // heads up we might be given a full sentence here, not just a word
         afterSpeak ({ getters, dispatch }, { word, callback = () => {} })  {
+            // setup the helper for tts just incase
             var helper = () => {
                 getters.textToSpeech.removeEventListener('tts-finish', helper)
                 callback()
             }
-            getters.textToSpeech.addEventListener('tts-finish', helper)
-            getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))  
-        /*
+            let cleanWord = word.toLowerCase().replace("'", "")
+            let hasRecording = getters.hasUserRecording(cleanWord)
+
+            //no recording, use tts
+            if (!hasRecording) {
+                getters.textToSpeech.addEventListener('tts-finish', helper)
+                getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))
+            }
             // load from the users recordings
-            word = word.toLowerCase().replace("'", "")
-            let userChoice = getters.hasUserRecording(word)
-            var sound = new Sound(word + '.aac', userChoice ? AudioUtils.DocumentDirectoryPath : Sound.MAIN_BUNDLE, (error) => {
-                // we have a good sound
-                if (!error) {
-                    sound.play(callback)
-                }
-                // error
-                else {
-                    console.log('failed to load sound: ' + word + '.aac', error)
-                    // we failed to load a default sound, somethings very wrong, use built in voice
-                    if (!userChoice) {
-                        getters.textToSpeech.addEventListener('tts-finish', helper)
-                        getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))  
+            else {
+                var sound = new Sound(cleanWord + '.aac', AudioUtils.DocumentDirectoryPath, (error) => {
+                    // we have a good sound
+                    if (!error) {
+                        // Set the recording to start at 0.2 second before we heard the user start speaking
+                        sound.setCurrentTime(Math.max(getters.getRecording(cleanWord).startTime - 0.2, 0))
+                        sound.play(callback)
                     }
-                    // we failed to load a user recording, invalidate it and retry with a default one
+                    // error
                     else {
-                        dispatch('invalidateRecording', name)
-                        var sound = new Sound(word + '.aac', Sound.MAIN_BUNDLE, (error) => {
-                            // we have a good sound
-                            if (!error) {
-                                sound.play(callback)
-                            }
-                             // we failed to load a default sound, somethings very wrong, use built in voice
-                            else {
-                                console.log('failed to load sound default')
-                                getters.textToSpeech.addEventListener('tts-finish', helper)
-                                getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))  
-                            }
-                        }
+                        // delete the recording and use tts instead
+                        console.log('failed to load sound: ' + cleanWord + '.aac', error)
+                        dispatch('invalidateRecording', cleanWord)
+                        getters.textToSpeech.addEventListener('tts-finish', helper)
+                        getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))
                     }
-                }
-            })
-        */
+                })
+            }
         },
 
         // right is a boolean
@@ -334,9 +324,10 @@ export default new Vuex.Store({
             commit('setPicture', {name, source, user: true})
         },
 
-        saveRecordings({getters, commit}, {names}) {
-            for (let name in names) {
-                commit('setRecording', {name, user: true})
+        saveRecordings({getters, commit}, {names, audioStartTimes}) {
+            for (let index in names) {
+                let name = names[index].toLowerCase().replace("'", "")
+                commit('setRecording', {name, user: true, startTime: audioStartTimes[index]})
             }
         },
 
@@ -356,15 +347,16 @@ export default new Vuex.Store({
 
         loadRecordings({commit, state}, savedRecordings) {
             if (savedRecordings) {
-                for (var name in savedRecordings) {
-                    commit('setRecording', {name, user: true})
+                savedRecordings = JSON.parse(savedRecordings)
+                for (var recording in savedRecordings) {
+                    commit('setRecording', {name: recording, user: true, startTime: savedRecordings[recording]})
                 }
-            }
+            }/*
             for (var name in state.allWordsSaid) {
                 if (!state.recordings[name]) {
-                    commit('setRecording', {name, user: false})
+                    commit('setRecording', {name, user: false, startTime: 0})
                 }
-            }
+            }*/
         },
 
         // used when loading app
