@@ -1,5 +1,7 @@
 <template>
-    <view class="container">
+    <view
+        v-if="!recordingView"
+        class="container">
         <modal
             animationType="fade"
             :transparent="true"
@@ -24,6 +26,7 @@
                         </text>
                     </touchable-opacity>
                     <touchable-opacity
+                        v-if="canRecord"
                         :onPress="modalRecordNew"
                         :style="{marginBottom: paddingSize*1.5}">
                         <text
@@ -43,7 +46,7 @@
                         </text>
                     </touchable-opacity>
                     <touchable-opacity
-                        v-if="hasUserRecording(modalWord)"
+                        v-if="modalWordFullyRecorded"
                         :onPress="modalRestoreDefaultRecording"
                         :style="{marginBottom: paddingSize*1.5}">
                         <text
@@ -115,12 +118,17 @@
             </view>
         </scroll-view>
     </view>
+    <RecordWord
+        v-else
+        :wordList="wordsToRecord"
+        :allDone="modalFinishRecording" />
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { Alert } from 'react-native'
 import ImagePicker from 'react-native-image-picker/lib/commonjs';
+import RecordWord from './RecordWord'
 
 export default {
     props: {
@@ -129,6 +137,10 @@ export default {
             required: true
         },
     },
+    
+    components: {
+        RecordWord,
+    },
 
     data () {
         return {
@@ -136,10 +148,29 @@ export default {
             saidPrompt: 0,
             showModal: false,
             modalWord: "",
+            recordingView: false,
+            wordsToRecord: [],
         }
     },
 
     computed: {
+        canRecord () {
+            return this.modalWord !== "BackgroundImage" && this.modalWord !== "LevelUpGif"
+        },
+
+        modalWordFullyRecorded () {
+            if (this.modalWord && this.canRecord) {
+                let allWords = this.getWordRecordingList(this.modalWord)
+                for (let word of allWords) {
+                    if (!this.hasUserRecording(word)) return false
+                }
+                return true
+            }
+            else {
+                return false
+            }
+        },
+
         canChangePicture () {
             return this.getPictureNames.includes(this.modalWord)
         },
@@ -162,7 +193,8 @@ export default {
             'getPictureNames',
             'getLetterNames',
             'hasUserPicture',
-            'hasUserRecording'
+            'hasUserRecording',
+            'getWordOrLetter'
         ]),
     },
 
@@ -170,6 +202,12 @@ export default {
         clickWord (word) {
             this.modalWord = word
             this.showModal = true
+        },
+
+        getWordRecordingList (word) {
+            let wordOrLetter = this.getWordOrLetter(word)
+            let sentence = wordOrLetter.sentence || wordOrLetter.alliteration
+            return sentence.split(' ')
         },
 
         changeWord (word) {
@@ -215,17 +253,22 @@ export default {
 
         modalRecordNew () {
             this.showModal = false
-            // TODO ???
-            // Record in batches
-            // Randomize the words so they're not in a sentence
-            // Prompt the user to unnunciate loudly in the beginning
+            this.wordsToRecord = this.getWordRecordingList(this.modalWord)
+            this.wordsToRecord = this.wordsToRecord.filter((word => {
+                return !this.hasUserRecording(word)
+            }))
+            this.shuffleArray(this.wordsToRecord)
+            this.recordingView = true
 
-            // I'm thinking the speakword screen, doing it all in rapid succession replacing the word on screen:
-            // mic starts off and no word. Then word appears, being highlighted already and the mic now recording.
             // once it picks up your speech, it records until you stop talking, not 50 milliseconds more(?). It writes that down (not full save) and clears the word, turns the mic off. Repeat
-            
             // use proper directory for saving user versions of words
             // be sure to call saveRecordings after the batch
+        },
+
+        modalFinishRecording () {
+            this.recordingView = false
+            this.wordsToRecord = []
+            // TODO
         },
 
         modalRestoreDefaultPicture () {
@@ -234,13 +277,26 @@ export default {
         },
 
         modalRestoreDefaultRecording () {
-            this.invalidateRecording(this.modalWord)
+            let allWords = this.getWordRecordingList(this.modalWord)
+            for (let word of allWords) {
+                this.invalidateRecording(word)
+            }
             setTimeout(() => this.afterSpeak({word: this.modalWord}), 250)
         },
 
         modalCancel () {
             this.showModal = false
             this.changeBackground(this.modalWord)
+        },
+
+        shuffleArray (a) {
+            var j, x, i
+            for (i = a.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * (i + 1))
+                x = a[i]
+                a[i] = a[j]
+                a[j] = x
+            }
         },
 
         ...mapMutations([

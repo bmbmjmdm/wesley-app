@@ -1,12 +1,12 @@
-<!-- This is copied by RecordWord. Idealy this code wouldn't be duplicated but thats low priority atm. ANY CHANGE TO THIS NEEDS TO UPDATE RecordWord TOO -->
+<!-- This is copied from SpeakWord. Idealy this code wouldn't duplicate but thats low priority atm. ANY CHANGE TO SpeakWord NEEDS TO UPDATE THIS TOO -->
 <template>
     <view class="container">
         <view class="word-to-speak">
             <Word
-                v-if="shouldShowTargetWord && showWord"
+                v-if="showWord"
                 ref="targetWordRef"
-                :key="curWord.targetWord"
-                :word="curWord.targetWord"
+                :key="wordList[curWord]"
+                :word="wordList[curWord]"
                 :wordPressed="() => {}"
                 :setManuallyReading="() => {}"
                 :manuallyReading="true"
@@ -37,23 +37,11 @@ import Vue from 'vue-native-core'
 
 export default {
     props: {
-        randomActivity: {
-            type: Function,
+        wordList: {
+            type: Array,
             required: true
         },
-        changeBackground: {
-            type: Function,
-            required: true
-        },
-        playRandomSound: {
-            type: Function,
-            required: true
-        },
-        sayGJ: {
-            type: Function,
-            required: true
-        },
-        sayLevelUp: {
+        allDone: {
             type: Function,
             required: true
         }
@@ -66,12 +54,9 @@ export default {
     data () {
         return {
             narrating: false,
-            curWord: {targetWord: ""},
             manuallyReading: false,
             showWord: false,
-            wordsSpoken: 0,
             userSpoke: false,
-            reinforced: false,
             filePath: AudioUtils.DocumentDirectoryPath + '/tempFile.aac',
             hasAudio: false,
             currentMetering: 0,
@@ -80,6 +65,9 @@ export default {
             silenceDuration: 999,
             maxGrowth: new Animated.Value(0),
             queuedCallback: null,
+            curWord: -1,
+            finishedWords: [],
+            reviewed: true
         }
     },
 
@@ -88,16 +76,6 @@ export default {
     },
 
     computed: {
-        // currently we show the target word on all difficulties
-        shouldShowTargetWord () {
-            //return this.difficultyReading < difficulty.HARD
-            return true
-        },
-        // we read target word on easy
-        shouldReadTargetWord () {
-            return this.difficultyReading <= difficulty.EASY
-        },
-
         micPic () {
             if (this.narrating) {
                 return micNormal
@@ -111,8 +89,6 @@ export default {
         },
         
         ...mapGetters([
-            'difficultyReading',
-            'getNextWord',
             'sizeFactor'
         ]),
     },
@@ -120,64 +96,42 @@ export default {
     methods: {
         ...mapActions([
             'afterSpeak',
-            'finishLevelUp'
         ]),
 
-        // Move on to the next target word. This does the following in order:
-        // Animates out the current target word if shown
-        // Loads the new image and sets it as the background
-        // Displays the new target word if on easy/medium and reads it if on easy
-        // Prompts the user to begin speaking
+        // Move on to the next word. This does the following in order:
+        // Animates out the current word if shown
+        // Displays the new target word
+        // Prompts the user to begin speaking if they havent said any words yet
         async getNext () {
             this.queuedCallback = null
-            await this.finishLevelUp()
-            // after 4 words spoken, go on to next activity
-            if (this.wordsSpoken >= 4) {
-                this.randomActivity()
+            if (this.curWord === this.wordList.length - 1) {
+                this.allDone(this.finishedWords)
             }
-            // still in this activity, go on to next word
+            // still have words left to record
             else {
                 // disable interaction
                 this.manuallyReading = true
                 this.narrating = true
                 // reset finished state
                 this.userSpoke = false
-                this.reinforced = false
+                this.reviewed = false
                 // hide these while we switch curWord
                 this.showWord = false
                 // move on to next word
-                this.curWord = this.getNextWord()
-                // show image and change background
-                this.fadeNewBackground()
+                this.curWord++
+                this.animateWord()
             }
         },
 
-        fadeNewBackground () {
-            this.changeBackground(this.curWord.targetWord, () => {
-                // new image is now displayed as background, animate in target word
-                // prepare the callback for after animation finishes
-                this.queuedCallback = () => {
-                    // speak and highlight the word
-                    if (this.shouldReadTargetWord) {
-                        this.$refs.targetWordRef.readWord(this.finishedTargetWord)
-                    }
-                    // just speak it
-                    else {
-                        this.finishedTargetWord()
-                    }
-                }
-                //initiate animation
-                this.showWord = true
-                if (this.shouldShowTargetWord) {
-                    // we dont care if the mic doesnt finish animating before reading the word, so no need for queuedCallbacks
-                    this.animateGrowth(true)
-                }
-                // if were in hard mode theres no word shown, so add the callback
-                // to this animation instead
-                else {
-                    this.animateGrowth(true, this.queuedCallback)
-                }
-            })
+        animateWord () {
+            // prepare the callback for after animation finishes
+            this.queuedCallback = this.finishedTargetWord
+            //initiate animation
+            this.showWord = true
+            // we only have to animate the mic in for the first word since it never animates out
+            if (this.curWord === 0) {
+                this.animateGrowth(true)
+            }
         },
 
         finishedTargetWord () {
@@ -185,46 +139,28 @@ export default {
                 // we're reinforcing the user's reading, 
                 if (this.userSpoke) {
                     // we already played their recording back to them, now finish
-                    if (this.reinforced) {
-                        this.doneReinforcing()
+                    if (this.reviewed) {
+                        this.doneReviewing()
                     }
                     // load the recording
                     else {
                         var recording = new Sound(this.filePath, '', (error) => {
                             if (error) {
                                 console.log('failed to load the sound', error)
-                                this.reinforced = true
-                                if (this.shouldShowTargetWord) {
-                                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
-                                }
-                                else {
-                                    this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
-                                }
+                                this.reviewed = true
+                                this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                             }
 
-                            // Set the recording to start at 0.1 second before we heard the user start speaking
-                            recording.setCurrentTime(Math.max(this.audioBegins - 0.1, 0))
+                            // Set the recording to start at 0.2 second before we heard the user start speaking
+                            recording.setCurrentTime(Math.max(this.audioBegins - 0.2, 0))
                             // After it plays, read the word a final time
                             let callback = (success) => {
+                                this.reviewed = true
                                 recording.release()
-                                this.reinforced = true
-                                if (this.shouldShowTargetWord) {
-                                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
-                                }
-                                else {
-                                    this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
-                                }
+                                this.finishedTargetWord()
                             }
                             // play the recording
                             recording.play(callback)
-                            // make sure it doesn't play for more than 2 seconds
-                            setTimeout(() => {
-                                if (!this.reinforced) {
-                                    recording.stop()
-                                    callback()
-                                }
-                            }, 2000)
-
                         })
                     }
                 }
@@ -262,26 +198,30 @@ export default {
                     }
                     else {
                         this.silenceDuration++
+                        if (this.silenceDuration > 5 && this.hasAudio) {
+                            this.stopRecording()
+                        }
                     }
                 }
                 
-                let prompt = "Please read the word out loud"
-                if (!this.shouldShowTargetWord) {
-                    prompt = "What's the picture of? Say it out loud"
+                let callback = async () => {
+                    this.narrating = false
+                    this.$refs.targetWordRef.startHighlightRepeating()
+                    this.manuallyReading = false
+                    try { await AudioRecorder.startRecording() }
+                    // more logs for later debugging
+                    catch (error) { console.log ("recording error"); console.log(error) }
                 }
-                this.afterSpeak({
-                    word: prompt,
-                    callback: async () => {
-                        this.narrating = false
-                        this.$refs.targetWordRef.startHighlightRepeating()
-                        this.manuallyReading = false
-                        setTimeout(this.stopRecording, 5000)
-                        try { await AudioRecorder.startRecording() }
-                        // more logs for later debugging
-                        catch (error) { console.log ("recording error"); console.log(error) }
-                        
-                    }
-                })
+                // we only prompt the user for the first word
+                if (this.curWord === 0) {
+                    this.afterSpeak({
+                        word: "Please read the word loud and clear",
+                        callback
+                    })
+                }
+                else {
+                    callback()
+                }
                 
             })
         },
@@ -301,13 +241,7 @@ export default {
 
                 // indicate we're in a finished state
                 this.userSpoke = true
-                //read the target word to reinforce and let user self-learn
-                if (this.shouldShowTargetWord) {
-                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
-                }
-                else {
-                    this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
-                }
+                this.finishedTargetWord()
             }
             else {
                 this.narrating = true
@@ -316,25 +250,20 @@ export default {
             }
         },
 
-        doneReinforcing () {
+        doneReviewing () {
             // prepare the callback for after animation finishes
             this.queuedCallback = () => {
                 this.showWord = false
-                this.wordsSpoken ++
                 // next word/sentence
-                this.sayGJ(this.getNext)
+                this.getNext()
             }
             // next tick so everything picks up the queuedCallback
             Vue.nextTick(() => {
-                // play a pleasant sound before moving on
-                this.playRandomSound()
                 // animate out our word if it exists
-                if (this.shouldShowTargetWord) {
-                    this.$refs.targetWordRef.animateOut()
+                this.$refs.targetWordRef.animateOut()
+                // we're done with all the recordings, get rid of the mic too
+                if (this.curWord === this.wordList.length - 1) {
                     this.animateGrowth(false)
-                }
-                else {
-                    this.animateGrowth(false, this.queuedCallback)
                 }
             })
         },

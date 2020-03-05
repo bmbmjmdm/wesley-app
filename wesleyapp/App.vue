@@ -192,7 +192,9 @@ export default {
             'curActivity',
             'textToSpeech',
             'difficultyReading',
-            'getPicture'
+            'getPicture',
+            'getUserPictures',
+            'getUserRecordings'
         ]),
     },
 
@@ -367,8 +369,12 @@ export default {
         //save child progress data when app is put into background/closed 
         handleAppStateChange (nextAppState) {
             if (this.appState === 'active' && nextAppState.match(/inactive|background/) ) {
-                let stringFile = JSON.stringify(this.getUserData)
-                AsyncStorage.setItem("WesleyApp-childProgress", stringFile);
+                let dataString = JSON.stringify(this.getUserData)
+                AsyncStorage.setItem("WesleyApp-childProgress", dataString);
+                let picturesString = JSON.stringify(this.getUserPictures())
+                AsyncStorage.setItem("WesleyApp-pictures", picturesString);
+                let recordingsString = JSON.stringify(this.getUserRecordings())
+                AsyncStorage.setItem("WesleyApp-recordings", recordingsString);
             }
             this.appState = nextAppState
         },

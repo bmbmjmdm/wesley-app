@@ -108,7 +108,10 @@ export default new Vuex.Store({
             }
             return userRecs
         },
-        hasUserRecording: state => (word) => state.recordings[word] && state.recordings[word].user,
+        hasUserRecording: state => (word) => {
+            let properWord = word.toLowerCase().replace("'", "")
+            return state.recordings[properWord] && state.recordings[properWord].user
+        },
         getLetterNames: state => letterList.map(letter => letter.targetWord),
         highlightSpeed: state => state.highlightSpeed,
         textToSpeech: state => state.textToSpeech,
@@ -137,6 +140,9 @@ export default new Vuex.Store({
                 allowedTopics: state.allowedTopics,
                 showIntro: state.showIntro
             }
+        },
+        getWordOrLetter: state => (word) => {
+            return letterList.concat(wordList).find(element => element.targetWord === word)
         },
 
         // depending on the activity, the object returned will be different
@@ -231,8 +237,9 @@ export default new Vuex.Store({
             getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))  
         /*
             // load from the users recordings
+            word = word.toLowerCase().replace("'", "")
             let userChoice = getters.hasUserRecording(word)
-            var sound = new Sound(String.toLowerCase(word) + '.aac', userChoice ? AudioUtils.DocumentDirectoryPath : Sound.MAIN_BUNDLE, (error) => {
+            var sound = new Sound(word + '.aac', userChoice ? AudioUtils.DocumentDirectoryPath : Sound.MAIN_BUNDLE, (error) => {
                 // we have a good sound
                 if (!error) {
                     sound.play(callback)
@@ -248,7 +255,7 @@ export default new Vuex.Store({
                     // we failed to load a user recording, invalidate it and retry with a default one
                     else {
                         dispatch('invalidateRecording', name)
-                        var sound = new Sound(String.toLowerCase(word) + '.aac', Sound.MAIN_BUNDLE, (error) => {
+                        var sound = new Sound(word + '.aac', Sound.MAIN_BUNDLE, (error) => {
                             // we have a good sound
                             if (!error) {
                                 sound.play(callback)
@@ -323,20 +330,14 @@ export default new Vuex.Store({
             }
         },
 
-        // slightly dangerous, we dont wait here to save. should be fine as long as we dont try to save two very fast
         savePicture({getters, commit}, {name, source}) {
             commit('setPicture', {name, source, user: true})
-            let stringFile = JSON.stringify(getters.getUserPictures())
-            AsyncStorage.setItem("WesleyApp-pictures", stringFile)
         },
 
-        // slightly dangerous, we dont wait here to save. should be fine as long as we dont try to save two very fast
         saveRecordings({getters, commit}, {names}) {
             for (let name in names) {
                 commit('setRecording', {name, user: true})
             }
-            let stringFile = JSON.stringify(getters.getUserRecordings())
-            AsyncStorage.setItem("WesleyApp-recordings", stringFile)
         },
 
         loadPictures({commit, state}, savedPictures) {
@@ -386,21 +387,14 @@ export default new Vuex.Store({
         },
 
         // if a picture fails to load, we reset to the default picture and save. 
-        // VERY dangerous, we dont wait here to save. Since many pictures can be invalidated at once I need to fix this
-        // TODO
         invalidatePicture({commit, getters}, name) {
             commit('setPicture', {name, source: allDefaultPictures[name], user: false})
-            let stringFile = JSON.stringify(getters.getUserPictures())
-            AsyncStorage.setItem("WesleyApp-pictures", stringFile);
         },
 
         // if a recording fails to load, we reset to the default recording and save. 
-        // VERY dangerous, we dont wait here to save. Since many recordings can be invalidated at once I need to fix this
-        // TODO
         invalidateRecording({commit, getters}, name) {
+            name = name.toLowerCase().replace("'", "")
             commit('deleteRecording', name)
-            let stringFile = JSON.stringify(getters.getUserRecordings())
-            AsyncStorage.setItem("WesleyApp-recordings", stringFile);
         },
     }
 });
