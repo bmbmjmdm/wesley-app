@@ -187,7 +187,7 @@ export default new Vuex.Store({
 
             let nextWord = list[Math.floor(Math.random() * list.length)]
             // we never want to show the same word twice
-            while (nextWord.targetWord === state.previousWord && list.length > 1 || nextWord.targetWord != "mom") {
+            while (nextWord.targetWord === state.previousWord && list.length > 1) {
                 nextWord = list[Math.floor(Math.random() * list.length)]
             }
             state.previousWord = nextWord.targetWord
