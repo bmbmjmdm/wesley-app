@@ -209,7 +209,7 @@ export default {
                     }
                     else {
                         this.silenceDuration++
-                        if (this.silenceDuration > 3 && this.hasAudio) {
+                        if (this.silenceDuration > 2 && this.hasAudio) {
                             this.stopRecording()
                         }
                     }
