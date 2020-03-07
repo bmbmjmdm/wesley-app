@@ -261,8 +261,10 @@ export default new Vuex.Store({
                     if (!error) {
                         // Set the recording to start at 0.2 second before we heard the user start speaking
                         sound.setCurrentTime(Math.max(getters.getRecording(cleanWord).startTime - 0.2, 0))
-                        console.log(getters.getRecording(cleanWord).startTime)
-                        sound.play(callback || (() => {}))
+                        sound.play(() => {
+                            sound.release()
+                            if (callback) callback()   
+                        })
                     }
                     // error
                     else {

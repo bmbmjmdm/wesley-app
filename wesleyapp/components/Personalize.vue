@@ -67,7 +67,7 @@
         </modal>
     
         <touchable-opacity
-            :onPress="() => setActivity({name: 'home'})"
+            :onPress="backHome"
             class="blue-box my-3"
             :style="[{paddingTop: paddingSize,
                     paddingBottom: paddingSize,
@@ -211,6 +211,11 @@ export default {
     },
 
     methods: {
+        backHome () {
+            this.readSentenceCallback = null
+            this.setActivity({name: 'home'})
+        },
+
         clickWord (word) {
             this.readSentenceCallback = null
             this.modalWord = word
@@ -293,17 +298,29 @@ export default {
         },
 
         modalRecordNew () {
-            this.readSentenceCallback = null
-            this.showModal = false
-            this.wordsToRecord = this.getWordRecordingList
-            // dont re-record words, unless all words are recorded, in which case re-record all
-            if (!this.modalWordFullyRecorded) {
-                this.wordsToRecord = this.wordsToRecord.filter((word => {
-                    return !this.hasUserRecording(word)
-                }))
+            if (this.showModal) {
+                this.showModal = false
+                this.readSentenceCallback = null
+                this.wordsToRecord = this.getWordRecordingList
+                // dont re-record words, unless all words are recorded, in which case re-record all
+                if (!this.modalWordFullyRecorded) {
+                    this.wordsToRecord = this.wordsToRecord.filter((word => {
+                        return !this.hasUserRecording(word)
+                    }))
+                }
+                //this.shuffleArray(this.wordsToRecord)
+                // we wait for any words/sentence being read to finish their current word 
+                // otherwise itll overlap our prompt
+                let waitToFinish = () => {
+                    if (this.curReading) {
+                        setTimeout(waitToFinish, 50)
+                    }
+                    else {
+                        this.recordingView = true
+                    }
+                }
+                waitToFinish()
             }
-            //this.shuffleArray(this.wordsToRecord)
-            this.recordingView = true
         },
 
         async modalFinishRecording (audioDetails) {

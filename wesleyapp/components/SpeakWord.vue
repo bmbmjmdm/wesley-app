@@ -95,7 +95,7 @@ export default {
         },
         // we read target word on easy
         shouldReadTargetWord () {
-            return this.difficultyReading <= difficulty.EASY
+            return this.difficultyReading <= difficulty.NORMAL
         },
 
         micPic () {
