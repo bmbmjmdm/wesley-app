@@ -4,6 +4,7 @@ import tts from 'react-native-tts'
 import wordList from './wordList'
 import allWordsText from './allWords'
 import letterList from './letterList'
+import additionalRecordingsList from './additionalRecordingsList'
 import { AsyncStorage } from 'react-native';
 import allDefaultPictures from './allDefaultPictures'
 import Sound  from 'react-native-sound'
@@ -103,7 +104,10 @@ export default new Vuex.Store({
             let userRecs = {}
             for (var index in state.recordings) {
                 if (state.recordings[index].user) {
-                    userRecs[index] = state.recordings[index].startTime
+                    userRecs[index] = {
+                        startTime: state.recordings[index].startTime,
+                        recordingLength: state.recordings[index].recordingLength
+                    }
                 }
             }
             return userRecs
@@ -113,7 +117,15 @@ export default new Vuex.Store({
             return state.recordings[properWord] && state.recordings[properWord].user
         },
         getLetterNames: state => letterList.map(letter => letter.targetWord),
-        highlightSpeed: state => state.highlightSpeed,
+        getRecordingNames: state => additionalRecordingsList.map(recording => recording.targetWord),
+        highlightSpeed: (state, getters) => (word) => {
+            let cleanWord = word.toLowerCase().replace("'", "")
+            if (getters.hasUserRecording(cleanWord)) {
+                let recording = getters.getRecording(cleanWord)
+                return 2.5 * recording.recordingLength * state.highlightSpeed
+            }
+            else return state.highlightSpeed
+        },
         textToSpeech: state => state.textToSpeech,
         shadow: state => state.shadow,
         allowAutoAdjust: state => state.allowAutoAdjust,
@@ -142,7 +154,7 @@ export default new Vuex.Store({
             }
         },
         getWordOrLetter: state => (word) => {
-            return letterList.concat(wordList).find(element => element.targetWord === word)
+            return letterList.concat(wordList).concat(additionalRecordingsList).find(element => element.targetWord === word)
         },
 
         // depending on the activity, the object returned will be different
@@ -175,7 +187,7 @@ export default new Vuex.Store({
 
             let nextWord = list[Math.floor(Math.random() * list.length)]
             // we never want to show the same word twice
-            while (nextWord.targetWord === state.previousWord && list.length > 1) {
+            while (nextWord.targetWord === state.previousWord && list.length > 1 || nextWord.targetWord != "mom") {
                 nextWord = list[Math.floor(Math.random() * list.length)]
             }
             state.previousWord = nextWord.targetWord
@@ -193,8 +205,8 @@ export default new Vuex.Store({
         setPicture(state, {name, source, user}) {
             Vue.set(state.pictures, name, {name, source, user})
         },
-        setRecording(state, {name, user, startTime}) {
-            Vue.set(state.recordings, name, {name, user, startTime})
+        setRecording(state, {name, user, startTime, recordingLength}) {
+            Vue.set(state.recordings, name, {name, user, startTime, recordingLength})
         },
         deleteRecording(state, name) {
             Vue.delete(state.recordings, name)
@@ -232,7 +244,7 @@ export default new Vuex.Store({
             // setup the helper for tts just incase
             var helper = () => {
                 getters.textToSpeech.removeEventListener('tts-finish', helper)
-                callback()
+                if (callback) callback()
             }
             let cleanWord = word.toLowerCase().replace("'", "")
             let hasRecording = getters.hasUserRecording(cleanWord)
@@ -249,7 +261,8 @@ export default new Vuex.Store({
                     if (!error) {
                         // Set the recording to start at 0.2 second before we heard the user start speaking
                         sound.setCurrentTime(Math.max(getters.getRecording(cleanWord).startTime - 0.2, 0))
-                        sound.play(callback)
+                        console.log(getters.getRecording(cleanWord).startTime)
+                        sound.play(callback || (() => {}))
                     }
                     // error
                     else {
@@ -324,10 +337,15 @@ export default new Vuex.Store({
             commit('setPicture', {name, source, user: true})
         },
 
-        saveRecordings({getters, commit}, {names, audioStartTimes}) {
+        saveRecordings({getters, commit}, {names, audioDetails}) {
             for (let index in names) {
                 let name = names[index].toLowerCase().replace("'", "")
-                commit('setRecording', {name, user: true, startTime: audioStartTimes[index]})
+                commit('setRecording', {
+                    name, 
+                    user: true, 
+                    startTime: audioDetails[index].startTime, 
+                    recordingLength: audioDetails[index].recordingLength
+                })
             }
         },
 
@@ -349,7 +367,12 @@ export default new Vuex.Store({
             if (savedRecordings) {
                 savedRecordings = JSON.parse(savedRecordings)
                 for (var recording in savedRecordings) {
-                    commit('setRecording', {name: recording, user: true, startTime: savedRecordings[recording]})
+                    commit('setRecording', {
+                        name: recording, 
+                        user: true, 
+                        startTime: savedRecordings[recording].startTime, 
+                        recordingLength: savedRecordings[recording].recordingLength
+                    })
                 }
             }/*
             for (var name in state.allWordsSaid) {

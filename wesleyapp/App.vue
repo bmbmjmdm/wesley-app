@@ -213,14 +213,14 @@ export default {
         randomActivity (changeBackground = true) {
             var activityList = []
             if (this.allowedTopics.includes('spelling')) {
-                activityList.push({name: 'spellWord', topic: 'Spelling', changeChance: 0})
-                activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.2})
-                activityList.push({name: 'findLetterByAlliteration', topic: 'Spelling', changeChance: 0.2})
+                //activityList.push({name: 'spellWord', topic: 'Spelling', changeChance: 0})
+                //activityList.push({name: 'findWordByLetter', topic: 'Spelling', changeChance: 0.2})
+                //activityList.push({name: 'findLetterByAlliteration', topic: 'Spelling', changeChance: 0.2})
             }
             if (this.allowedTopics.includes('reading')) {
-                activityList.push({name: 'findWordByPicture', topic: 'Reading', changeChance: 0})
+                //activityList.push({name: 'findWordByPicture', topic: 'Reading', changeChance: 0})
                 activityList.push({name: 'findWordInSentence', topic: 'Reading', changeChance: 0})
-                activityList.push({name: 'speakWord', topic: 'Reading', changeChance: 0})
+                //activityList.push({name: 'speakWord', topic: 'Reading', changeChance: 0})
             }
             let newActivity
             let random

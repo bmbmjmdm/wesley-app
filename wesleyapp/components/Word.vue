@@ -232,7 +232,7 @@ export default {
                     this.highlightedText = this.highlightedText + this.normalText.charAt(0)
                     this.normalText = this.normalText.slice(1, this.normalText.length)
                     this.highlightWord(callback)
-                }, this.highlightSpeed)
+                }, this.highlightSpeed(this.word))
             }
             else {
                 // we're reading a sentence, alert the parent that we've finished
@@ -240,13 +240,13 @@ export default {
                     setTimeout(() => {
                         this.highlighting = false
                         this.finishReading(callback)
-                    }, this.highlightSpeed)
+                    }, this.highlightSpeed(this.word))
                 }
                 // we're reading just this word, clean up
                 else {
                     setTimeout(() => {
                         this.clearHighlight(callback)
-                    }, this.highlightSpeed*2)
+                    }, this.highlightSpeed(this.word)*2)
                 }
             }
         },

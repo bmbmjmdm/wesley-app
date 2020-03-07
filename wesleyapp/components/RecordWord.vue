@@ -65,7 +65,7 @@ export default {
             maxGrowth: new Animated.Value(0),
             queuedCallback: null,
             curWord: -1,
-            wordStartTimes: [],
+            audioDetails: [],
             reviewed: true
         }
     },
@@ -109,7 +109,7 @@ export default {
         async getNext () {
             this.queuedCallback = null
             if (this.curWord === this.wordList.length - 1) {
-                this.allDone(this.wordStartTimes)
+                this.allDone(this.audioDetails)
             }
             // still have words left to record
             else {
@@ -155,6 +155,11 @@ export default {
                                 this.$refs.targetWordRef.readWord(this.finishedTargetWord)
                             }
 
+                            
+                            this.audioDetails.push({
+                                startTime: this.audioBegins, 
+                                recordingLength: recording.getDuration() - Math.max(this.audioBegins - 0.2, 0)
+                            })
                             // Set the recording to start at 0.2 second before we heard the user start speaking
                             recording.setCurrentTime(Math.max(this.audioBegins - 0.2, 0))
                             // After it plays, read the word a final time
@@ -200,12 +205,11 @@ export default {
                         this.silenceDuration = 0
                         if (this.audioBegins === 0) {
                             this.audioBegins = data.currentTime
-                            this.wordStartTimes.push(this.audioBegins)
                         }
                     }
                     else {
                         this.silenceDuration++
-                        if (this.silenceDuration > 5 && this.hasAudio) {
+                        if (this.silenceDuration > 3 && this.hasAudio) {
                             this.stopRecording()
                         }
                     }

@@ -256,7 +256,7 @@ export default {
                     this.finishReading()
                 }
             })
-            setTimeout(this.continueReadWord, this.highlightSpeed)
+            setTimeout(this.continueReadWord, this.highlightSpeed(this.word))
         },
 
         continueReadWord () {
@@ -264,7 +264,7 @@ export default {
             if (this.readThisMany > 0) {
                 this.$refs.letterRef[this.$refs.letterRef.length-this.readThisMany].highlightLetter()
                 this.readThisMany--
-                setTimeout(this.continueReadWord, this.highlightSpeed)
+                setTimeout(this.continueReadWord, this.highlightSpeed(this.word))
             }
             else {
                 this.doneHighlighting = true

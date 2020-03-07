@@ -32,7 +32,7 @@
                         <text
                             class="link-text"
                             :style="{fontSize: fontSize }">
-                            Record reading voice
+                            {{modalWordFullyRecorded? "Re-r" : "R"}}ecord reading voice
                         </text>
                     </touchable-opacity>
                     <touchable-opacity
@@ -150,6 +150,7 @@ export default {
             modalWord: "",
             recordingView: false,
             wordsToRecord: [],
+            readSentenceCallback: null
         }
     },
 
@@ -158,9 +159,19 @@ export default {
             return this.modalWord !== "BackgroundImage" && this.modalWord !== "LevelUpGif"
         },
 
+        modalWordAsObject () {
+            return this.getWordOrLetter(this.modalWord) || {}
+        },
+
+        getWordRecordingList () {
+            let wordOrLetter = this.modalWordAsObject
+            let sentence = wordOrLetter.sentence || wordOrLetter.alliteration || ""
+            return sentence.split(' ')
+        },
+
         modalWordFullyRecorded () {
             if (this.modalWord && this.canRecord) {
-                let allWords = this.getWordRecordingList(this.modalWord)
+                let allWords = this.getWordRecordingList
                 for (let word of allWords) {
                     if (!this.hasUserRecording(word)) return false
                 }
@@ -176,7 +187,7 @@ export default {
         },
 
         filteredWords () {
-            return this.getPictureNames.concat(this.getLetterNames).filter(
+            return this.getRecordingNames.concat(this.getPictureNames).concat(this.getLetterNames).filter(
                 (word) => {
                     return word.toLowerCase().includes(this.filterText.toLowerCase())
                 }
@@ -192,6 +203,7 @@ export default {
             'sizeFactor',
             'getPictureNames',
             'getLetterNames',
+            'getRecordingNames',
             'hasUserPicture',
             'hasUserRecording',
             'getWordOrLetter'
@@ -200,14 +212,42 @@ export default {
 
     methods: {
         clickWord (word) {
+            this.readSentenceCallback = null
             this.modalWord = word
             this.showModal = true
+            if (this.canChangePicture) {
+                this.changeBackground(word)
+            }
+            this.readCurSentence()
         },
 
-        getWordRecordingList (word) {
-            let wordOrLetter = this.getWordOrLetter(word)
-            let sentence = wordOrLetter.sentence || wordOrLetter.alliteration
-            return sentence.split(' ')
+        readCurSentence () {
+            let sentence = this.getWordRecordingList
+            let i = -1
+            // if there's another sentence being read,
+            // we wait here for a split second to let the current word being read finish
+            // then that sentence is cut off and we start our queued sentence
+            let waitToFinish = () => {
+                // the waiting loop
+                if (this.curReading) {
+                    setTimeout(waitToFinish, 50)
+                }
+                // cur word is done reading, move on to the queued sentence
+                else {
+                    this.readSentenceCallback = () => {
+                        i++
+                        if (i < sentence.length && this.readSentenceCallback) {
+                            this.curReading = true
+                            this.afterSpeak({word: sentence[i], callback: this.readSentenceCallback})
+                        }
+                        else {
+                            this.curReading = false
+                        }
+                    }
+                    this.readSentenceCallback()
+                }
+            }
+            waitToFinish()
         },
 
         changeWord (word) {
@@ -224,7 +264,7 @@ export default {
                 },
             }
             // open the image picker so they can override the word's picture
-            ImagePicker.launchImageLibrary(options, (response) => {
+            ImagePicker.launchImageLibrary(options, async (response) => {
                 if (response.didCancel) {
                     console.log('User cancelled image picker')
                 } else if (response.error || !response) {
@@ -239,49 +279,56 @@ export default {
                 else {
                     // success!
                     const source = { uri: response.uri }
-                    this.savePicture({name: word, source, user: true})
+                    await this.savePicture({name: word, source, user: true})
                 }
                 // now show the user what the word's picture is, whether it changed or not
-                setTimeout(() => this.changeBackground(word), 250)
+                this.changeBackground(word)
             })
         },
 
         modalSelectNew () {
+            this.readSentenceCallback = null
             this.showModal = false
             this.changeWord(this.modalWord)
         },
 
         modalRecordNew () {
+            this.readSentenceCallback = null
             this.showModal = false
-            this.wordsToRecord = this.getWordRecordingList(this.modalWord)
-            this.wordsToRecord = this.wordsToRecord.filter((word => {
-                return !this.hasUserRecording(word)
-            }))
-            this.shuffleArray(this.wordsToRecord)
+            this.wordsToRecord = this.getWordRecordingList
+            // dont re-record words, unless all words are recorded, in which case re-record all
+            if (!this.modalWordFullyRecorded) {
+                this.wordsToRecord = this.wordsToRecord.filter((word => {
+                    return !this.hasUserRecording(word)
+                }))
+            }
+            //this.shuffleArray(this.wordsToRecord)
             this.recordingView = true
         },
 
-        modalFinishRecording (audioStartTimes) {
+        async modalFinishRecording (audioDetails) {
             this.recordingView = false
-            this.saveRecordings({names: this.wordsToRecord, audioStartTimes})
+            await this.saveRecordings({names: this.wordsToRecord, audioDetails})
+            this.readCurSentence()
         },
 
-        modalRestoreDefaultPicture () {
-            this.invalidatePicture(this.modalWord)
-            setTimeout(() => this.changeBackground(this.modalWord), 250)
+        async modalRestoreDefaultPicture () {
+            await this.invalidatePicture(this.modalWord)
+            this.changeBackground(this.modalWord)
         },
 
-        modalRestoreDefaultRecording () {
-            let allWords = this.getWordRecordingList(this.modalWord)
+        async modalRestoreDefaultRecording () {
+            this.readSentenceCallback = null
+            let allWords = this.getWordRecordingList
             for (let word of allWords) {
-                this.invalidateRecording(word)
+                await this.invalidateRecording(word)
             }
-            setTimeout(() => this.afterSpeak({word: this.modalWord}), 250)
+            this.readCurSentence()
         },
 
         modalCancel () {
+            this.readSentenceCallback = null
             this.showModal = false
-            this.changeBackground(this.modalWord)
         },
 
         shuffleArray (a) {
