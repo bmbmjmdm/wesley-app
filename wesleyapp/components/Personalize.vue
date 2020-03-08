@@ -15,49 +15,93 @@
                     class="bottom-menu"
                     :activeOpacity="1"
                     :onPress="() => {}">
-                    <touchable-opacity
-                        v-if="canChangePicture"
-                        :onPress="modalSelectNew"
-                        :style="{marginBottom: paddingSize*1.5}">
-                        <text
-                            class="link-text"
-                            :style="{fontSize: fontSize }">
-                            Select new picture
-                        </text>
-                    </touchable-opacity>
-                    <touchable-opacity
-                        v-if="canRecord"
-                        :onPress="modalRecordNew"
-                        :style="{marginBottom: paddingSize*1.5}">
-                        <text
-                            class="link-text"
-                            :style="{fontSize: fontSize }">
-                            {{modalWordFullyRecorded? "Re-r" : "R"}}ecord reading voice
-                        </text>
-                    </touchable-opacity>
-                    <touchable-opacity
-                        v-if="hasUserPicture(modalWord)"
-                        :onPress="modalRestoreDefaultPicture"
-                        :style="{marginBottom: paddingSize*1.5}">
-                        <text
-                            class="link-text-danger"
-                            :style="{fontSize: fontSize }">
-                            Restore default picture
-                        </text>
-                    </touchable-opacity>
-                    <touchable-opacity
-                        v-if="modalWordFullyRecorded"
-                        :onPress="modalRestoreDefaultRecording"
-                        :style="{marginBottom: paddingSize*1.5}">
-                        <text
-                            class="link-text-danger"
-                            :style="{fontSize: fontSize }">
-                            Restore default voice
-                        </text>
-                    </touchable-opacity>
+                    <template v-if="!bulkActions" class="centered">
+                        <touchable-opacity
+                            v-if="canChangePicture"
+                            :onPress="modalSelectNew"
+                            :style="{marginBottom: paddingSize*1.5}">
+                            <text
+                                class="link-text center-text"
+                                :style="{fontSize: fontSize }">
+                                Select new picture
+                            </text>
+                        </touchable-opacity>
+                        <touchable-opacity
+                            v-if="canRecord"
+                            :onPress="modalRecordNew"
+                            :style="{marginBottom: paddingSize*1.5}">
+                            <text
+                                class="link-text center-text"
+                                :style="{fontSize: fontSize }">
+                                {{modalWordFullyRecorded ? "Re-r" : "R"}}ecord reading voice
+                            </text>
+                        </touchable-opacity>
+                        <touchable-opacity
+                            v-if="hasUserPicture(modalWord)"
+                            :onPress="modalRestoreDefaultPicture"
+                            :style="{marginBottom: paddingSize*1.5}">
+                            <text
+                                class="link-text-danger center-text"
+                                :style="{fontSize: fontSize }">
+                                Restore default picture
+                            </text>
+                        </touchable-opacity>
+                        <touchable-opacity
+                            v-if="modalWordFullyRecorded"
+                            :onPress="modalRestoreDefaultRecording"
+                            :style="{marginBottom: paddingSize*1.5}">
+                            <text
+                                class="link-text-danger center-text"
+                                :style="{fontSize: fontSize }">
+                                Restore default voice
+                            </text>
+                        </touchable-opacity>
+                    </template>
+                    <template v-else class="centered">
+                        <touchable-opacity
+                            v-if="true"
+                            :onPress="recordBulk"
+                            :style="{marginBottom: paddingSize*1.5}">
+                            <text
+                                class="link-text center-text"
+                                :style="{fontSize: fontSize }">
+                                Record Voice in Bulk
+                            </text>
+                        </touchable-opacity>
+                        <touchable-opacity
+                            v-if="true"
+                            :onPress="pictureBulk"
+                            :style="{marginBottom: paddingSize*1.5}">
+                            <text
+                                class="link-text center-text"
+                                :style="{fontSize: fontSize }">
+                                Select Pictures in Bulk
+                            </text>
+                        </touchable-opacity>
+                        <touchable-opacity
+                            v-if="hasAnyUserPicture"
+                            :onPress="restoreAllPictures"
+                            :style="{marginBottom: paddingSize*1.5}">
+                            <text
+                                class="link-text-danger center-text"
+                                :style="{fontSize: fontSize }">
+                                {{ confirmRestorePictures ? "Please confirm, this will wipe all personalized pictures" : "Restore All Default Pictures" }}
+                            </text>
+                        </touchable-opacity>
+                        <touchable-opacity
+                            v-if="hasAnyUserRecording"
+                            :onPress="restoreAllRecordings"
+                            :style="{marginBottom: paddingSize*1.5}">
+                            <text
+                                class="link-text-danger center-text"
+                                :style="{fontSize: fontSize }">
+                                {{ confirmRestoreRecordings ? "Please confirm, this will wipe all personalized voices" : "Restore All Default Voices" }}
+                            </text>
+                        </touchable-opacity>
+                    </template>
                     <touchable-opacity class="cancel-text" :onPress="modalCancel">
                         <text
-                            class="cancel-text"
+                            class="cancel-text center-text"
                             :style="{fontSize: fontSize * 1.5}">
                             Cancel
                         </text>
@@ -66,20 +110,37 @@
             </touchable-opacity>
         </modal>
     
-        <touchable-opacity
-            :onPress="backHome"
-            class="blue-box my-3"
-            :style="[{paddingTop: paddingSize,
-                    paddingBottom: paddingSize,
-                    paddingRight: paddingSize * 1.5,
-                    paddingLeft: paddingSize * 1.5 },
-                    roundBox]">
-            <text 
-                :style="{fontSize: fontSize}"
-                class="normal-text">
-                Back
-            </text>
-        </touchable-opacity>
+        <View class="horizontal-spaced my-3">
+            <touchable-opacity
+                :onPress="backHome"
+                class="blue-box ml-3"
+                :style="[{paddingTop: paddingSize,
+                        paddingBottom: paddingSize,
+                        paddingRight: paddingSize * 1.5,
+                        paddingLeft: paddingSize * 1.5 },
+                        roundBox]">
+                <text 
+                    :style="{fontSize: fontSize}"
+                    class="normal-text">
+                    Back
+                </text>
+            </touchable-opacity>
+            
+            <touchable-opacity
+                :onPress="clickBulk"
+                class="blue-box mr-3"
+                :style="[{paddingTop: paddingSize,
+                        paddingBottom: paddingSize,
+                        paddingRight: paddingSize * 1.5,
+                        paddingLeft: paddingSize * 1.5 },
+                        roundBox]">
+                <text 
+                    :style="{fontSize: fontSize}"
+                    class="normal-text">
+                    Bulk
+                </text>
+            </touchable-opacity>
+        </View>
         
         <text-input
             v-model="filterText"
@@ -121,6 +182,7 @@
     <RecordWord
         v-else
         :wordList="wordsToRecord"
+        :bulkRecording="bulkRecording"
         :allDone="modalFinishRecording" />
 </template>
 
@@ -150,7 +212,12 @@ export default {
             modalWord: "",
             recordingView: false,
             wordsToRecord: [],
-            readSentenceCallback: null
+            readSentenceCallback: null,
+            bulkActions: false,
+            confirmRestoreRecordings: false,
+            confirmRestorePictures: false,
+            preventRestore: false,
+            bulkRecording: false,
         }
     },
 
@@ -206,7 +273,11 @@ export default {
             'getRecordingNames',
             'hasUserPicture',
             'hasUserRecording',
-            'getWordOrLetter'
+            'hasAnyUserPicture',
+            'hasAnyUserRecording',
+            'getWordOrLetter',
+            'getAllWordsToRecord',
+            'getAllWordsNeedingPictures'
         ]),
     },
 
@@ -216,10 +287,16 @@ export default {
             this.setActivity({name: 'home'})
         },
 
+        clickBulk () {
+            this.bulkActions = true
+            this.showModal = true
+        },
+
         clickWord (word) {
             this.readSentenceCallback = null
             this.modalWord = word
             this.showModal = true
+            this.bulkActions = false
             if (this.canChangePicture) {
                 this.changeBackground(word)
             }
@@ -275,6 +352,7 @@ export default {
                 } else if (response.error || !response) {
                     Alert.alert(
                         'Upload Failed: Please try again',
+                        '',
                         [
                             {text: 'OK', onPress: () => {}},
                         ],
@@ -325,8 +403,13 @@ export default {
 
         async modalFinishRecording (audioDetails) {
             this.recordingView = false
-            await this.saveRecordings({names: this.wordsToRecord, audioDetails})
-            this.readCurSentence()
+            await this.saveRecordings({audioDetails})
+            if (!this.bulkRecording) {
+                this.readCurSentence()
+            }
+            else {
+                this.bulkRecording = false
+            }
         },
 
         async modalRestoreDefaultPicture () {
@@ -346,6 +429,107 @@ export default {
         modalCancel () {
             this.readSentenceCallback = null
             this.showModal = false
+            this.bulkActions = false
+            this.confirmRestoreRecordings = false
+            this.confirmRestorePictures = false
+        },
+
+        restoreAllPictures () {
+            if (this.preventRestore) return
+            if (!this.confirmRestorePictures) {
+                this.confirmRestorePictures = true
+                this.preventRestore = true
+                setTimeout(() => this.preventRestore = false, 1000)
+            }
+            else {
+                this.confirmRestorePictures = false
+                this.invalidateAllPictures()
+            }
+        },
+
+        restoreAllRecordings () {
+            if (this.preventRestore) return
+            if (!this.confirmRestoreRecordings) {
+                this.confirmRestoreRecordings = true
+                this.preventRestore = true
+                setTimeout(() => this.preventRestore = false, 1000)
+            }
+            else {
+                this.confirmRestoreRecordings = false
+                this.invalidateAllRecordings()
+            }
+        },
+
+        recordBulk () {
+            if (this.showModal) {
+                this.modalCancel()
+                this.wordsToRecord = this.getAllWordsToRecord()
+                this.bulkRecording = true
+                this.recordingView = true
+            }
+        },
+
+        pictureBulk () {
+            if (this.showModal) {
+                this.modalCancel()
+                this.wordsToRecord = this.getAllWordsNeedingPictures()
+                // loop through all those words and select a picture for each
+                let callback = () => {
+                    // exit condition
+                    if (!this.wordsToRecord.length) return
+
+                    let word = this.wordsToRecord.shift()
+                    // full prompt if they just started, short after that
+                    if(this.saidPrompt < 2) {
+                        this.afterSpeak({word: 'Select a picture for ' + word})
+                        this.saidPrompt++
+                    }
+                    else {
+                        this.afterSpeak({word})
+                    }
+                    const options = {
+                        title: 'Select vertical picture of: ' + word,
+                        mediaType: 'photo',
+                        storageOptions: {
+                            skipBackup: true,
+                            path: 'wordPictures',
+                        },
+                    }
+                    // open the image picker so they can override the word's picture
+                    ImagePicker.launchImageLibrary(options, async (response) => {
+                        if (response.didCancel) {
+                            // TODO the user canceled, offer option to skip cur picture
+                            Alert.alert(
+                                'Skip this picture or stop all together?',
+                                '',
+                                [
+                                    {text: 'Stop', onPress: () => {}},
+                                    {text: 'Skip', onPress: callback}
+                                ],
+                                {cancelable: true},
+                            )
+                        }
+                        else if (response.error || !response) {
+                            Alert.alert(
+                                'Upload Failed: Please try again',
+                                '',
+                                [
+                                    {text: 'OK', onPress: () => {}}
+                                ],
+                                {cancelable: true},
+                            )
+                        }
+                        else {
+                            // success! save picture and loop
+                            const source = { uri: response.uri }
+                            this.savePicture({name: word, source, user: true})
+                            callback()
+                        }
+                    })
+                }
+                //initiate callback loop
+                callback()
+            }
         },
 
         shuffleArray (a) {
@@ -367,7 +551,9 @@ export default {
             'saveRecordings',
             'afterSpeak',
             'invalidatePicture',
-            'invalidateRecording'
+            'invalidateRecording',
+            'invalidateAllPictures',
+            'invalidateAllRecordings'
         ]),
     },
 }
@@ -380,6 +566,12 @@ export default {
         justify-content: center;
         flex: 1;
         flex-direction: column;
+    }
+
+    .horizontal-spaced {
+        justify-content: space-between;
+        flex-direction: row;
+        width: 100% 
     }
 
     .grid-list {
@@ -424,6 +616,14 @@ export default {
         margin-bottom: 15;
     }
 
+    .mr-3 {
+        margin-right: 15;
+    }
+
+    .ml-3 {
+        margin-left: 15;
+    }
+
     .m-2 {
         margin: 10
     }
@@ -448,5 +648,16 @@ export default {
         padding: 25px;
         width: 100%;
         background-color:'rgb(255,255,255)';
+    }
+
+    .centered {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .center-text {
+        text-align: center
     }
 </style>

@@ -94,6 +94,10 @@ export default {
         skipShrink: {
             type: Boolean,
             default: false
+        },
+        animationSpeedFactor: {
+            type: Number,
+            default: 1,
         }
     },
 
@@ -160,9 +164,9 @@ export default {
         ]),
         
         animateGrowth (max, padding) {
-            var time = 500
+            var time = 500 * this.animationSpeedFactor
             if (this.pic) {
-                time = 800
+                time = 800 * this.animationSpeedFactor
             }
             // Animate the word in, going from 0 size to full
             Animated.parallel([
@@ -180,7 +184,7 @@ export default {
         },
         
         widenWord () {
-            var time = 300
+            var time = 300 * this.animationSpeedFactor
             // Animate the word as we read it, making it inflate
             Animated.parallel([
                 Animated.timing(this.paddingMod, {
@@ -192,7 +196,7 @@ export default {
         },
         
         shrinkWord (callback) {
-            var time = 300
+            var time = 300 * this.animationSpeedFactor
             // Animate the word after we read it, making it deflate
             Animated.parallel([
                 Animated.timing(this.paddingMod, {
@@ -204,7 +208,7 @@ export default {
         },
         
         animateOpacity (value) {
-            var time = 1000
+            var time = 1000 * this.animationSpeedFactor
             // Fade the letter in/out
             Animated.parallel([
                 Animated.timing(this.opacityGrowth, {

@@ -98,6 +98,13 @@ export default new Vuex.Store({
             return userPics
         },
         hasUserPicture: state => (word) => state.pictures[word] && state.pictures[word].user,
+        hasAnyUserPicture: state => {
+            for (var index in state.pictures) {
+                if (state.pictures[index].user) {
+                    return true
+                }
+            }
+        },
         getPictureNames: state => Object.keys(state.pictures),
         getRecording: state => name => state.recordings[name],
         getUserRecordings: state => () => {
@@ -115,6 +122,13 @@ export default new Vuex.Store({
         hasUserRecording: state => (word) => {
             let properWord = word.toLowerCase().replace("'", "")
             return state.recordings[properWord] && state.recordings[properWord].user
+        },
+        hasAnyUserRecording: state => {
+            for (var index in state.recordings) {
+                if (state.recordings[index].user) {
+                    return true
+                }
+            }
         },
         getLetterNames: state => letterList.map(letter => letter.targetWord),
         getRecordingNames: state => additionalRecordingsList.map(recording => recording.targetWord),
@@ -155,6 +169,39 @@ export default new Vuex.Store({
         },
         getWordOrLetter: state => (word) => {
             return letterList.concat(wordList).concat(additionalRecordingsList).find(element => element.targetWord === word)
+        },
+        getAllWordsToRecord: (state, getters) => () => {
+            let fullList = additionalRecordingsList.concat(wordList).concat(letterList)
+            let finalList = new Set()
+            // look at all words/letters/phrases we have
+            for (let wordObj of fullList) {
+                // grab the actual sentence/alliteration/phrase associated with the word/letter/phrase
+                let sentence = wordObj.sentence || wordObj.alliteration
+                if (sentence) {
+                    sentence = sentence.split(' ')
+                    // look at each word in that sentence/alliteration/phrase
+                    for (let wordString of sentence) {
+                        // clean it up so we can see if we already have a recording for it
+                        let cleanWord = wordString.toLowerCase().replace("'", "")
+                        if (!getters.hasUserRecording(cleanWord)) {
+                            // if not add it to our set. we want it to be lowercase so we dont get duplicates due to
+                            // case, however not if the word should never be lowercase like "I"
+                            let readableWord = cleanWord === 'i' || cleanWord === 'im' || cleanWord === 'ive' ? wordString : wordString.toLowerCase()
+                            finalList.add(readableWord)
+                        }
+                    }
+                }
+            }
+            return Array.from(finalList)            
+        },
+        getAllWordsNeedingPictures: (state, getters) => () => {
+            let finalList = []
+            for (let word of getters.getPictureNames) {
+                if (!getters.hasUserPicture(word)) {
+                    finalList.push(word)
+                }
+            }
+            return finalList          
         },
 
         // depending on the activity, the object returned will be different
@@ -339,14 +386,13 @@ export default new Vuex.Store({
             commit('setPicture', {name, source, user: true})
         },
 
-        saveRecordings({getters, commit}, {names, audioDetails}) {
-            for (let index in names) {
-                let name = names[index].toLowerCase().replace("'", "")
+        saveRecordings({getters, commit}, {audioDetails}) {
+            for (let obj of audioDetails) {
                 commit('setRecording', {
-                    name, 
+                    name: obj.word, 
                     user: true, 
-                    startTime: audioDetails[index].startTime, 
-                    recordingLength: audioDetails[index].recordingLength
+                    startTime: obj.startTime, 
+                    recordingLength: obj.recordingLength
                 })
             }
         },
@@ -413,6 +459,18 @@ export default new Vuex.Store({
             name = name.toLowerCase().replace("'", "")
             commit('deleteRecording', name)
         },
+
+        async invalidateAllPictures({commit, getters, dispatch}) {
+            for (var name in getters.getUserPictures()) {
+                await dispatch('invalidatePicture', name)
+            }
+        },
+
+        async invalidateAllRecordings({commit, getters}) {
+            for (var name in getters.getUserRecordings()) {
+                await dispatch('invalidateRecording', name)
+            }
+        },
     }
 });
 
@@ -464,12 +522,13 @@ function getChoices(state, list, rightWrong) {
                     ratio = wordHistory[rightWrong]/wordHistory.total
                 }
                 // if we have no data on the word, but we're looking for hard words,
-                // assume the unseen word is a little hard
+                // assume the unseen word is hard
                 else if (rightWrong === 'wrong') {
-                    ratio = 0.5
+                    ratio = 0.75
                 }
+                // otherwise assume the word is a little easy
                 else {
-                    ratio = 0
+                    ratio = 0.25
                 }
                 if (ratio >= threshold) newList.push(i)
                 else if (ratio > highest) highest = ratio

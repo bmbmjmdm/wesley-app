@@ -1,4 +1,4 @@
-<!-- This is copied from SpeakWord. Idealy this code wouldn't duplicate but thats low priority atm. ANY CHANGE TO SpeakWord NEEDS TO UPDATE THIS TOO -->
+<!-- Most of this is copied from SpeakWord. Idealy this code wouldn't duplicate but thats low priority atm. ANY CHANGE TO SpeakWord NEEDS TO UPDATE THIS TOO -->
 <template>
     <view class="container">
         <view class="word-to-speak">
@@ -13,13 +13,27 @@
                 :narrating="false"
                 :continueSentence="()=>{}"
                 :finishedAnimating="queuedCallback"
+                :animationSpeedFactor="0.5"
                 :skipShrink="!narrating" />
         </view>
         <animated:image
             v-if="showMic"
             :fadeDuration="0"
             :style="{height: maxGrowth, width: maxGrowth, resizeMode: 'stretch'}"
-            :source="micPic">
+            :source="micPic" />
+        
+        <view v-if="bulkRecording" class="back-button">
+            <touchable-opacity
+                class="white-box"
+                :onPress="quit"
+                :style="[{padding: paddingSizeSmall}, roundBox]">
+                <text 
+                    :style="{fontSize: fontSizeSmall}"
+                    class="link-text">
+                    Stop Recording
+                </text>
+            </touchable-opacity>
+        </view>
     </view>
 </template>
 
@@ -44,7 +58,11 @@ export default {
         allDone: {
             type: Function,
             required: true
-        }
+        },
+        bulkRecording: {
+            type: Boolean,
+            default: false,
+        },
     },
     
     components: {
@@ -66,7 +84,8 @@ export default {
             queuedCallback: null,
             curWord: -1,
             audioDetails: [],
-            reviewed: true
+            reviewed: true,
+            recording: null
         }
     },
 
@@ -93,7 +112,10 @@ export default {
         },
         
         ...mapGetters([
-            'sizeFactor'
+            'sizeFactor',
+            'roundBox',
+            'paddingSizeSmall',
+            'fontSizeSmall',
         ]),
     },
 
@@ -148,7 +170,7 @@ export default {
                     }
                     // load the recording
                     else {
-                        var recording = new Sound(this.filePath, '', (error) => {
+                        this.recording = new Sound(this.filePath, '', (error) => {
                             if (error) {
                                 console.log('failed to load the sound', error)
                                 this.reviewed = true
@@ -157,19 +179,20 @@ export default {
 
                             
                             this.audioDetails.push({
+                                word: this.wordList[this.curWord].toLowerCase().replace("'", ""),
                                 startTime: this.audioBegins, 
-                                recordingLength: recording.getDuration() - Math.max(this.audioBegins - 0.2, 0)
+                                recordingLength: this.recording.getDuration() - Math.max(this.audioBegins - 0.2, 0)
                             })
                             // Set the recording to start at 0.2 second before we heard the user start speaking
-                            recording.setCurrentTime(Math.max(this.audioBegins - 0.2, 0))
+                            this.recording.setCurrentTime(Math.max(this.audioBegins - 0.2, 0))
                             // After it plays, read the word a final time
                             let callback = (success) => {
                                 this.reviewed = true
-                                recording.release()
+                                this.recording.release()
                                 this.finishedTargetWord()
                             }
                             // play the recording
-                            recording.play(callback)
+                            this.recording.play(callback)
                         })
                     }
                 }
@@ -296,10 +319,20 @@ export default {
             Animated.parallel([
                 Animated.timing(this.maxGrowth, {
                     toValue: max,
-                    duration: 500,
+                    duration: 250,
                     useNativeDriver: false,
                 }),
             ]).start(callback)
+        },
+
+        async quit () {
+            try {
+                AudioRecorder.stopRecording()
+                this.$refs.targetWordRef.stopHighlightRepeating()
+                if (this.recording) this.recording.release()
+            }
+            catch (error) {}
+            this.allDone(this.audioDetails)
         },
     }
 
@@ -322,4 +355,20 @@ export default {
         align-self: center;
         margin-top: 50
     }
+
+    .back-button {
+        position: absolute;
+        bottom: 0;
+        align-self: center;
+        margin-bottom: 50
+    }
+
+    .white-box {
+        background-color: 'rgb(255, 255, 255)';
+    }
+
+    .link-text {
+        color: 'rgb(0, 119, 179)';
+    }
+
 </style>
