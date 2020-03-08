@@ -33,6 +33,18 @@
                     Stop Recording
                 </text>
             </touchable-opacity>
+            <touchable-opacity
+                class="ml-8 mr-2"
+                :class="{'white-box': curWord !== 0, 'white-disabled-box': curWord === 0}"
+                :disabled="curWord === 0"
+                :onPress="undo"
+                :style="[{padding: paddingSizeSmall, paddingRight: paddingSizeSmall*2, paddingLeft: paddingSizeSmall*2}, roundBox]">
+                <text 
+                    :style="{fontSize: fontSizeSmall}"
+                    class="link-text">
+                    Undo
+                </text>
+            </touchable-opacity>
         </view>
     </view>
 </template>
@@ -85,7 +97,9 @@ export default {
             curWord: -1,
             audioDetails: [],
             reviewed: true,
-            recording: null
+            recording: null,
+            undoing: false,
+            quiter: false
         }
     },
 
@@ -130,7 +144,7 @@ export default {
         // Prompts the user to begin speaking if they havent said any words yet
         async getNext () {
             this.queuedCallback = null
-            if (this.curWord === this.wordList.length - 1) {
+            if (this.curWord === this.wordList.length - 1 && !this.undoing) {
                 this.allDone(this.audioDetails)
             }
             // still have words left to record
@@ -143,8 +157,18 @@ export default {
                 this.reviewed = false
                 // hide these while we switch curWord
                 this.showWord = false
+                // move on to the previous word if we're undoing
+                if (this.undoing) {
+                    this.curWord--
+                    this.undoing = false
+                    // we also want to remove the last 2 audio details from our list, since we're technically undoing both the one they clicked "undo" on and the previous word
+                    this.audioDetails.pop()
+                    this.audioDetails.pop()
+                }
                 // move on to next word
-                this.curWord++
+                else {
+                    this.curWord++
+                }
                 this.animateWord()
             }
         },
@@ -174,7 +198,15 @@ export default {
                             if (error) {
                                 console.log('failed to load the sound', error)
                                 this.reviewed = true
-                                this.$refs.targetWordRef.readWord(this.finishedTargetWord)
+                                this.recording.release()
+                                if (this.undoing) {
+                                    this.audioDetails.push({})
+                                    this.finishedTargetWord()
+                                }
+                                else {
+                                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
+                                }
+                                return
                             }
 
                             
@@ -221,6 +253,11 @@ export default {
                 }
                 // keep track of metering
                 AudioRecorder.onProgress = (data) => {
+                    if (this.undoing || this.quitter) {
+                        this.stopRecording()
+                        this.hasAudio = true
+                        return
+                    }
                     this.currentMetering = data.currentMetering
                     let levelRequired = Platform.OS === 'android' ? 8000 : -40
                     if (this.currentMetering > levelRequired) {
@@ -261,7 +298,11 @@ export default {
         },
 
         async stopRecording () {
-            await AudioRecorder.stopRecording()
+            try {
+                await AudioRecorder.stopRecording()
+            }
+            catch (error) {console.log(error)}
+            if (this.quiter) return
             this.finishRecording()
         },
 
@@ -327,12 +368,19 @@ export default {
 
         async quit () {
             try {
+                this.quiter = true
                 AudioRecorder.stopRecording()
                 this.$refs.targetWordRef.stopHighlightRepeating()
                 if (this.recording) this.recording.release()
             }
             catch (error) {}
             this.allDone(this.audioDetails)
+        },
+
+        async undo () {
+            if (this.curWord != 0) {
+                this.undoing = true
+            }
         },
     }
 
@@ -360,15 +408,29 @@ export default {
         position: absolute;
         bottom: 0;
         align-self: center;
-        margin-bottom: 50
+        margin-bottom: 50;
+        flex-direction: row
+
     }
 
     .white-box {
         background-color: 'rgb(255, 255, 255)';
     }
 
+    .white-disabled-box {
+        background-color: 'rgba(255, 255, 255, 0.5)';
+    }
+
     .link-text {
         color: 'rgb(0, 119, 179)';
+    }
+
+    .ml-8 {
+        margin-left: 40
+    }
+
+    .mr-2 {
+        margin-right: 10
     }
 
 </style>

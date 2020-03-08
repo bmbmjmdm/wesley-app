@@ -200,6 +200,7 @@ export default {
                                 else {
                                     this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
                                 }
+                                return
                             }
 
                             // Set the recording to start at 0.1 second before we heard the user start speaking
@@ -287,7 +288,10 @@ export default {
         },
 
         async stopRecording () {
-            await AudioRecorder.stopRecording()
+            try {
+                await AudioRecorder.stopRecording()
+            }
+            catch (error) {console.log(error)}
             this.finishRecording()
         },
 

@@ -466,7 +466,7 @@ export default new Vuex.Store({
             }
         },
 
-        async invalidateAllRecordings({commit, getters}) {
+        async invalidateAllRecordings({commit, getters, dispatch}) {
             for (var name in getters.getUserRecordings()) {
                 await dispatch('invalidateRecording', name)
             }

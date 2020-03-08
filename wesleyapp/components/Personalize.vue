@@ -15,7 +15,10 @@
                     class="bottom-menu"
                     :activeOpacity="1"
                     :onPress="() => {}">
-                    <template v-if="!bulkActions" class="centered">
+                    <view v-if="loading" class="loading">
+                        <ActivityIndicator size="large" />
+                    </view>
+                    <template v-if="!bulkActions" class="centered pmb-5">
                         <touchable-opacity
                             v-if="canChangePicture"
                             :onPress="modalSelectNew"
@@ -57,7 +60,7 @@
                             </text>
                         </touchable-opacity>
                     </template>
-                    <template v-else class="centered">
+                    <template v-else class="centered pmb-5">
                         <touchable-opacity
                             v-if="true"
                             :onPress="recordBulk"
@@ -99,7 +102,7 @@
                             </text>
                         </touchable-opacity>
                     </template>
-                    <touchable-opacity class="cancel-text" :onPress="modalCancel">
+                    <touchable-opacity class="cancel-text pb-5" :onPress="modalCancel">
                         <text
                             class="cancel-text center-text"
                             :style="{fontSize: fontSize * 1.5}">
@@ -191,6 +194,7 @@ import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { Alert } from 'react-native'
 import ImagePicker from 'react-native-image-picker/lib/commonjs';
 import RecordWord from './RecordWord'
+import { ActivityIndicator } from 'react-native'
 
 export default {
     props: {
@@ -202,6 +206,7 @@ export default {
     
     components: {
         RecordWord,
+        ActivityIndicator,
     },
 
     data () {
@@ -218,6 +223,7 @@ export default {
             confirmRestorePictures: false,
             preventRestore: false,
             bulkRecording: false,
+            loading: false,
         }
     },
 
@@ -427,6 +433,7 @@ export default {
         },
 
         modalCancel () {
+            if (this.loading) return
             this.readSentenceCallback = null
             this.showModal = false
             this.bulkActions = false
@@ -434,34 +441,42 @@ export default {
             this.confirmRestorePictures = false
         },
 
-        restoreAllPictures () {
-            if (this.preventRestore) return
+        async restoreAllPictures () {
+            if (this.preventRestore || this.loading) return
             if (!this.confirmRestorePictures) {
                 this.confirmRestorePictures = true
                 this.preventRestore = true
                 setTimeout(() => this.preventRestore = false, 1000)
             }
             else {
-                this.confirmRestorePictures = false
-                this.invalidateAllPictures()
+                this.loading = true
+                setTimeout(async () => {
+                    await this.invalidateAllPictures()
+                    this.confirmRestorePictures = false
+                    this.loading = false
+                }, 50)
             }
         },
 
-        restoreAllRecordings () {
-            if (this.preventRestore) return
+        async restoreAllRecordings () {
+            if (this.preventRestore || this.loading) return
             if (!this.confirmRestoreRecordings) {
                 this.confirmRestoreRecordings = true
                 this.preventRestore = true
                 setTimeout(() => this.preventRestore = false, 1000)
             }
             else {
-                this.confirmRestoreRecordings = false
-                this.invalidateAllRecordings()
+                this.loading = true
+                setTimeout(async () => {
+                    await this.invalidateAllRecordings()
+                    this.confirmRestoreRecordings = false
+                    this.loading = false
+                }, 50)
             }
         },
 
         recordBulk () {
-            if (this.showModal) {
+            if (this.showModal && !this.loading) {
                 this.modalCancel()
                 this.wordsToRecord = this.getAllWordsToRecord()
                 this.bulkRecording = true
@@ -470,7 +485,7 @@ export default {
         },
 
         pictureBulk () {
-            if (this.showModal) {
+            if (this.showModal && !this.loading) {
                 this.modalCancel()
                 this.wordsToRecord = this.getAllWordsNeedingPictures()
                 // loop through all those words and select a picture for each
@@ -645,9 +660,18 @@ export default {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 25px;
         width: 100%;
         background-color:'rgb(255,255,255)';
+    }
+
+    .pmb-5 {
+        padding-top: 25px;
+        padding-right: 25px;
+        padding-left: 25px;
+    }
+
+    .pb-5 {
+        padding-bottom: 25px;
     }
 
     .centered {
@@ -659,5 +683,15 @@ export default {
 
     .center-text {
         text-align: center
+    }
+
+    .loading {
+        position: absolute;
+        z-index: 999;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        background-color:'rgba(0,0,0,0.3)';
     }
 </style>
