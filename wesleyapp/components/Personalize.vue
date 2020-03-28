@@ -191,10 +191,11 @@
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import { Alert } from 'react-native'
+import { Alert, Platform } from 'react-native'
 import ImagePicker from 'react-native-image-picker/lib/commonjs';
 import RecordWord from './RecordWord'
 import { ActivityIndicator } from 'react-native'
+import { request, PERMISSIONS } from 'react-native-permissions'
 
 export default {
     props: {
@@ -352,27 +353,35 @@ export default {
                 },
             }
             // open the image picker so they can override the word's picture
-            ImagePicker.launchImageLibrary(options, async (response) => {
-                if (response.didCancel) {
-                    console.log('User cancelled image picker')
-                } else if (response.error || !response) {
-                    Alert.alert(
-                        'Upload Failed: Please try again',
-                        '',
-                        [
-                            {text: 'OK', onPress: () => {}},
-                        ],
-                        {cancelable: true},
-                    )
-                }
-                else {
-                    // success!
-                    const source = { uri: response.uri }
-                    await this.savePicture({name: word, source, user: true})
-                }
-                // now show the user what the word's picture is, whether it changed or not
-                this.changeBackground(word)
-            })
+            let launchIP = () => {
+                ImagePicker.launchImageLibrary(options, async (response) => {
+                    if (response.didCancel) {
+                        console.log('User cancelled image picker')
+                    } else if (response.error || !response) {
+                        Alert.alert(
+                            'Upload Failed: Please try again',
+                            '',
+                            [
+                                {text: 'OK', onPress: () => {}},
+                            ],
+                            {cancelable: true},
+                        )
+                    }
+                    else {
+                        // success!
+                        const source = { uri: response.uri }
+                        await this.savePicture({name: word, source, user: true})
+                    }
+                    // now show the user what the word's picture is, whether it changed or not
+                    this.changeBackground(word)
+                })
+            }
+            if (Platform.OS === 'android') {
+                launchIP()
+            }
+            else {
+                request(PERMISSIONS.IOS.PHOTO_LIBRARY).then(launchIP)
+            }
         },
 
         modalSelectNew () {
