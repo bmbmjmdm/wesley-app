@@ -146,10 +146,10 @@ export default new Vuex.Store({
         difficultyReading: state => state.difficultyReading,
         difficultySpelling: state => state.difficultySpelling,
         sizeFactor: state => state.sizeFactor,
-        fontSize: state => state.baseFontSize * state.sizeFactor,
-        paddingSize: state => state.basePaddingSize * state.sizeFactor,
-        fontSizeSmall: state => state.baseFontSizeSmall * state.sizeFactor,
-        paddingSizeSmall: state => state.basePaddingSizeSmall * state.sizeFactor,
+        fontSize: state => Math.round(state.baseFontSize * state.sizeFactor),
+        paddingSize: state => Math.round(state.basePaddingSize * state.sizeFactor),
+        fontSizeSmall: state => Math.round(state.baseFontSizeSmall * state.sizeFactor),
+        paddingSizeSmall: state => Math.round(state.basePaddingSizeSmall * state.sizeFactor),
         radiusSize: state => state.radiusSize,
         roundBox: state => state.roundBox,
         previousWord: state => state.previousWord,
@@ -299,7 +299,7 @@ export default new Vuex.Store({
             //no recording, use tts
             if (!hasRecording) {
                 getters.textToSpeech.addEventListener('tts-finish', helper)
-                getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))
+                getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word.toLowerCase()))
             }
             // load from the users recordings
             else {
@@ -319,7 +319,7 @@ export default new Vuex.Store({
                         console.log('failed to load sound: ' + cleanWord + '.aac', error)
                         dispatch('invalidateRecording', cleanWord)
                         getters.textToSpeech.addEventListener('tts-finish', helper)
-                        getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word))
+                        getters.textToSpeech.getInitStatus().then(() => getters.textToSpeech.speak(word.toLowerCase()))
                     }
                 })
             }

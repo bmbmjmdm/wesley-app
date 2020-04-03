@@ -128,6 +128,10 @@
                     Back
                 </text>
             </touchable-opacity>
+
+            <view v-if="(curReading || loading) && !showModal">
+                <ActivityIndicator size="large" />
+            </view>
             
             <touchable-opacity
                 :onPress="clickBulk"
@@ -225,6 +229,7 @@ export default {
             preventRestore: false,
             bulkRecording: false,
             loading: false,
+            curReading: false,
         }
     },
 
@@ -290,16 +295,19 @@ export default {
 
     methods: {
         backHome () {
+            if (this.curReading || this.loading) return
             this.readSentenceCallback = null
             this.setActivity({name: 'home'})
         },
 
         clickBulk () {
+            if (this.curReading || this.loading) return
             this.bulkActions = true
             this.showModal = true
         },
 
         clickWord (word) {
+            if (this.curReading || this.loading) return
             this.readSentenceCallback = null
             this.modalWord = word
             this.showModal = true
@@ -340,7 +348,7 @@ export default {
         },
 
         changeWord (word) {
-            if(this.saidPrompt < 2) {
+            if (this.saidPrompt < 2) {
                 this.afterSpeak({word: 'Select a picture for ' + word})
                 this.saidPrompt++
             }
@@ -442,7 +450,6 @@ export default {
         },
 
         modalCancel () {
-            if (this.loading) return
             this.readSentenceCallback = null
             this.showModal = false
             this.bulkActions = false

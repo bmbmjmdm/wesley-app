@@ -259,7 +259,7 @@ export default {
                         return
                     }
                     this.currentMetering = data.currentMetering
-                    let levelRequired = Platform.OS === 'android' ? 8000 : 1000
+                    let levelRequired = Platform.OS === 'android' ? 8000 : -35
                     if (this.currentMetering > levelRequired) {
                         this.hasAudio = true
                         this.silenceDuration = 0

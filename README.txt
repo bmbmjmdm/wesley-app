@@ -7,6 +7,10 @@ For IMAGES of words: do not exceed 1MB per picture or lag may occur in transitio
 If IOS cannot run simulator: 
 https://github.com/facebook/react-native/issues/23282#issuecomment-476439080
 
+For IOS: 
+Run 'pod install' in iOS folder
+Then open the workspace package (not project package) and run it targeting tethered device
+
 (Might be deprecated since upgrade) If IOS is failing to build certain node_module files: (change the 0.3.5 to 0.3.4):
 https://github.com/facebook/react-native/issues/21168#issuecomment-422431294
 
