@@ -257,6 +257,7 @@ export default {
                     }
                     // keep track of metering
                     AudioRecorder.onProgress = (data) => {
+                        // They manually chose to stop recording
                         if (this.undoing || this.quitter) {
                             this.stopRecording()
                             this.hasAudio = true
@@ -264,6 +265,7 @@ export default {
                         }
                         this.currentMetering = data.currentMetering
                         let levelRequired = Platform.OS === 'android' ? 8000 : -35
+                        // They're speaking
                         if (this.currentMetering > levelRequired) {
                             this.hasAudio = true
                             this.silenceDuration = 0
@@ -271,11 +273,18 @@ export default {
                                 this.audioBegins = data.currentTime
                             }
                         }
+                        // They've stopped speaking (or havent started yet)
                         else {
                             this.silenceDuration++
                             if (this.silenceDuration > 2 && this.hasAudio) {
                                 this.stopRecording()
+                                return
                             }
+                        }
+                        // auto stop after 2 seconds of recording
+                        if (this.hasAudio && data.currentTime - this.audioBegins > 2) {
+                            this.stopRecording()
+                            return
                         }
                     }
                     

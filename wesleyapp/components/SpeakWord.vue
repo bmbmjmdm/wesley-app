@@ -224,7 +224,7 @@ export default {
                                     recording.stop()
                                     callback()
                                 }
-                            }, 2000)
+                            }, 3000)
 
                         })
                     }
@@ -260,13 +260,24 @@ export default {
                     AudioRecorder.onProgress = (data) => {
                         this.currentMetering = data.currentMetering
                         let levelRequired = Platform.OS === 'android' ? 8000 : -35
+                        // They're speaking
                         if (this.currentMetering > levelRequired) {
                             this.hasAudio = true
                             this.silenceDuration = 0
                             if (this.audioBegins === 0) this.audioBegins = data.currentTime
                         }
+                        // They've stopped speaking (or havent started yet)
                         else {
                             this.silenceDuration++
+                            if (this.silenceDuration > 15 && this.hasAudio) {
+                                this.stopRecording()
+                                return
+                            }
+                        }
+                        // auto stop after 3 seconds of recording
+                        if (this.hasAudio && data.currentTime - this.audioBegins > 3) {
+                            this.stopRecording()
+                            return
                         }
                     }
                     
@@ -280,7 +291,7 @@ export default {
                             this.narrating = false
                             this.$refs.targetWordRef.startHighlightRepeating()
                             this.manuallyReading = false
-                            setTimeout(this.stopRecording, 5000)
+                            setTimeout(this.tryStopRecording, 5000)
                             try { await AudioRecorder.startRecording() }
                             // more logs for later debugging
                             catch (error) { console.log ("recording error"); console.log(error) }
@@ -292,6 +303,11 @@ export default {
             }
             // start loop
             requestLoop()
+        },
+
+        // The user needs another prompt if they havent started recording yet
+        async tryStopRecording () {
+            if (!this.hasAudio) this.stopRecording()
         },
 
         async stopRecording () {
