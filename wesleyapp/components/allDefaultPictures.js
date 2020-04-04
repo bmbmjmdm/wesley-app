@@ -74,11 +74,23 @@ import trampoline from '../assets/trampoline.jpg';
 import turtle from '../assets/turtle.jpg';
 import vegetables from '../assets/vegetables.jpg';
 import BackgroundImage from '../assets/BackgroundImage.jpg';
-import LevelUpGif from '../assets/levelUpGif.gif';
+import LevelUpGif1 from '../assets/levelUpGif1.gif';
+import LevelUpGif2 from '../assets/levelUpGif2.gif';
+import LevelUpGif3 from '../assets/levelUpGif3.gif';
+import LevelUpGif4 from '../assets/levelUpGif4.gif';
+import LevelUpGif5 from '../assets/levelUpGif5.gif';
+import LevelUpGif6 from '../assets/levelUpGif6.gif';
+import LevelUpGif7 from '../assets/levelUpGif7.gif';
+import LevelUpGif8 from '../assets/levelUpGif8.gif';
+import LevelUpGif9 from '../assets/levelUpGif9.gif';
+import LevelUpGif10 from '../assets/levelUpGif10.gif';
+import LevelUpGif11 from '../assets/levelUpGif11.gif';
+import LevelUpGif12 from '../assets/levelUpGif12.gif';
+import LevelUpGif13 from '../assets/levelUpGif13.gif';
+import LevelUpGif14 from '../assets/levelUpGif14.gif';
+import LevelUpGif15 from '../assets/levelUpGif15.gif';
 
 export default {
-    BackgroundImage,
-    LevelUpGif,
     mom,
     dad,
     home,
@@ -86,6 +98,22 @@ export default {
     cat,
     grandma,
     grandpa,
+    BackgroundImage,
+    LevelUpGif1,
+    LevelUpGif2,
+    LevelUpGif3,
+    LevelUpGif4,
+    LevelUpGif5,
+    LevelUpGif6,
+    LevelUpGif7,
+    LevelUpGif8,
+    LevelUpGif9,
+    LevelUpGif10,
+    LevelUpGif11,
+    LevelUpGif12,
+    LevelUpGif13,
+    LevelUpGif14,
+    LevelUpGif15,
     grandparents,
     park,
     hug,

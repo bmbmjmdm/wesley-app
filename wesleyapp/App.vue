@@ -328,7 +328,8 @@ export default {
         },
 
         sayLevelUp (callback) {
-            this.changeBackground("LevelUpGif")
+            var ran = Math.ceil(Math.random() * 15)
+            this.changeBackground("LevelUpGif" + ran)
             var ran = Math.floor(Math.random() * this.levelUpList.length)
             let sentence = this.levelUpList[ran]
             this.sayReinforcement(sentence, callback)
