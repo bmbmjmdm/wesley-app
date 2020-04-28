@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { Platform, Animated } from 'react-native'
+import { Platform, Animated, Alert } from 'react-native'
 import Word from './Word'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import {AudioRecorder, AudioUtils} from 'react-native-audio'
@@ -237,80 +237,87 @@ export default {
         },
 
         promptSpeaking () {
-            // request authorization until user accepts
-            let requestLoop = () => {
-                AudioRecorder.requestAuthorization().then((isAuthorized) => {
-                    if (!isAuthorized) return requestLoop()
+            // check if android needs checkAuthorizationStatus or this looped
+            AudioRecorder.requestAuthorization().then((isAuthorized) => {
+                if (!isAuthorized) return this.requestPermission()
 
-                    AudioRecorder.prepareRecordingAtPath(this.filePath, { MeteringEnabled: true, AudioEncoding: "aac" })
-                    this.currentMetering = 0
-                    this.hasAudio = false
-                    this.audioBegins = 0
-                    this.silenceDuration = 999
-                    // this is just for logging incase i need to debug
-                    AudioRecorder.onFinished = (data) => {
-                        if (!data) return
-                        console.log("finished recording")
-                        console.log(data.status)
-                        console.log(data.audioFileURL)
-                        console.log(data.audioFileSize)
+                AudioRecorder.prepareRecordingAtPath(this.filePath, { MeteringEnabled: true, AudioEncoding: "aac" })
+                this.currentMetering = 0
+                this.hasAudio = false
+                this.audioBegins = 0
+                this.silenceDuration = 999
+                // this is just for logging incase i need to debug
+                AudioRecorder.onFinished = (data) => {
+                    if (!data) return
+                    console.log("finished recording")
+                    console.log(data.status)
+                    console.log(data.audioFileURL)
+                    console.log(data.audioFileSize)
+                }
+                // keep track of metering
+                AudioRecorder.onProgress = (data) => {
+                    // They manually chose to stop recording
+                    if (this.undoing || this.quitter) {
+                        this.stopRecording()
+                        this.hasAudio = true
+                        return
                     }
-                    // keep track of metering
-                    AudioRecorder.onProgress = (data) => {
-                        // They manually chose to stop recording
-                        if (this.undoing || this.quitter) {
-                            this.stopRecording()
-                            this.hasAudio = true
-                            return
-                        }
-                        this.currentMetering = data.currentMetering
-                        let levelRequired = Platform.OS === 'android' ? 8000 : -35
-                        // They're speaking
-                        if (this.currentMetering > levelRequired) {
-                            this.hasAudio = true
-                            this.silenceDuration = 0
-                            if (this.audioBegins === 0) {
-                                this.audioBegins = data.currentTime
-                            }
-                        }
-                        // They've stopped speaking (or havent started yet)
-                        else {
-                            this.silenceDuration++
-                            if (this.silenceDuration > 2 && this.hasAudio) {
-                                this.stopRecording()
-                                return
-                            }
-                        }
-                        // auto stop after 2 seconds of recording
-                        if (this.hasAudio && data.currentTime - this.audioBegins > 2) {
-                            this.stopRecording()
-                            return
+                    this.currentMetering = data.currentMetering
+                    let levelRequired = Platform.OS === 'android' ? 8000 : -30
+                    // They're speaking
+                    if (this.currentMetering > levelRequired) {
+                        this.hasAudio = true
+                        this.silenceDuration = 0
+                        if (this.audioBegins === 0) {
+                            this.audioBegins = data.currentTime
                         }
                     }
-                    
-                    let callback = async () => {
-                        this.narrating = false
-                        this.$refs.targetWordRef.startHighlightRepeating()
-                        this.manuallyReading = false
-                        try { await AudioRecorder.startRecording() }
-                        // more logs for later debugging
-                        catch (error) { console.log ("recording error"); console.log(error) }
-                    }
-                    // we only prompt the user for the first word
-                    if (this.curWord === 0) {
-                        this.afterSpeak({
-                            word: "Please read the word loud and clear",
-                            callback
-                        })
-                    }
+                    // They've stopped speaking (or havent started yet)
                     else {
-                        callback()
+                        this.silenceDuration++
+                        if (this.silenceDuration > 1 && this.hasAudio) {
+                            this.stopRecording()
+                            return
+                        }
                     }
-                    
-                })
-            }
-            // start loop
-            requestLoop()
+                    // auto stop after 2 seconds of recording
+                    if (this.hasAudio && data.currentTime - this.audioBegins > 2) {
+                        this.stopRecording()
+                        return
+                    }
+                }
+                
+                let callback = async () => {
+                    this.narrating = false
+                    this.$refs.targetWordRef.startHighlightRepeating()
+                    this.manuallyReading = false
+                    try { await AudioRecorder.startRecording() }
+                    // more logs for later debugging
+                    catch (error) { console.log ("recording error"); console.log(error) }
+                }
+                // we only prompt the user for the first word
+                if (this.curWord === 0) {
+                    this.afterSpeak({
+                        word: "Please read the word loud and clear",
+                        callback
+                    })
+                }
+                else {
+                    callback()
+                }
+                
+            })
+        },
+
+        async requestPermission () {
+            Alert.alert(
+                'Audio permission required to record',
+                'Please go into settings and enable it for this app',
+                [
+                    {text: 'OK', onPress: this.quit}
+                ],
+                {cancelable: false}
+            )
         },
 
         async stopRecording () {

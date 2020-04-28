@@ -259,7 +259,7 @@ export default {
                     // keep track of metering
                     AudioRecorder.onProgress = (data) => {
                         this.currentMetering = data.currentMetering
-                        let levelRequired = Platform.OS === 'android' ? 8000 : -35
+                        let levelRequired = Platform.OS === 'android' ? 8000 : -30
                         // They're speaking
                         if (this.currentMetering > levelRequired) {
                             this.hasAudio = true
