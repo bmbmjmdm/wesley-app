@@ -8,7 +8,8 @@
             :onPress="nextIntro">
             <text
                 class="normal-text"
-                :style="{fontSize: fontSize}">
+                :style="{fontSize: fontSize}"
+                :allowFontScaling="false">
                 {{ introText }}
             </text>
         </touchable-opacity>

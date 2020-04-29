@@ -2,6 +2,12 @@
     <view
         v-if="!recordingView"
         class="container">
+        <view
+            v-if="(curReading || loading) && !showModal"
+            class="loading center-hor">
+            <ActivityIndicator class="mt-7" size="large" />
+        </view>
+
         <modal
             animationType="fade"
             :transparent="true"
@@ -15,7 +21,7 @@
                     class="bottom-menu"
                     :activeOpacity="1"
                     :onPress="() => {}">
-                    <view v-if="loading" class="loading">
+                    <view v-if="loading" class="loading center-no-flex">
                         <ActivityIndicator size="large" />
                     </view>
                     <template v-if="!bulkActions" class="centered pmb-5">
@@ -128,10 +134,6 @@
                     Back
                 </text>
             </touchable-opacity>
-
-            <view v-if="(curReading || loading) && !showModal">
-                <ActivityIndicator size="large" />
-            </view>
             
             <touchable-opacity
                 :onPress="clickBulk"
@@ -388,7 +390,11 @@ export default {
                 launchIP()
             }
             else {
-                request(PERMISSIONS.IOS.PHOTO_LIBRARY).then(launchIP)
+                this.loading = true
+                request(PERMISSIONS.IOS.PHOTO_LIBRARY).then(() => {
+                    this.loading = false
+                    launchIP()
+                })
             }
         },
 
@@ -647,6 +653,10 @@ export default {
         margin-bottom: 15;
     }
 
+    .mt-7 {
+        margin-top: 35;
+    }
+
     .mr-3 {
         margin-right: 15;
     }
@@ -706,8 +716,17 @@ export default {
         z-index: 999;
         width: 100%;
         height: 100%;
+        background-color:'rgba(0,0,0,0.3)';
+    }
+
+    .center-no-flex {
         justify-content: center;
         align-items: center;
-        background-color:'rgba(0,0,0,0.3)';
+    }
+
+    .center-hor {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 </style>
