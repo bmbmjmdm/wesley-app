@@ -306,8 +306,8 @@ export default new Vuex.Store({
                 var sound = new Sound(cleanWord + '.aac', AudioUtils.DocumentDirectoryPath, (error) => {
                     // we have a good sound
                     if (!error) {
-                        // Set the recording to start at 0.2 second before we heard the user start speaking
-                        sound.setCurrentTime(Math.max(getters.getRecording(cleanWord).startTime - 0.2, 0))
+                        // Set the recording to start at 0.3 second before we heard the user start speaking
+                        sound.setCurrentTime(Math.max(getters.getRecording(cleanWord).startTime - 0.3, 0))
                         sound.play(() => {
                             sound.release()
                             if (callback) callback()   

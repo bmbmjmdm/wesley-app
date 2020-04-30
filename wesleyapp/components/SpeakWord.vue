@@ -251,15 +251,11 @@ export default {
                     // this is just for logging incase i need to debug
                     AudioRecorder.onFinished = (data) => {
                         if (!data) return
-                        console.log("finished recording")
-                        console.log(data.status)
-                        console.log(data.audioFileURL)
-                        console.log(data.audioFileSize)
                     }
                     // keep track of metering
                     AudioRecorder.onProgress = (data) => {
                         this.currentMetering = data.currentMetering
-                        let levelRequired = Platform.OS === 'android' ? 8000 : -30
+                        let levelRequired = Platform.OS === 'android' ? 8000 : -25
                         // They're speaking
                         if (this.currentMetering > levelRequired) {
                             this.hasAudio = true

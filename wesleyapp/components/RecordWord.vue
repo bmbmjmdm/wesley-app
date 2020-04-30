@@ -213,10 +213,10 @@ export default {
                             this.audioDetails.push({
                                 word: this.wordList[this.curWord].toLowerCase().replace("'", ""),
                                 startTime: this.audioBegins, 
-                                recordingLength: this.recording.getDuration() - Math.max(this.audioBegins - 0.2, 0)
+                                recordingLength: this.recording.getDuration() - Math.max(this.audioBegins - 0.3, 0)
                             })
-                            // Set the recording to start at 0.2 second before we heard the user start speaking
-                            this.recording.setCurrentTime(Math.max(this.audioBegins - 0.2, 0))
+                            // Set the recording to start at 0.3 second before we heard the user start speaking
+                            this.recording.setCurrentTime(Math.max(this.audioBegins - 0.3, 0))
                             // After it plays, read the word a final time
                             let callback = (success) => {
                                 this.reviewed = true
@@ -249,10 +249,6 @@ export default {
                 // this is just for logging incase i need to debug
                 AudioRecorder.onFinished = (data) => {
                     if (!data) return
-                    console.log("finished recording")
-                    console.log(data.status)
-                    console.log(data.audioFileURL)
-                    console.log(data.audioFileSize)
                 }
                 // keep track of metering
                 AudioRecorder.onProgress = (data) => {
@@ -263,7 +259,7 @@ export default {
                         return
                     }
                     this.currentMetering = data.currentMetering
-                    let levelRequired = Platform.OS === 'android' ? 8000 : -30
+                    let levelRequired = Platform.OS === 'android' ? 8000 : -15
                     // They're speaking
                     if (this.currentMetering > levelRequired) {
                         this.hasAudio = true
