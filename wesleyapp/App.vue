@@ -13,6 +13,10 @@
                 :onError="() => invalidatePicture(bgImageFront.name)"
                 :imageStyle="{resizeMode: 'stretch'}"
                 :class="'full-flex'">
+                <LevelUpVid
+                    v-if="showLevelUpGif"
+                    ref="levelUpVid"
+                    class="screen-back">
                 <SpecialEffects
                     v-if="showGjGif"
                     ref="reinforceSparkles"
@@ -111,6 +115,7 @@ import Options from './components/Options';
 import Personalize from './components/Personalize'
 import Sound  from 'react-native-sound'
 import Sentence from './components/Sentence'
+import LevelUpVid from './components/LevelUpVid'
 import { Animated, Easing } from "react-native";
 import store  from './components/store'
 import { difficulty } from './components/store'
@@ -131,7 +136,8 @@ export default {
         Sentence,
         SpeakWord,
         Personalize,
-        SpecialEffects
+        SpecialEffects,
+        LevelUpVid
     },
 
     data () {
@@ -140,6 +146,7 @@ export default {
             bgImageFrontName: 'BackgroundImage',
             showReinforce: false,
             showGjGif: false,
+            showLevelUpGif: false,
             reinforceentence: "",
             gjList: ["Good job", "You're cool", "Great work", "You rock", "Awesome", "Cool beans", "Nice job", "Wow wow", "Oh yeah"],
             levelUpList: ["Level Up! Woah!", "Level up! Way to go!", "Level up! Amazing!", "Level up! Look at you!"],
@@ -328,8 +335,7 @@ export default {
         },
 
         sayLevelUp (callback) {
-            var ran = Math.ceil(Math.random() * 15)
-            this.changeBackground("LevelUpGif" + ran)
+            this.showLevelUpGif = true
             var ran2 = Math.floor(Math.random() * this.levelUpList.length)
             let sentence = this.levelUpList[ran2]
             this.sayReinforcement(sentence, callback)
@@ -356,12 +362,16 @@ export default {
             this.queuedCallback = () => {
                 this.showReinforce = false
                 this.showGjGif = false
+                this.showLevelUpGif = false
                 this.reinforceCallback()
             }
             Vue.nextTick(() => {
                 // we dont bother checking to make sure both finish because the sparkles dont matter too much
                 if (this.showGjGif) {
                     this.$refs.reinforceSparkles.animateOut()
+                }
+                else if (this.showLevelUpGif) {
+                    this.$refs.levelUpVid.animateOut()
                 }
                 this.$refs.reinforceSentence.animateOut()
             })
@@ -447,6 +457,12 @@ export default {
     .screen-filter {
         position: absolute;
         z-index: 999;
+        width: 100%;
+        height: 100%;
+    }
+
+    .screen-back {
+        position: absolute;
         width: 100%;
         height: 100%;
     }
