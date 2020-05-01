@@ -191,7 +191,7 @@
     <RecordWord
         v-else
         :wordList="wordsToRecord"
-        :bulkRecording="bulkRecording"
+        :bulkRecording="true"
         :allDone="modalFinishRecording" />
 </template>
 
