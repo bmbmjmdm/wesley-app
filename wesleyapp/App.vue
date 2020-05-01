@@ -16,7 +16,8 @@
                 <LevelUpVid
                     v-if="showLevelUpGif"
                     ref="levelUpVid"
-                    class="screen-back">
+                    class="screen-back"
+                />
                 <SpecialEffects
                     v-if="showGjGif"
                     ref="reinforceSparkles"
