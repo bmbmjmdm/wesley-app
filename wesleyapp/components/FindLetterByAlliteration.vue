@@ -1,10 +1,8 @@
 <template>
     <view class="container">
-        <view
-            v-if="shouldShowSentence"
-            class="half-container">
+        <view class="half-container">
             <Sentence
-                v-if="showSentence"
+                v-if="shouldShowSentence && showSentence"
                 ref="sentenceRef"
                 :finish-narration="sentenceDone"
                 :sentence="curSentence.alliteration"
@@ -16,7 +14,15 @@
                 :fadeAnimations="true"
                 targetWord=""
                 :queuedCallback="queuedCallback" />
-            </view>
+            <RepeatWord
+                v-else-if="showSentence"
+                :word="curSentence.alliteration"
+                ref="sentenceRef"
+                :setManuallyReading="setManuallyReading"
+                :manuallyReading="manuallyReading"
+                :finishedAnimating="queuedCallback"
+                :fadeAnimations="true" />
+        </view>
         <view class="half-container">
             <WordMadeOfLetters 
                 v-if="showLetters"
@@ -42,6 +48,7 @@
 
 <script>
 import Sentence from './Sentence'
+import RepeatWord from './RepeatWord'
 import WordMadeOfLetters from './WordMadeOfLetters'
 import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
@@ -74,6 +81,7 @@ export default {
     components: {
         Sentence,
         WordMadeOfLetters,
+        RepeatWord
     },
 
     data () {
@@ -90,6 +98,7 @@ export default {
             firstReading: false,
             queuedCallback: null,
             callbackCount: 0,
+            allWords: [],
         }
     },
 
@@ -174,32 +183,35 @@ export default {
                 this.firstReading = true
                 this.curSentence = this.getNextWord()
                 // animate in (or read) sentence
+                this.queuedCallback = () => {}
                 this.introduceSentence()
             }
         },
 
         introduceSentence () {
           // prepare the callback for after animation finishes
-          this.queuedCallback = () => {
+          callback = () => {
               // speak and highlight the sentence
               if (this.shouldShowSentence && this.shouldReadSentence) {
                   this.$refs.sentenceRef.beginNarration()
               }
               // just speak it
               else if (this.shouldReadSentence) {
-                  this.afterSpeak({ word: this.curSentence.alliteration, callback: this.sentenceDone })
+                  this.readAliteration()
               }
               else {
                   this.sentenceDone()
               }
           }
-          
-          // animate in sentence if not on hard
-          this.showSentence = true
-          
-          // hardmode has no sentence to animate
+
+          // if were not in easy mode we dont wait for the speaker to finish showing
           if (!this.shouldShowSentence) {
-              this.queuedCallback()
+              this.showSentence = true
+              callback()
+          }
+          else {
+              this.queuedCallback = callback
+              this.showSentence = true
           }
         },
 
@@ -246,7 +258,7 @@ export default {
                     }
                     // just speak it
                     else {
-                        this.afterSpeak({ word: this.curSentence.alliteration, callback: this.sentenceDone })
+                        this.readAliteration()
                     }
                 }, 300)
             }
@@ -284,14 +296,27 @@ export default {
                 this.playRandomSound()
                 // animate out our sentence and letters
                 this.$refs.letterOptionsRef.animateOut()
-                if (this.shouldShowSentence) {
-                    this.$refs.sentenceRef.animateOut()
-                }
-                else {
-                    // we're not animating sentence so assume it callbacked
-                    this.callbackCount++
-                }
+                this.$refs.sentenceRef.animateOut()
             })
+        },
+
+        // alliteration sentence needs each word to be spoken seperately to get user voice
+        readAliteration () {
+            this.allWords = this.curSentence.alliteration.split(' ')
+            this.speakLoop()
+        },
+
+        speakLoop () {
+            if (this.allWords.length > 0) {
+                let readWord = this.allWords.shift()
+                this.afterSpeak({
+                    word: readWord,
+                    callback: this.speakLoop
+                })
+            }
+            else {
+                this.sentenceDone()
+            }
         },
 
         setManuallyReading (val) {

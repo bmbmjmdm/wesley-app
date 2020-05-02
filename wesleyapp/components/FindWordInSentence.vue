@@ -12,6 +12,14 @@
                 :narrating="false"
                 :continueSentence="()=>{}"
                 :finishedAnimating="queuedCallback" />
+            <RepeatWord
+                v-else-if="showWord"
+                :word="curSentence.targetWord"
+                ref="targetWordRef"
+                :key="curSentence.targetWord + curSentence.sentence"
+                :setManuallyReading="setManuallyReading"
+                :manuallyReading="manuallyReading"
+                :finishedAnimating="queuedCallback" />
         </view>
         <Sentence
             v-if="showSentence"
@@ -31,6 +39,7 @@
 <script>
 import Sentence from './Sentence'
 import Word from './Word'
+import RepeatWord from './RepeatWord'
 import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import Vue from 'vue-native-core'
@@ -62,6 +71,7 @@ export default {
     components: {
         Sentence,
         Word,
+        RepeatWord,
     },
 
     data () {
@@ -139,6 +149,7 @@ export default {
                 // move on to next sentence/word
                 this.curSentence = this.getNextWord()
                 // show image and change background
+                this.queuedCallback = () => {}
                 this.fadeNewBackground()
             }
         },
@@ -147,7 +158,7 @@ export default {
             this.changeBackground(this.curSentence.targetWord, () => {
                 // new image is now displayed as background, animate in target word
                 // prepare the callback for after animation finishes
-                this.queuedCallback = () => {
+                let callback = () => {
                     // speak and highlight the word
                     if (this.shouldShowTargetWord) {
                         this.$refs.targetWordRef.readWord(this.finishedTargetWord)
@@ -157,11 +168,14 @@ export default {
                         this.afterSpeak({ word: this.curSentence.targetWord, callback: this.finishedTargetWord })
                     }
                 }
-                // initiate animation
-                this.showWord = true
-                // if were not in easy mode theres no animation so timeout 
+                // if were not in easy mode we dont wait for the speaker to finish showing
                 if (!this.shouldShowTargetWord) {
-                    this.queuedCallback()
+                    this.showWord = true
+                    callback()
+                }
+                else {
+                    this.queuedCallback = callback
+                    this.showWord = true
                 }
             })
         },
@@ -250,13 +264,7 @@ export default {
                     this.playRandomSound()
                     // animate out our sentence and word
                     this.$refs.sentenceRef.animateOut()
-                    if (this.shouldShowTargetWord) {
-                        this.$refs.targetWordRef.animateOut()
-                    }
-                    else {
-                        // no word to animate so count it as done
-                        this.callbackCount++
-                    }
+                    this.$refs.targetWordRef.animateOut()
                 })
             }
             else {

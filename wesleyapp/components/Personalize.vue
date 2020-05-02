@@ -153,7 +153,7 @@
         
         <text-input
             v-model="filterText"
-            placeholder="Search"
+            placeholder="Search (or scroll)"
             class="white-box mb-8 link-text"
             :style="[{paddingTop: paddingSize / 1.5,
                     paddingBottom: paddingSize / 1.5,

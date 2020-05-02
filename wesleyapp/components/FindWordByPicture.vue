@@ -12,6 +12,14 @@
                 :narrating="false"
                 :continueSentence="()=>{}"
                 :finishedAnimating="queuedCallback" />
+            <RepeatWord
+                v-else-if="showTarget"
+                :word="curWords.targetWord"
+                ref="targetWordRef"
+                :key="curWords.targetWord + curWords.allWords"
+                :setManuallyReading="setManuallyReading"
+                :manuallyReading="manuallyReading"
+                :finishedAnimating="queuedCallback" />
         </view>
         <WordGrid
             v-if="showGrid"
@@ -30,6 +38,7 @@
 
 <script>
 import Word from './Word'
+import RepeatWord from './RepeatWord'
 import WordGrid from './WordGrid'
 import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
@@ -61,7 +70,8 @@ export default {
     
     components: {
         Word,
-        WordGrid
+        WordGrid,
+        RepeatWord
     },
 
     data () {
@@ -140,13 +150,14 @@ export default {
                 // move on to next word grid/target word
                 this.curWords = this.getNextWord()
                 // show/read target word and begin animations
+                this.queuedCallback = () => {}
                 this.startTargetWord()
             }
         },
 
         startTargetWord () {
             // prepare the callback for after animation finishes
-            this.queuedCallback = () => {
+            callback = () => {
                 // speak and highlight the word
                 if (this.shouldShowTargetWord) {
                     this.$refs.targetWordRef.readWord(this.finishedTargetWord)
@@ -163,11 +174,14 @@ export default {
                 }
             }
 
-            // animate in target word
-            this.showTarget = true
-            // if were in easy mode theres no animation
+            // if were not in easy mode we dont wait for the speaker to finish showing
             if (!this.shouldShowTargetWord) {
-                this.queuedCallback()
+                this.showTarget = true
+                callback()
+            }
+            else {
+                this.queuedCallback = callback
+                this.showTarget = true
             }
         },
 
@@ -275,13 +289,7 @@ export default {
                     this.playRandomSound()
                     // animate out our word grid and target word
                     this.$refs.wordGrid.animateOut()
-                    if (this.shouldShowTargetWord) {
-                        this.$refs.targetWordRef.animateOut()
-                    }
-                    else {
-                        // we're not animating word so count it as finished
-                        this.callbackCount++
-                    }
+                    this.$refs.targetWordRef.animateOut()
                 })
             }
             else {

@@ -13,6 +13,15 @@
                 :continueSequence="()=>{}"
                 :fadeIn="true"
                 :finishedAnimating="queuedCallback" />
+            <RepeatWord
+                v-else-if="showLetter"
+                :word="curList.targetWord"
+                ref="letterRef"
+                :key="curList.targetWord + curList.allWords"
+                :setManuallyReading="setManuallyReading"
+                :manuallyReading="manuallyReading"
+                :finishedAnimating="queuedCallback"
+                :fadeAnimations="true" />
         </view>
         <view :class="{'mt-10': sizeFactor < 1}">
             <WordList
@@ -36,6 +45,7 @@
 <script>
 import WordList from './WordList'
 import Letter from './Letter'
+import RepeatWord from './RepeatWord'
 import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import Vue from 'vue-native-core'
@@ -67,6 +77,7 @@ export default {
     components: {
         WordList,
         Letter,
+        RepeatWord
     },
 
     data () {
@@ -159,13 +170,14 @@ export default {
                 // move on to next list/word
                 this.curList = this.getNextWord()
                 // show letter
+                this.queuedCallback = () => {}
                 this.animateLetter()
             }
         },
 
         animateLetter () {
             // prepare the callback for after animation finishes
-            this.queuedCallback = () => {
+            callback = () => {
                 // speak and highlight the letter
                 if (this.shouldShowLetter) {
                     this.$refs.letterRef.readLetter(this.finishedLetterHint)
@@ -176,11 +188,14 @@ export default {
                 }
             }
 
-            // animate in the letter
-            this.showLetter = true
-            // if were in easy mode theres no animation
+            // if were not in easy mode we dont wait for the speaker to finish showing
             if (!this.shouldShowLetter) {
-                this.queuedCallback()
+                this.showLetter = true
+                callback()
+            }
+            else {
+                this.queuedCallback = callback
+                this.showLetter = true
             }
         },
 
@@ -277,13 +292,7 @@ export default {
                 this.playRandomSound()
                 // animate out our list and letter
                 this.$refs.listRef.animateOut()
-                if (this.shouldShowLetter) {
-                    this.$refs.letterRef.animateOut()
-                }
-                else {
-                    // we're not animating letter so count it as finished
-                    this.callbackCount++
-                }
+                this.$refs.letterRef.animateOut()
             })
         },
 

@@ -93,7 +93,7 @@ export default {
             //return this.difficultyReading < difficulty.HARD
             return true
         },
-        // we read target word on easy
+        // we read target word on easy + medium
         shouldReadTargetWord () {
             return this.difficultyReading <= difficulty.MEDIUM
         },

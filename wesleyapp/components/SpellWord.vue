@@ -14,7 +14,7 @@
                 :fadeAnimations="true"
                 :finishedAnimating="queuedCallback" />
             <WordMadeOfLetters
-                v-if="shouldShowWordMadeOfLetters && showWord"
+                v-else-if="shouldShowWordMadeOfLetters && showWord"
                 ref="targetWordRef"
                 :key="curWord.targetWord + 'letters'"
                 :finish-narration="finishedTargetWord"
@@ -27,6 +27,15 @@
                 :doneReading="finishedTargetWord"
                 :fadeIn="true"
                 :queuedCallback="queuedCallback" />
+            <RepeatWord
+                v-else-if="showWord"
+                :word="curWord.targetWord"
+                ref="targetWordRef"
+                :key="curWord.targetWord + 'speaker'"
+                :setManuallyReading="setManuallyReading"
+                :manuallyReading="manuallyReading"
+                :finishedAnimating="queuedCallback"
+                :fadeAnimations="true" />
         </view>
         <view class="one-third">
             <WordMadeOfLetters
@@ -69,6 +78,7 @@
 import WordMadeOfLetters from './WordMadeOfLetters'
 import Word from './Word'
 import Letter from './Letter'
+import RepeatWord from './RepeatWord'
 import Vue from 'vue-native-core'
 import { difficulty } from './store'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
@@ -101,6 +111,7 @@ export default {
         Letter,
         Word,
         WordMadeOfLetters,
+        RepeatWord
     },
 
     data () {
@@ -188,6 +199,7 @@ export default {
                 // move on to next word
                 this.curWord = this.getNextWord()
                 // show image and change background
+                this.queuedCallback = () => {}
                 this.fadeNewBackground()
             }
         },
@@ -196,7 +208,7 @@ export default {
             this.changeBackground(this.curWord.targetWord, () => {
                 // new image is now displayed as background, animate in target word
                 // prepare the callback for after animation finishes
-                this.queuedCallback = () => {
+                callback = () => {
                     // speak and highlight the word
                     if (this.shouldShowWordNormal || this.shouldShowWordMadeOfLetters) {
                         this.$refs.targetWordRef.readWord(this.finishedTargetWord)
@@ -206,11 +218,14 @@ export default {
                         this.afterSpeak({ word: this.curWord.targetWord, callback: this.finishedTargetWord })
                     }
                 }
-                // initiate animation
-                this.showWord = true
-                // if were in hard mode theres no animation
+                // if were not in easy mode we dont wait for the speaker to finish showing
                 if (!(this.shouldShowWordNormal || this.shouldShowWordMadeOfLetters)) {
-                    this.queuedCallback()
+                    this.showWord = true
+                    callback()
+                }
+                else {
+                    this.queuedCallback = callback
+                    this.showWord = true
                 }
             })
         },
@@ -357,13 +372,7 @@ export default {
             // next tick so everything picks up the queuedCallback
             Vue.nextTick(() => {
                 // Then animate out the word to spell and the word we just made
-                if (this.shouldShowWordNormal || this.shouldShowWordMadeOfLetters) {
-                    this.$refs.targetWordRef.animateOut()
-                }
-                else {
-                // target word isnt displayed so count it as done
-                this.callbackCount++
-                }
+                this.$refs.targetWordRef.animateOut()
                 this.$refs.speltWordRef.animateOut()
             })
         },
