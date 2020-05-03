@@ -1,6 +1,8 @@
 <template>
     <view class="container">
-        <view class="letter-to-find">
+        <view
+            class="letter-to-find"
+            :style="{marginTop: 50 * sizeFactor}">
             <Letter
                 v-if="shouldShowLetter && showLetter"
                 ref="letterRef"
@@ -23,7 +25,7 @@
                 :finishedAnimating="queuedCallback"
                 :fadeAnimations="true" />
         </view>
-        <view :class="{'mt-10': sizeFactor < 1}">
+        <view :style="{marginTop: 75 * sizeFactor}">
             <WordList
                 v-if="showList"
                 ref="listRef"
@@ -320,10 +322,5 @@ export default {
         position: absolute;
         top: 0;
         align-self: center;
-        margin-top: 50
-    }
-
-    .mt-10 {
-        margin-top: 75
     }
 </style>

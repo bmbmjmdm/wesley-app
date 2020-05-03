@@ -12,8 +12,8 @@
                     paddingRight: paddingRightGrowth,
                     marginLeft: marginGrowth,
                     marginRight: marginGrowth,
-                    marginTop: 3,
-                    marginBottom: 3 }"
+                    marginTop: 3 * sizeFactor,
+                    marginBottom: 3 * sizeFactor}"
             :class="{'blue-box':!tutorialHighlight && !tutorialFade, 'red-box':tutorialHighlight, 'fade-box':tutorialFade}">
             <view>
                 <text
@@ -144,7 +144,7 @@ export default {
             this.paddingRightGrowth.setValue(this.paddingSize)
             this.radiusLeftGrowth.setValue(this.radiusSize)
             this.radiusRightGrowth.setValue(this.radiusSize)
-            this.marginGrowth.setValue(10)
+            this.marginGrowth.setValue(10 * this.sizeFactor)
         }
         else if (this.position === 'left') {
             this.paddingLeftGrowth.setValue(this.paddingSize)
@@ -167,7 +167,8 @@ export default {
             'borderSize',
             'fontSize',
             'paddingSize',
-            'radiusSize'
+            'radiusSize',
+            'sizeFactor'
         ]),
     },
 
@@ -229,7 +230,7 @@ export default {
                     useNativeDriver: false,
                 }),
                 Animated.timing(this.marginGrowth, {
-                    toValue: 10,
+                    toValue: 10 * this.sizeFactor,
                     duration: time,
                     easing: Easing.linear,
                     useNativeDriver: false,
@@ -415,10 +416,6 @@ export default {
     .highlighted-text-red {
         color: red;
         background-color: yellow;
-    }
-
-    .m-03 {
-        margin: 3
     }
 
     .blue-box {

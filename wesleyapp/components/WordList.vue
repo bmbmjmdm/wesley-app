@@ -3,7 +3,7 @@
     <view class="word-container">
         <WordMadeOfLetters
             v-for="(word,index) in list"
-            class="mb-3"
+            :style="{marginBottom: 15 * sizeFactor}"
             :key="word+index+list"
             :ref="'wordRef'"
             :word="word"
@@ -87,6 +87,7 @@ export default {
 
     computed: {        
         ...mapGetters([
+            'sizeFactor'
         ])
     },
 
@@ -147,8 +148,5 @@ export default {
         flex-direction: column;
         flex-wrap: wrap;
         align-items: center;
-    }
-    .mb-3 {
-        margin-bottom: 15
     }
 </style>

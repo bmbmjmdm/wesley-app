@@ -1,6 +1,8 @@
 <template>
     <view class="container">
-        <view class="word-to-find">
+        <view 
+            class="word-to-find"
+            :style="{marginTop: 50 * sizeFactor}">
             <Word
                 v-if="shouldShowTargetWord && showWord"
                 ref="targetWordRef"
@@ -111,7 +113,8 @@ export default {
         
         ...mapGetters([
             'difficultyReading',
-            'getNextWord'
+            'getNextWord',
+            'sizeFactor'
         ]),
     },
 
@@ -296,6 +299,5 @@ export default {
         position: absolute;
         top: 0;
         align-self: center;
-        margin-top: 50
     }
 </style>

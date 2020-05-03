@@ -1,7 +1,9 @@
 <!-- This is copied by RecordWord. Idealy this code wouldn't be duplicated but thats low priority atm. ANY CHANGE TO THIS NEEDS TO UPDATE RecordWord TOO -->
 <template>
     <view class="container">
-        <view class="word-to-speak">
+        <view
+            class="word-to-speak"
+            :style="{marginTop: 50 * sizeFactor}">
             <Word
                 v-if="shouldShowTargetWord && showWord"
                 ref="targetWordRef"
@@ -403,6 +405,5 @@ export default {
         position: absolute;
         top: 0;
         align-self: center;
-        margin-top: 50
     }
 </style>

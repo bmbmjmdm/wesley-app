@@ -1,7 +1,8 @@
 <template>
     <touchable-opacity :onPress="manualReadWord">
         <animated:view
-            :style="[{maxHeight: maxGrowth,
+            :style="[{margin: 3 * sizeFactor,
+                    maxHeight: maxGrowth,
                     maxWidth: maxGrowth,
                     minWidth: minGrowth,
                     minHeight: minGrowth,
@@ -12,7 +13,7 @@
                     opacity: opacityGrowth,},
                     roundBox]"
             :class="{'blue-box':!tutorialHighlight && !tutorialFade, 'red-box':tutorialHighlight, 'fade-box':tutorialFade}"
-            class="column m-03">
+            class="column">
             <view class="row">
                 <text
                     v-if="highlightedText"
@@ -373,10 +374,6 @@ export default {
     .highlighted-text-red {
         color: red;
         background-color: yellow;
-    }
-
-    .m-03 {
-        margin: 3
     }
 
     .blue-box {

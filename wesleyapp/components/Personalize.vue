@@ -5,7 +5,9 @@
         <view
             v-if="(curReading || loading) && !showModal"
             class="loading center-hor">
-            <ActivityIndicator class="mt-7" size="large" />
+            <ActivityIndicator
+                :style="{marginTop: 35 * sizeFactor}"
+                size="large" />
         </view>
 
         <modal
@@ -119,14 +121,17 @@
             </touchable-opacity>
         </modal>
     
-        <View class="horizontal-spaced my-3">
+        <View
+            class="horizontal-spaced"
+            :style="{marginTop: 15 * sizeFactor, marginBottom: 15 * sizeFactor}">
             <touchable-opacity
                 :onPress="backHome"
-                class="blue-box ml-3"
+                class="blue-box"
                 :style="[{paddingTop: paddingSize,
                         paddingBottom: paddingSize,
                         paddingRight: paddingSize * 1.5,
-                        paddingLeft: paddingSize * 1.5 },
+                        paddingLeft: paddingSize * 1.5,
+                        marginLeft: 15 * sizeFactor },
                         roundBox]">
                 <text 
                     :style="{fontSize: fontSize}"
@@ -137,11 +142,12 @@
             
             <touchable-opacity
                 :onPress="clickBulk"
-                class="blue-box mr-3"
+                class="blue-box"
                 :style="[{paddingTop: paddingSize,
                         paddingBottom: paddingSize,
                         paddingRight: paddingSize * 1.5,
-                        paddingLeft: paddingSize * 1.5 },
+                        paddingLeft: paddingSize * 1.5,
+                        marginRight: 15 * sizeFactor },
                         roundBox]">
                 <text 
                     :style="{fontSize: fontSize}"
@@ -154,13 +160,14 @@
         <text-input
             v-model="filterText"
             placeholder="Search (or scroll)"
-            class="white-box mb-8 link-text"
+            class="white-box link-text"
             :style="[{paddingTop: paddingSize / 1.5,
                     paddingBottom: paddingSize / 1.5,
                     paddingRight: paddingSize,
                     paddingLeft: paddingSize,
                     width: 300 * sizeFactor,
-                    fontSize: fontSize / 1.5},
+                    fontSize: fontSize / 1.5,
+                    marginBottom: 40 * sizeFactor},
                     roundBox]"
             underlineColorAndroid="transparent" 
         />
@@ -170,7 +177,7 @@
                 <touchable-opacity
                     v-for="word in filteredWords"
                     :onPress="() => clickWord(word)"
-                    class="m-2">
+                    :style="{margin: 10 * sizeFactor}">
                     <view
                         :style="[{paddingTop: paddingSize,
                                 paddingBottom: paddingSize,
@@ -642,31 +649,6 @@ export default {
 
     .normal-text {
         color: white;
-    }
-
-    .mb-8 {
-        margin-bottom: 40
-    }
-
-    .my-3 {
-        margin-top: 15;
-        margin-bottom: 15;
-    }
-
-    .mt-7 {
-        margin-top: 35;
-    }
-
-    .mr-3 {
-        margin-right: 15;
-    }
-
-    .ml-3 {
-        margin-left: 15;
-    }
-
-    .m-2 {
-        margin: 10
     }
 
     .full-flex {

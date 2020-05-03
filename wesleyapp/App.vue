@@ -175,8 +175,10 @@ export default {
         AppState.addEventListener('change', this.handleAppStateChange)
         
         // setup resizing to fit different screens
+        let screenWidth = Dimensions.get('window').width
         let screenHeight = Dimensions.get('window').height
-        this.setSizeFactor(screenHeight/960)
+        let screenSize = (screenHeight + screenWidth) / 2
+        this.setSizeFactor(screenSize/720)
         
         this.loaded = true
 

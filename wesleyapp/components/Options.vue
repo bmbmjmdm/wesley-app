@@ -15,9 +15,9 @@
             </text>
         </touchable-opacity>
         <touchable-opacity
-            class="white-box mt-6"
+            class="white-box"
             :onPress="() => cycleTopics()"
-            :style="[{padding: paddingSizeSmall}, roundBox]">
+            :style="[{padding: paddingSizeSmall, marginTop: 30 * sizeFactor}, roundBox]">
             <text 
                 :style="{fontSize: fontSizeSmall}"
                 class="link-text">
@@ -26,9 +26,9 @@
         </touchable-opacity>
         <touchable-opacity
             v-if="allowedTopics.includes('reading')"
-            class="white-box mt-6"
+            class="white-box"
             :onPress="() => cycleDifficultyReading()"
-            :style="[{padding: paddingSizeSmall}, roundBox]">
+            :style="[{padding: paddingSizeSmall, marginTop: 30 * sizeFactor}, roundBox]">
             <text 
                 :style="{fontSize: fontSizeSmall}"
                 class="link-text">
@@ -37,9 +37,9 @@
         </touchable-opacity>
         <touchable-opacity
             v-if="allowedTopics.includes('spelling')"
-            class="white-box mt-6"
+            class="white-box"
             :onPress="() => cycleDifficultySpelling()"
-            :style="[{padding: paddingSizeSmall}, roundBox]">
+            :style="[{padding: paddingSizeSmall, marginTop: 30 * sizeFactor}, roundBox]">
             <text 
                 :style="{fontSize: fontSizeSmall}"
                 class="link-text">
@@ -47,9 +47,9 @@
             </text>
         </touchable-opacity>
         <touchable-opacity
-            class="white-box mt-6"
+            class="white-box"
             :onPress="() => cycleAllowAutoAdjust()"
-            :style="[{padding: paddingSizeSmall}, roundBox]">
+            :style="[{padding: paddingSizeSmall, marginTop: 30 * sizeFactor}, roundBox]">
             <text 
                 :style="{fontSize: fontSizeSmall}"
                 class="link-text">
@@ -100,6 +100,7 @@ export default {
             'paddingSizeSmall',
             'fontSizeSmall',
             'fontSize',
+            'sizeFactor'
         ]),
     },
 
@@ -174,9 +175,5 @@ export default {
 
     .normal-text {
         color: white;
-    }
-
-    .mt-6 {
-        margin-top: 30
     }
 </style>

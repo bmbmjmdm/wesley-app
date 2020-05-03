@@ -1,7 +1,9 @@
 <!-- Most of this is copied from SpeakWord. Idealy this code wouldn't duplicate but thats low priority atm. ANY CHANGE TO SpeakWord NEEDS TO UPDATE THIS TOO -->
 <template>
     <view class="container">
-        <view class="word-to-speak">
+        <view
+            class="word-to-speak"
+            :style="{marginTop: 50 * sizeFactor}" >
             <Word
                 v-if="showWord"
                 ref="targetWordRef"
@@ -22,7 +24,10 @@
             :style="{height: maxGrowth, width: maxGrowth, resizeMode: 'stretch'}"
             :source="micPic" />
         
-        <view v-if="bulkRecording" class="back-button">
+        <view
+            v-if="bulkRecording"
+            class="back-button"
+            :style="{marginBottom: 50 * sizeFactor}" >
             <touchable-opacity
                 class="white-box"
                 :onPress="quit"
@@ -34,11 +39,16 @@
                 </text>
             </touchable-opacity>
             <touchable-opacity
-                class="ml-8 mr-2"
                 :class="{'white-box': curWord !== 0, 'white-disabled-box': curWord === 0}"
                 :disabled="curWord === 0"
                 :onPress="undo"
-                :style="[{padding: paddingSizeSmall, paddingRight: paddingSizeSmall*2, paddingLeft: paddingSizeSmall*2}, roundBox]">
+                :style="[{
+                            padding: paddingSizeSmall,
+                            paddingRight: paddingSizeSmall*2,
+                            paddingLeft: paddingSizeSmall*2,
+                            marginLeft: 40 * sizeFactor,
+                            marginRight: 10 * sizeFactor
+                        }, roundBox]">
                 <text 
                     :style="{fontSize: fontSizeSmall}"
                     class="link-text">
@@ -420,14 +430,12 @@ export default {
         position: absolute;
         top: 0;
         align-self: center;
-        margin-top: 50
     }
 
     .back-button {
         position: absolute;
         bottom: 0;
         align-self: center;
-        margin-bottom: 50;
         flex-direction: row
 
     }
@@ -442,14 +450,6 @@ export default {
 
     .link-text {
         color: 'rgb(0, 119, 179)';
-    }
-
-    .ml-8 {
-        margin-left: 40
-    }
-
-    .mr-2 {
-        margin-right: 10
     }
 
 </style>

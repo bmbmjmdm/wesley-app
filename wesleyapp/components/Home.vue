@@ -29,8 +29,8 @@
             </text>
         </touchable-opacity>
         <touchable-opacity
-            :class="{'white-box': !showIntro || introStep == 1, 'white-shadow': showIntro && introStep != 1, 'mt-6': true}"
-            :style="[{padding: paddingSizeSmall}, roundBox]"
+            :class="{'white-box': !showIntro || introStep == 1, 'white-shadow': showIntro && introStep != 1}"
+            :style="[{padding: paddingSizeSmall, marginTop: 30 * sizeFactor}, roundBox]"
             :onPress="viewOptions">
             <text 
                 :style="{fontSize: fontSizeSmall}"
@@ -39,8 +39,8 @@
             </text>
         </touchable-opacity>
         <touchable-opacity
-            :class="{'white-box': !showIntro || introStep == 2, 'white-shadow': showIntro && introStep != 2, 'mt-6': true}"
-            :style="[{padding: paddingSizeSmall}, roundBox]"
+            :class="{'white-box': !showIntro || introStep == 2, 'white-shadow': showIntro && introStep != 2}"
+            :style="[{padding: paddingSizeSmall, marginTop: 30 * sizeFactor}, roundBox]"
             :onPress="viewPersonalize">
             <ActivityIndicator
                 v-if="loading"
@@ -101,6 +101,7 @@ export default {
             'fontSizeSmall',
             'fontSize',
             'showIntro',
+            'sizeFactor',
         ])
     },
 
@@ -211,14 +212,6 @@ export default {
 
     .normal-text-shadow {
         color: 'rgb(76, 76, 76)';
-    }
-    
-    .mt-6 {
-        margin-top: 30
-    }
-    
-    .mt-4 {
-        margin-top: 20
     }
 
     .white-box {
