@@ -25,7 +25,7 @@
                 :finishedAnimating="queuedCallback"
                 :fadeAnimations="true" />
         </view>
-        <view :style="{marginTop: 75 * sizeFactor}">
+        <view :style="{marginTop: 150 * sizeFactor}">
             <WordList
                 v-if="showList"
                 ref="listRef"

@@ -46,6 +46,7 @@ export default {
             animated: Animated,
             pic: speaker,
             allWords: [],
+            animatingOut: false,
         }
     },
 
@@ -83,7 +84,7 @@ export default {
                     duration: time,
                     useNativeDriver: false,
                 }),
-            ]).start(this.finishedAnimating)
+            ]).start(this.animateOutCallback)
         },
         
         animateOpacity (value) {
@@ -95,10 +96,17 @@ export default {
                     duration: time,
                     useNativeDriver: false,
                 })
-            ]).start(this.finishedAnimating)
+            ]).start(this.animateOutCallback)
+        },
+
+        animateOutCallback () {
+            if (this.animatingOut) {
+                this.finishedAnimating()
+            }
         },
 
         animateOut () {
+            this.animatingOut = true
             // we want to fade out the word on special occasion
             if (this.fadeAnimations) {
                 this.animateOpacity(0)
