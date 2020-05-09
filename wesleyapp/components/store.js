@@ -60,21 +60,6 @@ export default new Vuex.Store({
         basePaddingSize: 30,
         baseFontSizeSmall: 20,
         basePaddingSizeSmall: 15,
-        // the basic shape of all words in the app
-        roundBox: {
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.8,
-            shadowRadius: 5,
-            borderRadius: 20,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-            // Currently elevation (android shadows) causes a bug where text in the roundBox casts an anti-shadow, making 
-            // look like its faintly white highlighted when the background is semi-transparent 
-            //elevation: 5,
-        },
         radiusSize: 20,
         previousWord: '',
         allowedTopics: 'reading spelling',
@@ -150,8 +135,22 @@ export default new Vuex.Store({
         paddingSize: state => Math.round(state.basePaddingSize * state.sizeFactor),
         fontSizeSmall: state => Math.round(state.baseFontSizeSmall * state.sizeFactor),
         paddingSizeSmall: state => Math.round(state.basePaddingSizeSmall * state.sizeFactor),
-        radiusSize: state => state.radiusSize,
-        roundBox: state => state.roundBox,
+        radiusSize: state => state.radiusSize * state.sizeFactor,
+        // the basic shape of all words in the app
+        roundBox: state => { return {
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.8,
+            shadowRadius: 5,
+            borderRadius: 20 * state.sizeFactor,
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+            // Currently elevation (android shadows) causes a bug where text in the roundBox casts an anti-shadow, making 
+            // look like its faintly white highlighted when the background is semi-transparent 
+            //elevation: 5,
+        } },
         previousWord: state => state.previousWord,
         allowedTopics: state => state.allowedTopics,
         curActivity: state => state.curActivity,
