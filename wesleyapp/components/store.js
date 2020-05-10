@@ -566,16 +566,19 @@ function shuffle(array) {
 
 function getWordOptions(nextWord) {
     let allWords = []
-    // fwbl uses words/letterList, fwbp uses nextWord as is/wordList
+    let list
+    // fwbl uses words/letterList
     if (nextWord.words) {
         list = letterList
         let wordStartingWithLetter
+        // we dont want 1-leter words
         do {
             wordStartingWithLetter = nextWord.words[Math.floor(Math.random() * nextWord.words.length)]
         }
         while (wordStartingWithLetter.length === 1)
         allWords.push(wordStartingWithLetter)
     }
+    //fwbp uses nextWord as is/wordList
     else {
         list = wordList
         allWords.push(nextWord)
@@ -586,15 +589,16 @@ function getWordOptions(nextWord) {
         // if we were given a letterList, we need to extract the word from the given letter's words
         if (randomWord.words) {
             let randomWordSelected
+            // we dont want 1-leter words
             do {
                 randomWordSelected = randomWord.words[Math.floor(Math.random() * randomWord.words.length)]
             }
             while (randomWordSelected.length === 1)
             randomWord = randomWordSelected
         }
-        // this second part of the check is to make sure we dont add a word containing the target letter for fwbl
+        // the second part of this check is to make sure we dont add a word containing the target letter for fwbl
         // the !randomWord.includes part is to check to make sure we're looking at a string, not an object
-        if (!allWords.includes(randomWord) && (!randomWord.includes || !randomWord.includes(nextWord.targetWord))) {
+        if (!allWords.includes(randomWord) && (!randomWord.includes || !randomWord.toLowerCase().includes(nextWord.targetWord))) {
             allWords.push(randomWord)
         }
     }
