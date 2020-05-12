@@ -5,6 +5,7 @@
         <touchable-opacity
             v-if="showIntro"
             class="top-of-screen"
+            :style="{padding: 25 * sizeFactor}"
             :onPress="nextIntro">
             <text
                 class="normal-text"
@@ -179,7 +180,6 @@ export default {
     .top-of-screen {
         position: absolute;
         top: 0;
-        padding: 25;
     }
 
     .normal-shadow {

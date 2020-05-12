@@ -1,6 +1,20 @@
 <!-- Most of this is copied from SpeakWord. Idealy this code wouldn't duplicate but thats low priority atm. ANY CHANGE TO SpeakWord NEEDS TO UPDATE THIS TOO -->
 <template>
-    <view class="container">
+    <view
+        class="container"
+        :class="{'normal-shadow': showRecordIntro}">
+        <touchable-opacity
+            v-if="showRecordIntro"
+            class="top-of-screen"
+            :style="{padding: 25 * sizeFactor}"
+            :onPress="undo">
+            <text
+                class="normal-text"
+                :style="{fontSize: fontSize}"
+                :allowFontScaling="false">
+                Be careful! What you record here is what your child will hear in the app. If you ever make a bad recording, press "Undo"!
+            </text>
+        </touchable-opacity>
         <view
             class="word-to-speak"
             :style="{marginTop: 50 * sizeFactor}" >
@@ -29,12 +43,13 @@
             class="back-button"
             :style="{marginBottom: 50 * sizeFactor}" >
             <touchable-opacity
-                class="white-box"
                 :onPress="quit"
+                :disabled="showRecordIntro"
+                :class="{'white-box-shadow': showRecordIntro, 'white-box': !showRecordIntro}"
                 :style="[{padding: paddingSizeSmall}, roundBox]">
                 <text 
                     :style="{fontSize: fontSizeSmall}"
-                    class="link-text">
+                    :class="{'link-text': !showRecordIntro, 'link-text-shadow': showRecordIntro}">
                     Stop Recording
                 </text>
             </touchable-opacity>
@@ -114,7 +129,7 @@ export default {
     },
 
     mounted () {
-        this.getNext()
+        if (!this.showRecordIntro) this.getNext()
     },
 
     computed: {
@@ -140,12 +155,18 @@ export default {
             'roundBox',
             'paddingSizeSmall',
             'fontSizeSmall',
+            'fontSize',
+            'showRecordIntro',
         ]),
     },
 
     methods: {
         ...mapActions([
             'afterSpeak',
+        ]),
+
+        ...mapMutations([
+            'finishRecordIntro'
         ]),
 
         // Move on to the next word. This does the following in order:
@@ -407,6 +428,10 @@ export default {
         },
 
         async undo () {
+            if (this.showRecordIntro) {
+                this.finishRecordIntro()
+                this.getNext()
+            }
             if (this.curWord != 0) {
                 this.undoing = true
             }
@@ -423,7 +448,7 @@ export default {
         align-items: center;
         justify-content: center;
         flex: 1;
-        flex-direction: row;
+        flex-direction: column;
     }
 
     .word-to-speak {
@@ -450,6 +475,27 @@ export default {
 
     .link-text {
         color: 'rgb(0, 119, 179)';
+    }
+
+    .normal-shadow {
+        background-color: 'rgba(0, 0, 0, 0.7)' !important;
+    }
+
+    .link-text-shadow {
+        color: 'rgb(0, 36, 54)';
+    }
+
+    .white-box-shadow {
+        background-color: 'rgb(76, 76, 76)';
+    }
+
+    .normal-text {
+        color: white;
+    }
+
+    .top-of-screen {
+        position: absolute;
+        top: 0;
     }
 
 </style>

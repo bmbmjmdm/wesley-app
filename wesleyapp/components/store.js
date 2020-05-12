@@ -68,6 +68,7 @@ export default new Vuex.Store({
             topic: '',
         },
         showIntro: true,
+        showRecordIntro: true,
         adjustLevel: 0,
         allWordsSaid: allWordsText.split("\n"),
     },
@@ -155,6 +156,7 @@ export default new Vuex.Store({
         allowedTopics: state => state.allowedTopics,
         curActivity: state => state.curActivity,
         showIntro: state => state.showIntro,
+        showRecordIntro: state => state.showRecordIntro,
         // used for saving app
         getUserData: state => {
             return {
@@ -163,7 +165,8 @@ export default new Vuex.Store({
                 difficultySpelling: state.difficultySpelling,
                 allowAutoAdjust: state.allowAutoAdjust,
                 allowedTopics: state.allowedTopics,
-                showIntro: state.showIntro
+                showIntro: state.showIntro,
+                showRecordIntro: state.showRecordIntro
             }
         },
         getWordOrLetter: state => (word) => {
@@ -281,6 +284,9 @@ export default new Vuex.Store({
 
         finishIntro(state) {
             Vue.set(state, 'showIntro', false)
+        },
+        finishRecordIntro (state) {
+            Vue.set(state, 'showRecordIntro', false)
         },
 
     },
@@ -438,6 +444,7 @@ export default new Vuex.Store({
                 Vue.set(state, 'allowedTopics', data.allowedTopics)
                 Vue.set(state, 'allowAutoAdjust', data.allowAutoAdjust)
                 Vue.set(state, 'showIntro', data.showIntro)
+                Vue.set(state, 'showRecordIntro', data.showRecordIntro)
             }
         
             let pictures = await AsyncStorage.getItem("WesleyApp-pictures")
