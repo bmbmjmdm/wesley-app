@@ -291,7 +291,29 @@ export default new Vuex.Store({
 
     },
     actions: {
-        // heads up we might be given a full sentence here, not just a word
+        // the proper way to use afterSpeak with a full sentence
+        afterSpeakSentence ({ getters, dispatch }, { sentence, callback = () => {} }) {
+            // we're done
+            if (!sentence) callback()
+            // last word
+            else if (sentence.indexOf(' ') === -1) {
+                dispatch('afterSpeak', { word: sentence, callback })
+            }
+            // still have a sentence
+            else {
+                let firstWord = sentence.substring(0, sentence.indexOf(' '))
+                let restSentence = sentence.substring(sentence.indexOf(' ') + 1)
+                // recursive call
+                dispatch('afterSpeak', {
+                    word: firstWord,
+                    callback: () => {
+                        dispatch('afterSpeakSentence', { sentence: restSentence, callback })
+                    }}
+                )
+            }
+        },
+
+        // heads up we might be given a full sentence here, not just a word. You should use afterSpeakSentence if you want to read a sentence
         afterSpeak ({ getters, dispatch }, { word, callback = () => {} })  {
             // setup the helper for tts just incase
             var helper = () => {

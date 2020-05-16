@@ -82,6 +82,7 @@ export default {
             silenceDuration: 999,
             maxGrowth: new Animated.Value(0),
             queuedCallback: null,
+            prompted: 0,
         }
     },
 
@@ -122,6 +123,7 @@ export default {
     methods: {
         ...mapActions([
             'afterSpeak',
+            'afterSpeakSentence',
             'finishLevelUp'
         ]),
 
@@ -283,19 +285,31 @@ export default {
                     if (!this.shouldShowTargetWord) {
                         prompt = "What's the picture of? Say it out loud"
                     }
-                    this.afterSpeak({
-                        word: prompt,
-                        callback: async () => {
-                            this.narrating = false
-                            this.$refs.targetWordRef.startHighlightRepeating()
-                            this.manuallyReading = false
-                            setTimeout(this.tryStopRecording, 5000)
-                            try { await AudioRecorder.startRecording() }
-                            // more logs for later debugging
-                            catch (error) { console.log ("recording error"); console.log(error) }
-                            
-                        }
-                    })
+                    let callback = async () => {
+                        this.prompted++
+                        this.narrating = false
+                        this.$refs.targetWordRef.startHighlightRepeating()
+                        this.manuallyReading = false
+                        setTimeout(this.tryStopRecording, 5000)
+                        try { await AudioRecorder.startRecording() }
+                        // more logs for later debugging
+                        catch (error) { console.log ("recording error"); console.log(error) }
+                        
+                    }
+
+                    // limit the number of times we prompt them
+                    let maxPrompt = 99
+                    if (this.difficultyReading === difficulty.MEDIUM) maxPrompt = 3
+                    else if (this.difficultyReading === difficulty.HARD) maxPrompt = 1
+                    if (this.prompted >= maxPrompt) {
+                        callback()
+                    }
+                    else {
+                        this.afterSpeakSentence({
+                            sentence: prompt,
+                            callback
+                        })
+                    }
                     
                 })
             }
@@ -305,7 +319,10 @@ export default {
 
         // The user needs another prompt if they havent started recording yet
         async tryStopRecording () {
-            if (!this.hasAudio) this.stopRecording()
+            if (!this.hasAudio) {
+                this.prompted = 0
+                this.stopRecording()
+            }
         },
 
         async stopRecording () {
