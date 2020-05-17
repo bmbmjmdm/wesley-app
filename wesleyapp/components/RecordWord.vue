@@ -157,6 +157,7 @@ export default {
             'fontSizeSmall',
             'fontSize',
             'showRecordIntro',
+            'textToSpeech',
         ]),
     },
 
@@ -284,7 +285,7 @@ export default {
                 // keep track of metering
                 AudioRecorder.onProgress = (data) => {
                     // They manually chose to stop recording
-                    if (this.undoing || this.quitter) {
+                    if (this.undoing || this.quiter) {
                         this.stopRecording()
                         this.hasAudio = true
                         return
@@ -422,8 +423,10 @@ export default {
                 AudioRecorder.stopRecording()
                 this.$refs.targetWordRef.stopHighlightRepeating()
                 if (this.recording) this.recording.release()
+                console.log('got here')
+                this.textToSpeech.stop()
             }
-            catch (error) {}
+            catch (error) { console.log(error) }
             this.allDone(this.audioDetails)
         },
 
