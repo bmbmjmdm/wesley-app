@@ -158,7 +158,6 @@ export default {
             'fontSizeSmall',
             'fontSize',
             'showRecordIntro',
-            'textToSpeech',
         ]),
     },
 
@@ -428,8 +427,6 @@ export default {
                 AudioRecorder.stopRecording()
                 this.$refs.targetWordRef.stopHighlightRepeating()
                 if (this.recording) this.recording.release()
-                console.log('got here')
-                this.textToSpeech.stop()
             }
             catch (error) { console.log(error) }
             // we dont quit while reading the prompt because it causes a rare bug, so we wait for the prompt to finish then quit
