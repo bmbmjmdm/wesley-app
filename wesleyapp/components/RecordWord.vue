@@ -124,7 +124,8 @@ export default {
             reviewed: true,
             recording: null,
             undoing: false,
-            quiter: false
+            quiter: false,
+            prompting: false
         }
     },
 
@@ -316,6 +317,8 @@ export default {
                 }
                 
                 let callback = async () => {
+                    if (this.quiter) this.allDone(this.audioDetails)
+                    this.prompting = false
                     this.narrating = false
                     this.$refs.targetWordRef.startHighlightRepeating()
                     this.manuallyReading = false
@@ -325,6 +328,7 @@ export default {
                 }
                 // we only prompt the user for the first word
                 if (this.curWord === 0) {
+                    this.prompting = true
                     this.afterSpeak({
                         word: "Please read the word loud and clear",
                         callback
@@ -418,6 +422,7 @@ export default {
         },
 
         async quit () {
+            if (this.quiter || this.undoing) return
             try {
                 this.quiter = true
                 AudioRecorder.stopRecording()
@@ -427,10 +432,12 @@ export default {
                 this.textToSpeech.stop()
             }
             catch (error) { console.log(error) }
-            this.allDone(this.audioDetails)
+            // we dont quit while reading the prompt because it causes a rare bug, so we wait for the prompt to finish then quit
+            if (!this.prompting) this.allDone(this.audioDetails)
         },
 
         async undo () {
+            if (this.quiter || this.undoing) return
             if (this.showRecordIntro) {
                 this.finishRecordIntro()
                 this.getNext()

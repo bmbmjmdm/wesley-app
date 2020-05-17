@@ -244,7 +244,7 @@ export default {
 
     computed: {
         canRecord () {
-            return this.modalWord !== "BackgroundImage" && this.modalWord !== "LevelUpGif"
+            return this.modalWord !== "BackgroundImage" && !this.modalWord.includes("LevelUpGif")
         },
 
         modalWordAsObject () {
