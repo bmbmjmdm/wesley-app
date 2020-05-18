@@ -1,7 +1,8 @@
 <template>
     <view
         v-if="!recordingView"
-        class="container">
+        class="container"
+        :class="{'normal-shadow': showPersonalizeIntro}">
         <view
             v-if="(curReading || loading) && !showModal"
             class="loading center-hor">
@@ -126,7 +127,7 @@
             :style="{marginTop: 15 * sizeFactor, marginBottom: 15 * sizeFactor}">
             <touchable-opacity
                 :onPress="backHome"
-                class="blue-box"
+                :class="{'blue-box': !showPersonalizeIntro, 'blue-shadow': showPersonalizeIntro}"
                 :style="[{paddingTop: paddingSize,
                         paddingBottom: paddingSize,
                         paddingRight: paddingSize * 1.5,
@@ -135,7 +136,7 @@
                         roundBox]">
                 <text 
                     :style="{fontSize: fontSize}"
-                    class="normal-text">
+                    :class="{'normal-text': !showPersonalizeIntro, 'normal-text-shadow': showPersonalizeIntro}">
                     Back
                 </text>
             </touchable-opacity>
@@ -158,6 +159,7 @@
         </View>
         
         <text-input
+            v-if="!showPersonalizeIntro"
             v-model="filterText"
             placeholder="Search (or scroll)"
             class="white-box link-text"
@@ -172,7 +174,7 @@
             underlineColorAndroid="transparent" 
         />
     
-        <scroll-view>
+        <scroll-view v-if="!showPersonalizeIntro">
             <view class="grid-list">
                 <touchable-opacity
                     v-for="word in filteredWords"
@@ -194,6 +196,17 @@
                 </touchable-opacity>
             </view>
         </scroll-view>
+        <touchable-opacity
+            v-else
+            :style="{padding: 25 * sizeFactor}"
+            :onPress="finishPersonalizeIntro">
+            <text
+                class="normal-text"
+                :style="{fontSize: fontSize}"
+                :allowFontScaling="false">
+                Here a list of a words, phrases, and letters will be listed that you can customize with your voice and pictures. Doing them one at a time is tiresome though, so feel free to use the bulk button above! Warning: Pictures used with this app should not be deleted from your phone, or else this app will automatically restore the default.
+            </text>
+        </touchable-opacity>
     </view>
     <RecordWord
         v-else
@@ -298,18 +311,21 @@ export default {
             'hasAnyUserRecording',
             'getWordOrLetter',
             'getAllWordsToRecord',
-            'getAllWordsNeedingPictures'
+            'getAllWordsNeedingPictures',
+            'showPersonalizeIntro'
         ]),
     },
 
     methods: {
         backHome () {
+            if (this.showPersonalizeIntro) return
             if (this.curReading || this.loading) return
             this.readSentenceCallback = null
             this.setActivity({name: 'home'})
         },
 
         clickBulk () {
+            if (this.showPersonalizeIntro) return this.finishPersonalizeIntro()
             if (this.curReading || this.loading) return
             this.bulkActions = true
             this.showModal = true
@@ -587,7 +603,8 @@ export default {
         },
 
         ...mapMutations([
-            'setActivity'
+            'setActivity',
+            'finishPersonalizeIntro'
         ]),
 
         ...mapActions([
@@ -710,5 +727,17 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
+    }
+
+    .blue-shadow {
+        background-color: 'rgb(0, 36, 54)' !important;
+    }
+
+    .normal-shadow {
+        background-color: 'rgba(0, 0, 0, 0.7)' !important;
+    }
+
+    .normal-text-shadow {
+        color: 'rgb(76, 76, 76)';
     }
 </style>

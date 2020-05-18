@@ -6,7 +6,7 @@
                 :key="words[0].targetWord + 0 + words"
                 :ref="'wordRef0'"
                 :word="words[0].targetWord"
-                :picName="words[0].targetWord"
+                :picName="showPictures ? words[0].targetWord : null"
                 :narrating="narrating"
                 :continueSentence="readWords"
                 :word-pressed="wordPressed"
@@ -21,7 +21,7 @@
                 :key="words[1].targetWord + 1 + words"
                 :ref="'wordRef1'"
                 :word="words[1].targetWord"
-                :picName="words[1].targetWord"
+                :picName="showPictures ? words[1].targetWord : null"
                 :narrating="narrating"
                 :continueSentence="readWords"
                 :word-pressed="wordPressed"
@@ -38,7 +38,7 @@
                 :key="words[2].targetWord + 2 + words"
                 :ref="'wordRef2'"
                 :word="words[2].targetWord"
-                :picName="words[2].targetWord"
+                :picName="showPictures ? words[2].targetWord : null"
                 :narrating="narrating"
                 :continueSentence="readWords"
                 :word-pressed="wordPressed"
@@ -53,7 +53,7 @@
                 :key="words[3].targetWord + 3 + words"
                 :ref="'wordRef3'"
                 :word="words[3].targetWord"
-                :picName="words[3].targetWord"
+                :picName="showPictures ? words[3].targetWord : null"
                 :narrating="narrating"
                 :continueSentence="readWords"
                 :word-pressed="wordPressed"
@@ -113,6 +113,10 @@ export default {
         queuedCallback: {
             type: Function,
             default: () => {},
+        },
+        showPictures: {
+            type: Boolean,
+            required: true,
         }
     },
 

@@ -43,6 +43,10 @@ export default {
             type: Function,
             required: true
         },
+        defaultBackground: {
+            type: Function,
+            required: true
+        },
         changeBackground: {
             type: Function,
             required: true
@@ -100,6 +104,10 @@ export default {
         shouldReadTargetWord () {
             return this.difficultyReading <= difficulty.MEDIUM
         },
+        // we show picture on medium
+        shouldShowPicture () {
+            return this.difficultyReading <= difficulty.MEDIUM
+        },
 
         micPic () {
             if (this.narrating) {
@@ -141,6 +149,7 @@ export default {
             }
             // still in this activity, go on to next word
             else {
+                if (!this.shouldShowPicture) this.defaultBackground()
                 // disable interaction
                 this.manuallyReading = true
                 this.narrating = true
@@ -157,7 +166,7 @@ export default {
         },
 
         fadeNewBackground () {
-            this.changeBackground(this.curWord.targetWord, () => {
+            let callback = () => {
                 // new image is now displayed as background, animate in target word
                 // prepare the callback for after animation finishes
                 this.queuedCallback = () => {
@@ -181,7 +190,10 @@ export default {
                 else {
                     this.animateGrowth(true, this.queuedCallback)
                 }
-            })
+            }
+            // we only show the word picture if we're on MED difficulty
+            if (this.shouldShowPicture) this.changeBackground(this.curWord.targetWord, callback)
+            else callback()
         },
 
         finishedTargetWord () {
@@ -299,7 +311,7 @@ export default {
 
                     // limit the number of times we prompt them
                     let maxPrompt = 99
-                    if (this.difficultyReading === difficulty.MEDIUM) maxPrompt = 3
+                    if (this.difficultyReading === difficulty.MEDIUM) maxPrompt = 2
                     else if (this.difficultyReading === difficulty.HARD) maxPrompt = 1
                     if (this.prompted >= maxPrompt) {
                         callback()

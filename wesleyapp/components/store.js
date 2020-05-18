@@ -46,9 +46,6 @@ export default new Vuex.Store({
         // split up by topic
         difficultyReading: difficulty.VERY_EASY,
         difficultySpelling: difficulty.VERY_EASY,
-        // whether we can adjust difficulty automatically based on user performance
-        // persistant
-        allowAutoAdjust: true,
         // highlight speed of read words
         highlightSpeed: 56,
         // text to speech module
@@ -69,6 +66,8 @@ export default new Vuex.Store({
         },
         showIntro: true,
         showRecordIntro: true,
+        showOptionsIntro: true,
+        showPersonalizeIntro: true,
         adjustLevel: 0,
         allWordsSaid: allWordsText.split("\n"),
     },
@@ -128,7 +127,6 @@ export default new Vuex.Store({
         },
         textToSpeech: state => state.textToSpeech,
         shadow: state => state.shadow,
-        allowAutoAdjust: state => state.allowAutoAdjust,
         difficultyReading: state => state.difficultyReading,
         difficultySpelling: state => state.difficultySpelling,
         sizeFactor: state => state.sizeFactor,
@@ -157,16 +155,19 @@ export default new Vuex.Store({
         curActivity: state => state.curActivity,
         showIntro: state => state.showIntro,
         showRecordIntro: state => state.showRecordIntro,
+        showOptionsIntro: state => state.showOptionsIntro,
+        showPersonalizeIntro: state => state.showPersonalizeIntro,
         // used for saving app
         getUserData: state => {
             return {
                 wordHistory: state.wordHistory,
                 difficultyReading: state.difficultyReading,
                 difficultySpelling: state.difficultySpelling,
-                allowAutoAdjust: state.allowAutoAdjust,
                 allowedTopics: state.allowedTopics,
                 showIntro: state.showIntro,
-                showRecordIntro: state.showRecordIntro
+                showRecordIntro: state.showRecordIntro,
+                showPersonalizeIntro: state.showPersonalizeIntro,
+                showOptionsIntro: state.showOptionsIntro
             }
         },
         getWordOrLetter: state => (word) => {
@@ -275,9 +276,6 @@ export default new Vuex.Store({
         setDifficultySpelling(state, value) {
             Vue.set(state, 'difficultySpelling', value)
         },
-        setAllowAutoAdjust(state, value) {
-            Vue.set(state, 'allowAutoAdjust', value)
-        },
         setAllowedTopics(state, value) {
             Vue.set(state, 'allowedTopics', value)
         },
@@ -287,6 +285,12 @@ export default new Vuex.Store({
         },
         finishRecordIntro (state) {
             Vue.set(state, 'showRecordIntro', false)
+        },
+        finishOptionsIntro (state) {
+            Vue.set(state, 'showOptionsIntro', false)
+        },
+        finishPersonalizeIntro (state) {
+            Vue.set(state, 'showPersonalizeIntro', false)
         },
 
     },
@@ -384,16 +388,14 @@ export default new Vuex.Store({
             }
 
             // Update difficulty
-            if (state.allowAutoAdjust) {
-                if (state[rightStreek] >= 4) {
-                    Vue.set(state, rightStreek, 0)
-                    state.adjustLevel = 1
-                    levelUp = true
-                }
-                else if (state[wrongStreek] >= 4) {
-                    Vue.set(state, wrongStreek, 0)
-                    state.adjustLevel = -1
-                }
+            if (state[rightStreek] >= 4) {
+                Vue.set(state, rightStreek, 0)
+                state.adjustLevel = 1
+                levelUp = true
+            }
+            else if (state[wrongStreek] >= 4) {
+                Vue.set(state, wrongStreek, 0)
+                state.adjustLevel = -1
             }
             return levelUp
         },
@@ -464,9 +466,10 @@ export default new Vuex.Store({
                 Vue.set(state, 'difficultySpelling', data.difficultySpelling)
                 Vue.set(state, 'difficultyReading', data.difficultyReading)
                 Vue.set(state, 'allowedTopics', data.allowedTopics)
-                Vue.set(state, 'allowAutoAdjust', data.allowAutoAdjust)
                 Vue.set(state, 'showIntro', data.showIntro)
                 Vue.set(state, 'showRecordIntro', data.showRecordIntro)
+                Vue.set(state, 'showOptionsIntro', data.showOptionsIntro)
+                Vue.set(state, 'showPersonalizeIntro', data.showPersonalizeIntro)
             }
         
             let pictures = await AsyncStorage.getItem("WesleyApp-pictures")

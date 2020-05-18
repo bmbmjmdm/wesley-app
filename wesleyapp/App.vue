@@ -62,6 +62,7 @@
                     v-else-if="curActivity.name === 'findWordByPicture'"
                     :random-activity="randomActivity"
                     :default-background="defaultBackground"
+                    :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
                     :sayLevelUp="sayLevelUp"
@@ -85,6 +86,7 @@
                 <SpeakWord
                     v-else-if="curActivity.name === 'speakWord'"
                     :random-activity="randomActivity"
+                    :default-background="defaultBackground"
                     :change-background="changeBackground"
                     :playRandomSound="playRandomSound"
                     :sayGJ="sayGJ"
@@ -284,7 +286,7 @@ export default {
             case 'findWordInSentence':
                 return false
             case 'findWordByPicture':
-                return true
+                return this.difficultyReading < difficulty.HARD
             case 'spellWord':
                 return false
             case 'findWordByLetter':
@@ -292,7 +294,7 @@ export default {
             case 'findLetterByAlliteration':
                 return true
             case 'speakWord':
-                return false
+                return this.difficultyReading > difficulty.MEDIUM
             default:
                 return true
             } 

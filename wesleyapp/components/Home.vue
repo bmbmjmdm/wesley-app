@@ -16,7 +16,7 @@
         </touchable-opacity>
         <touchable-opacity
             :onPress="startGame"
-            :class="{'blue-box': !showIntro || introStep == 0, 'blue-shadow': showIntro && introStep != 0}"
+            :class="{'blue-box': !showIntro || introStep == 1, 'blue-shadow': showIntro && introStep != 1}"
             :style="[{paddingTop: paddingSize,
                     paddingBottom: paddingSize,
                     paddingRight: paddingSize * 1.5,
@@ -25,22 +25,22 @@
                     roundBox]">
             <text 
                 :style="{fontSize: fontSize}"
-                :class="{'normal-text': !showIntro || introStep == 0, 'normal-text-shadow': showIntro && introStep != 0}">
+                :class="{'normal-text': !showIntro || introStep == 1, 'normal-text-shadow': showIntro && introStep != 1}">
                 Start
             </text>
         </touchable-opacity>
         <touchable-opacity
-            :class="{'white-box': !showIntro || introStep == 1, 'white-shadow': showIntro && introStep != 1}"
+            :class="{'white-box': !showIntro || introStep == 2, 'white-shadow': showIntro && introStep != 2}"
             :style="[{padding: paddingSizeSmall, marginTop: 30 * sizeFactor}, roundBox]"
             :onPress="viewOptions">
             <text 
                 :style="{fontSize: fontSizeSmall}"
-                :class="{'link-text': !showIntro || introStep == 1, 'link-text-shadow': showIntro && introStep != 1}">
+                :class="{'link-text': !showIntro || introStep == 2, 'link-text-shadow': showIntro && introStep != 2}">
                 Lesson Options
             </text>
         </touchable-opacity>
         <touchable-opacity
-            :class="{'white-box': !showIntro || introStep == 2, 'white-shadow': showIntro && introStep != 2}"
+            :class="{'white-box': !showIntro || introStep == 3, 'white-shadow': showIntro && introStep != 3}"
             :style="[{padding: paddingSizeSmall, marginTop: 30 * sizeFactor}, roundBox]"
             :onPress="viewPersonalize">
             <ActivityIndicator
@@ -50,7 +50,7 @@
             />
             <text 
                 :style="{fontSize: fontSizeSmall}"
-                :class="{'link-text': !showIntro || introStep == 2, 'link-text-shadow': showIntro && introStep != 2}">
+                :class="{'link-text': !showIntro || introStep == 3, 'link-text-shadow': showIntro && introStep != 3}">
                 Personalize
             </text>
         </touchable-opacity>
@@ -84,13 +84,16 @@ export default {
         introText () {
             switch(this.introStep) {
                 case 0:
-                    return "Press here to start reading/spelling. Once you do, you can't go back to the main menu, preventing children from toying with options"
+                    return "Welcome! I'm going to tell you what these buttons do. Press this text if you understand."
                     break;
                 case 1:
-                    return "Press here for options. This includes changing the difficulty (we suggest doing this before you start) as well as enabling/disabling topics"
+                    return "This button will start reading/spelling. Once you start, you can't go back to the main menu, preventing children from toying with options"
                     break;
                 case 2:
-                    return "Press here to add your own photos and voice to the app! Then your child will see YOUR picture and hear YOUR voice for \"mom\", \"dad\", \"dog\", etc!"
+                    return "This button provides game options. This includes changing the difficulty (we suggest doing this before you start) as well as enabling/disabling topics"
+                    break;
+                case 3:
+                    return "This button lets you add your own photos and voice to the app! Then your child will see YOUR picture and hear YOUR voice for \"mom\", \"dad\", \"dog\", etc!"
                     break;
             } 
         },
@@ -115,14 +118,14 @@ export default {
     methods: {
         nextIntro () {
             this.introStep++
-            if (this.introStep > 2) {
+            if (this.introStep > 3) {
                 this.finishIntro()
             }
         },
 
         startGame () {
             if (this.showIntro) {
-                if (this.introStep === 0) {
+                if (this.introStep === 1) {
                     this.nextIntro()
                 }
             }
@@ -133,7 +136,7 @@ export default {
 
         viewOptions () {
             if (this.showIntro) {
-                if (this.introStep === 1) {
+                if (this.introStep === 2) {
                     this.nextIntro()
                 }
             }
@@ -145,7 +148,7 @@ export default {
         // dont know why nextTick isn't enough, but we need the setTimeout to make the loading indicator appear
         viewPersonalize () {
             if (this.showIntro) {
-                if (this.introStep === 2) {
+                if (this.introStep === 3) {
                     this.nextIntro()
                 }
             }

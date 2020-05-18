@@ -32,7 +32,8 @@
             :manuallyReading="manuallyReading"
             :tutorial="tutorial"
             :targetWord="curWords.targetWord"
-            :queuedCallback="queuedCallback" />
+            :queuedCallback="queuedCallback"
+            :showPictures="!shouldShowPicture" />
     </view>
 </template>
 
@@ -51,6 +52,10 @@ export default {
             required: true
         },
         defaultBackground: {
+            type: Function,
+            required: true
+        },
+        changeBackground: {
             type: Function,
             required: true
         },
@@ -109,6 +114,11 @@ export default {
             return this.difficultyReading < difficulty.HARD
         },
         
+        // we show the target picture as the background on hard difficulty
+        shouldShowPicture () {
+            return this.difficultyReading > difficulty.MEDIUM
+        },
+        
         ...mapGetters([
             'difficultyReading',
             'getNextWord'
@@ -138,7 +148,7 @@ export default {
             // still in this activity, go on to next word
             else {
                 // incase the background changed during a level up, reset it
-                this.defaultBackground()
+                if (!this.shouldShowPicture) this.defaultBackground()
                 this.correctOnFirstTry = true
                 // disable interaction
                 this.manuallyReading = true
@@ -151,8 +161,13 @@ export default {
                 this.curWords = this.getNextWord()
                 // show/read target word and begin animations
                 this.queuedCallback = () => {}
-                this.startTargetWord()
+                this.changeBackgroundPicture()
             }
+        },
+
+        changeBackgroundPicture () {
+            if (this.shouldShowPicture) this.changeBackground(this.curWords.targetWord, this.startTargetWord)
+            else this.startTargetWord()
         },
 
         startTargetWord () {
