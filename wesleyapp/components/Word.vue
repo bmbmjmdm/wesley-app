@@ -14,7 +14,9 @@
                     roundBox]"
             :class="{'blue-box':!tutorialHighlight && !tutorialFade, 'red-box':tutorialHighlight, 'fade-box':tutorialFade}"
             class="column">
-            <view class="row">
+            <view
+                v-if="word.length < 8"
+                class="row">
                 <text
                     v-if="highlightedText"
                     :numberOfLines="1"
@@ -27,6 +29,23 @@
                     :style="{fontSize: fontSize}"
                     :class="{'normal-text':!tutorialFade, 'normal-text-fade':tutorialFade}">
                     {{ normalText }}
+                </text>
+            </view>
+            <!--- This is needed because of React Native's wierd text wrapping requirements. Long words need all letters displayed individually to avoid wrapping --->
+            <view
+                v-else
+                class="row">
+                <text
+                    v-for="highlight in highlightedText"
+                    :style="{fontSize: fontSize}"
+                    :class="{'highlighted-text':!tutorialHighlight, 'highlighted-text-red':tutorialHighlight}">
+                    {{ highlight }}
+                </text>
+                <text
+                    v-for="letter in normalText"
+                    :style="{fontSize: fontSize}"
+                    :class="{'normal-text':!tutorialFade, 'normal-text-fade':tutorialFade}">
+                    {{ letter }}
                 </text>
             </view>
             <image

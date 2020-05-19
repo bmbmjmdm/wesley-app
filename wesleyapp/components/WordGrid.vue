@@ -1,8 +1,8 @@
 <template>
     <view class="word-container-outer">
         <view class="word-container-inner">
+            <view class="word-container">
             <Word
-                :style="wordMargin"
                 :key="words[0].targetWord + 0 + words"
                 :ref="'wordRef0'"
                 :word="words[0].targetWord"
@@ -15,9 +15,10 @@
                 :tutorialHighlight="tutorial && words[0].targetWord === targetWord"
                 :tutorialFade="tutorial && words[0].targetWord !== targetWord"
                 :unhighlightDuringNarration="true"
-                :finishedAnimating="finishedAnimating" /> 
+                :finishedAnimating="finishedAnimating" />
+            </view>
+            <view class="word-container">
             <Word
-                :style="wordMargin"
                 :key="words[1].targetWord + 1 + words"
                 :ref="'wordRef1'"
                 :word="words[1].targetWord"
@@ -31,10 +32,11 @@
                 :tutorialFade="tutorial && words[1].targetWord !== targetWord"
                 :unhighlightDuringNarration="true"
                 :finishedAnimating="finishedAnimating" />
+            </view>
         </view>
         <view class="word-container-inner">
+            <view class="word-container">
             <Word
-                :style="wordMargin"
                 :key="words[2].targetWord + 2 + words"
                 :ref="'wordRef2'"
                 :word="words[2].targetWord"
@@ -48,8 +50,9 @@
                 :tutorialFade="tutorial && words[2].targetWord !== targetWord"
                 :unhighlightDuringNarration="true"
                 :finishedAnimating="finishedAnimating" />
+            </view>
+            <view class="word-container">
             <Word
-                :style="wordMargin"
                 :key="words[3].targetWord + 3 + words"
                 :ref="'wordRef3'"
                 :word="words[3].targetWord"
@@ -63,6 +66,7 @@
                 :tutorialFade="tutorial && words[3].targetWord !== targetWord"
                 :unhighlightDuringNarration="true"
                 :finishedAnimating="finishedAnimating" />
+            </view>
         </view>
     </view>
 </template>
@@ -191,8 +195,15 @@ export default {
 <style>
     .word-container-inner {
         flex-direction: row;
+        flex: 1
     }
     .word-container-outer {
         flex-direction: column;
+        flex: 1
+    }
+    .word-container {
+        flex: 1;
+        align-items: center;
+        justify-content: center;
     }
 </style>

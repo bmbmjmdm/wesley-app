@@ -599,6 +599,7 @@ function shuffle(array) {
 function getWordOptions(nextWord) {
     let allWords = []
     let list
+    let targetWord
     // fwbl uses words/letterList
     if (nextWord.words) {
         list = letterList
@@ -608,13 +609,14 @@ function getWordOptions(nextWord) {
             wordStartingWithLetter = nextWord.words[Math.floor(Math.random() * nextWord.words.length)]
         }
         while (wordStartingWithLetter.length === 1)
-        allWords.push(wordStartingWithLetter)
+        targetWord = wordStartingWithLetter
     }
     //fwbp uses nextWord as is/wordList
     else {
         list = wordList
-        allWords.push(nextWord)
+        targetWord = nextWord
     }
+    allWords.push(targetWord)
     // now choose a random 3 more words from our given list (no duplicates)
     while (allWords.length < 4) {
         let randomWord = list[Math.floor(Math.random() * list.length)]
@@ -633,7 +635,20 @@ function getWordOptions(nextWord) {
         if (!allWords.includes(randomWord) && (!randomWord.includes || !randomWord.toLowerCase().includes(nextWord.targetWord))) {
             allWords.push(randomWord)
         }
+        
+        if (allWords.length === 4) {
+            shuffle(allWords)
+            // now time for a wierd check. fwbp cannot have 2 side-by-side words that exceed 15 total characters (due to screen limitations)
+            // so we need to check the firstWord.length + secondWord.length as well as thirdWord.length + fourthWord.length to see if either of these exceed 15
+            // again, !randomWord.includes tells us we're doing fwbp
+            if (!randomWord.includes) {
+                let firstLineLength = allWords[0].targetWord.length + allWords[1].targetWord.length
+                let secondLineLength = allWords[2].targetWord.length + allWords[3].targetWord.length
+                if (secondLineLength > 15 || firstLineLength > 15) {
+                    allWords = [targetWord]
+                }
+            }
+        }
     }
-    shuffle(allWords)
     return allWords
 }
