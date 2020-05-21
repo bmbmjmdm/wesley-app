@@ -20,12 +20,14 @@
                 <text
                     v-if="highlightedText"
                     :numberOfLines="1"
+                    ellipsizeMode="clip"
                     :style="{fontSize: fontSize}"
                     :class="{'highlighted-text':!tutorialHighlight, 'highlighted-text-red':tutorialHighlight}">
                     {{ highlightedText }}
                 </text>
                 <text
                     :numberOfLines="1"
+                    ellipsizeMode="clip"
                     :style="{fontSize: fontSize}"
                     :class="{'normal-text':!tutorialFade, 'normal-text-fade':tutorialFade}">
                     {{ normalText }}

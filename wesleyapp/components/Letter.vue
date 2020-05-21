@@ -18,6 +18,7 @@
             <view>
                 <text
                     :numberOfLines="1"
+                    ellipsizeMode="clip"
                     :style="{fontSize: fontSize}"
                     :class="{'normal-text':!tutorialFade && !highlighted,
                             'normal-text-fade':tutorialFade && !highlighted,
