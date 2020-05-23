@@ -254,79 +254,86 @@ export default {
         },
 
         promptSpeaking () {
-            // request authorization until user accepts
-            let requestLoop = () => {
-                AudioRecorder.requestAuthorization().then((isAuthorized) => {
-                    if (!isAuthorized) return requestLoop()
+            // request authorization
+            AudioRecorder.requestAuthorization().then((isAuthorized) => {
+                if (!isAuthorized) return this.requestPermission()
 
-                    AudioRecorder.prepareRecordingAtPath(this.filePath, { MeteringEnabled: true, AudioEncoding: "aac" })
-                    this.currentMetering = 0
-                    this.hasAudio = false
-                    this.audioBegins = 0
-                    this.silenceDuration = 999
-                    // this is just for logging incase i need to debug
-                    AudioRecorder.onFinished = (data) => {
-                        if (!data) return
+                AudioRecorder.prepareRecordingAtPath(this.filePath, { MeteringEnabled: true, AudioEncoding: "aac" })
+                this.currentMetering = 0
+                this.hasAudio = false
+                this.audioBegins = 0
+                this.silenceDuration = 999
+                // this is just for logging incase i need to debug
+                AudioRecorder.onFinished = (data) => {
+                    if (!data) return
+                }
+                // keep track of metering
+                AudioRecorder.onProgress = (data) => {
+                    this.currentMetering = data.currentMetering
+                    let levelRequired = Platform.OS === 'android' ? 8000 : -25
+                    // They're speaking
+                    if (this.currentMetering > levelRequired) {
+                        this.hasAudio = true
+                        this.silenceDuration = 0
+                        if (this.audioBegins === 0) this.audioBegins = data.currentTime
                     }
-                    // keep track of metering
-                    AudioRecorder.onProgress = (data) => {
-                        this.currentMetering = data.currentMetering
-                        let levelRequired = Platform.OS === 'android' ? 8000 : -25
-                        // They're speaking
-                        if (this.currentMetering > levelRequired) {
-                            this.hasAudio = true
-                            this.silenceDuration = 0
-                            if (this.audioBegins === 0) this.audioBegins = data.currentTime
-                        }
-                        // They've stopped speaking (or havent started yet)
-                        else {
-                            this.silenceDuration++
-                            if (this.silenceDuration > 15 && this.hasAudio) {
-                                this.stopRecording()
-                                return
-                            }
-                        }
-                        // auto stop after 3 seconds of recording
-                        if (this.hasAudio && data.currentTime - this.audioBegins > 3) {
+                    // They've stopped speaking (or havent started yet)
+                    else {
+                        this.silenceDuration++
+                        if (this.silenceDuration > 15 && this.hasAudio) {
                             this.stopRecording()
                             return
                         }
                     }
+                    // auto stop after 3 seconds of recording
+                    if (this.hasAudio && data.currentTime - this.audioBegins > 3) {
+                        this.stopRecording()
+                        return
+                    }
+                }
+                
+                let prompt = "Please read the word out loud"
+                if (!this.shouldShowTargetWord) {
+                    prompt = "What's the picture of? Say it out loud"
+                }
+                let callback = async () => {
+                    this.prompted++
+                    this.narrating = false
+                    this.$refs.targetWordRef.startHighlightRepeating()
+                    this.manuallyReading = false
+                    setTimeout(this.tryStopRecording, 5000)
+                    try { await AudioRecorder.startRecording() }
+                    // more logs for later debugging
+                    catch (error) { console.log ("recording error"); console.log(error) }
                     
-                    let prompt = "Please read the word out loud"
-                    if (!this.shouldShowTargetWord) {
-                        prompt = "What's the picture of? Say it out loud"
-                    }
-                    let callback = async () => {
-                        this.prompted++
-                        this.narrating = false
-                        this.$refs.targetWordRef.startHighlightRepeating()
-                        this.manuallyReading = false
-                        setTimeout(this.tryStopRecording, 5000)
-                        try { await AudioRecorder.startRecording() }
-                        // more logs for later debugging
-                        catch (error) { console.log ("recording error"); console.log(error) }
-                        
-                    }
+                }
 
-                    // limit the number of times we prompt them
-                    let maxPrompt = 99
-                    if (this.difficultyReading === difficulty.MEDIUM) maxPrompt = 2
-                    else if (this.difficultyReading === difficulty.HARD) maxPrompt = 1
-                    if (this.prompted >= maxPrompt) {
-                        callback()
-                    }
-                    else {
-                        this.afterSpeakSentence({
-                            sentence: prompt,
-                            callback
-                        })
-                    }
-                    
-                })
-            }
-            // start loop
-            requestLoop()
+                // limit the number of times we prompt them
+                let maxPrompt = 99
+                if (this.difficultyReading === difficulty.MEDIUM) maxPrompt = 2
+                else if (this.difficultyReading === difficulty.HARD) maxPrompt = 1
+                if (this.prompted >= maxPrompt) {
+                    callback()
+                }
+                else {
+                    this.afterSpeakSentence({
+                        sentence: prompt,
+                        callback
+                    })
+                }
+                
+            })
+        },
+
+        async requestPermission () {
+            Alert.alert(
+                'Audio permission required to record',
+                'Please go into settings and enable it for this app',
+                [
+                    {text: 'OK', onPress: this.randomActivity}
+                ],
+                {cancelable: false}
+            )
         },
 
         // The user needs another prompt if they havent started recording yet

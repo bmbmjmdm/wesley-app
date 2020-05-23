@@ -106,7 +106,8 @@
 </template>
 
 <script>
-import { Platform, AppState, AsyncStorage, Dimensions, PermissionsAndroid } from 'react-native';
+import { Platform, AppState, AsyncStorage, Dimensions, PermissionsAndroid, Alert } from 'react-native';
+import {AudioRecorder, AudioUtils} from 'react-native-audio'
 import FindWordInSentence from './components/FindWordInSentence';
 import FindWordByPicture from './components/FindWordByPicture';
 import FindWordByLetter from './components/FindWordByLetter'
@@ -415,14 +416,12 @@ export default {
                 } catch (err) {
                     console.warn(err)
                 }
-            }
-            if (Platform.OS === 'android') {
                 try {
                     const granted = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
                         {
                         title: 'Permissions for mic access',
-                        message: 'One activity involves reading outloud!',
+                        message: 'Personalize this app with your own voice, as well as one activity involves reading out loud!',
                         buttonPositive: 'ok',
                         },
                     )
@@ -434,6 +433,23 @@ export default {
                 } catch (err) {
                     console.warn(err)
                 }
+            }
+            else {
+                // for some reason some IOS require that we prep a recording path before ANY audio works???
+                AudioRecorder.requestAuthorization().then((isAuthorized) => {
+                    let path = AudioUtils.DocumentDirectoryPath + '/test.aac'
+                    AudioRecorder.prepareRecordingAtPath(path, { MeteringEnabled: true, AudioEncoding: "aac" })
+                    if (!isAuthorized) {
+                        Alert.alert(
+                            'Audio permission required to record',
+                            'Please go into settings and enable it for this app',
+                            [
+                                {text: 'OK', onPress: () => {}}
+                            ],
+                            {cancelable: false}
+                        )
+                    }
+                })
             }
         },
 

@@ -84,7 +84,7 @@ export default {
         introText () {
             switch(this.introStep) {
                 case 0:
-                    return "Welcome! I'm going to tell you what these buttons do. Press this text if you understand."
+                    return "Welcome! I'm going to tell you what these buttons do. Press this text to continue."
                     break;
                 case 1:
                     return "This button will start reading/spelling. Once you start, you can't go back to the main menu, preventing children from toying with options"

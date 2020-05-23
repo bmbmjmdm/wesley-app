@@ -211,6 +211,7 @@ export default new Vuex.Store({
         getNextWord: state => () => {
             let list
             let populateOptions = false
+            let letterLimit = 999
             if (state.curActivity.name === "findWordInSentence") {
                 list = wordList
             }
@@ -219,6 +220,7 @@ export default new Vuex.Store({
             }
             else if (state.curActivity.name === "spellWord") {
                 list = wordList
+                letterLimit = 10
             }
             else if (state.curActivity.name === "findWordByPicture") {
                 list = wordList
@@ -232,12 +234,12 @@ export default new Vuex.Store({
                 populateOptions = true
             }
 
-            if (state['wrongStreek' + state.curActivity.topic] >= 2) list = getEasyChoices(state, list)
-            else if (state['rightStreek' + state.curActivity.topic] >= 2) list = getHardChoices(state, list)
+            if (state['wrongStreek' + state.curActivity.topic] >= 2) list = getEasyChoices(state, list, letterLimit)
+            else if (state['rightStreek' + state.curActivity.topic] >= 2) list = getHardChoices(state, list, letterLimit)
 
             let nextWord = list[Math.floor(Math.random() * list.length)]
             // we never want to show the same word twice
-            while (nextWord.targetWord === state.previousWord && list.length > 1) {
+            while ((nextWord.targetWord === state.previousWord || nextWord.targetWord.length > letterLimit) && list.length > 1) {
                 nextWord = list[Math.floor(Math.random() * list.length)]
             }
             state.previousWord = nextWord.targetWord
@@ -520,15 +522,15 @@ function decreaseDifficulty (state) {
     Vue.set(state, variable, Math.max(difficulty.VERY_EASY, state[variable] - 1))
 }
 
-function getEasyChoices(state, list) {
-    return getChoices(state, list, "right")
+function getEasyChoices(state, list, letterLimit) {
+    return getChoices(state, list, "right", letterLimit)
 }
 
-function getHardChoices(state, list) {
-    return getChoices(state, list, "wrong")
+function getHardChoices(state, list, letterLimit) {
+    return getChoices(state, list, "wrong", letterLimit)
 }
 
-function getChoices(state, list, rightWrong) {
+function getChoices(state, list, rightWrong, letterLimit) {
     var newList = []
     
     // We're looking for words the user has had >= 75% success/failure answering in the past
@@ -545,6 +547,7 @@ function getChoices(state, list, rightWrong) {
         for (var i of list) {
             // we never want to show the same word twice
             if (i.targetWord == state.previousWord) continue
+            if (i.targetWord.length > letterLimit) continue
 
             let wordHistory = state.wordHistory[i.targetWord]
             if (wordHistory) {
