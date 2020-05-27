@@ -556,36 +556,49 @@ export default {
                         },
                     }
                     // open the image picker so they can override the word's picture
-                    ImagePicker.launchImageLibrary(options, async (response) => {
-                        if (response.didCancel) {
-                            // TODO the user canceled, offer option to skip cur picture
-                            Alert.alert(
-                                'Skip this picture or stop all together?',
-                                '',
-                                [
-                                    {text: 'Stop', onPress: () => {}},
-                                    {text: 'Skip', onPress: callback}
-                                ],
-                                {cancelable: true},
-                            )
-                        }
-                        else if (response.error || !response) {
-                            Alert.alert(
-                                'Upload Failed: Please try again',
-                                '',
-                                [
-                                    {text: 'OK', onPress: () => {}}
-                                ],
-                                {cancelable: true},
-                            )
-                        }
-                        else {
-                            // success! save picture and loop
-                            const source = { uri: response.uri }
-                            this.savePicture({name: word, source, user: true})
-                            callback()
-                        }
-                    })
+                    let launchIP = () => {
+                        ImagePicker.launchImageLibrary(options, async (response) => {
+                            if (response.didCancel) {
+                                // TODO the user canceled, offer option to skip cur picture
+                                Alert.alert(
+                                    'Skip this picture or stop all together?',
+                                    '',
+                                    [
+                                        {text: 'Stop', onPress: () => {}},
+                                        {text: 'Skip', onPress: callback}
+                                    ],
+                                    {cancelable: true},
+                                )
+                            }
+                            else if (response.error || !response) {
+                                Alert.alert(
+                                    'Upload Failed: Please try again',
+                                    '',
+                                    [
+                                        {text: 'OK', onPress: () => {}}
+                                    ],
+                                    {cancelable: true},
+                                )
+                            }
+                            else {
+                                // success! save picture and loop
+                                const source = { uri: response.uri }
+                                this.savePicture({name: word, source, user: true})
+                                callback()
+                            }
+                        })
+                    }
+                    // on IOS we have to get permission first
+                    if (Platform.OS === 'android') {
+                        launchIP()
+                    }
+                    else {
+                        this.loading = true
+                        request(PERMISSIONS.IOS.PHOTO_LIBRARY).then(() => {
+                            this.loading = false
+                            launchIP()
+                        })
+                    }
                 }
                 //initiate callback loop
                 callback()
