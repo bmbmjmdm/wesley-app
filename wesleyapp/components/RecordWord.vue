@@ -237,7 +237,10 @@ export default {
                                     this.finishedTargetWord()
                                 }
                                 else {
-                                    this.$refs.targetWordRef.readWord(this.finishedTargetWord)
+                                    this.afterSpeak({
+                                        word: wordList[curWord],
+                                        callback: this.finishedTargetWord
+                                    })
                                 }
                                 return
                             }
