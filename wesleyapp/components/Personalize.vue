@@ -174,7 +174,11 @@
             underlineColorAndroid="transparent" 
         />
     
-        <scroll-view v-if="!showPersonalizeIntro">
+        <scroll-view
+            v-if="!showPersonalizeIntro"
+            ref="scrollRef"
+            :onScroll="updateScrollPosition"
+            :scrollEventThrottle="50">
             <view class="grid-list">
                 <touchable-opacity
                     v-for="word in filteredWords"
@@ -253,6 +257,7 @@ export default {
             bulkRecording: false,
             loading: false,
             curReading: false,
+            scrollPosition: 0,
         }
     },
 
@@ -467,6 +472,13 @@ export default {
             else {
                 this.bulkRecording = false
             }
+            setTimeout(() => {
+                this.$refs.scrollRef.scrollTo({y: this.scrollPosition, animated: true})
+            }, 100)
+        },
+
+        updateScrollPosition (event) {
+            this.scrollPosition = event.nativeEvent.contentOffset.y
         },
 
         async forceSaveRecordings () {
