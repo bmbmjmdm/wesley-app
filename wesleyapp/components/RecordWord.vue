@@ -136,7 +136,7 @@ export default {
     computed: {
         // we always capitalized single-letter words so the user reads them correctly
         wordToShow () {
-            let word = this.wordList[curWord]
+            let word = this.wordList[this.curWord]
             if (word.length === 1) {
                 return word.charAt(0).toUpperCase()
             }
@@ -247,7 +247,7 @@ export default {
                                 }
                                 else {
                                     this.afterSpeak({
-                                        word: this.wordList[curWord],
+                                        word: this.wordList[this.curWord],
                                         callback: this.finishedTargetWord
                                     })
                                 }
