@@ -35,7 +35,7 @@
         <animated:image
             v-if="showMic"
             :fadeDuration="0"
-            :style="{height: maxGrowth, width: maxGrowth, resizeMode: 'stretch'}"
+            :style="{height: maxGrowth._value, width: maxGrowth._value, resizeMode: 'stretch'}"
             :source="micPic" />
         
         <view

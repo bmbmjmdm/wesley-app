@@ -34,6 +34,7 @@
                 :finishedAnimating="finishedAnimating" />
             </view>
         </view>
+        <view class="divider" />
         <view class="word-container-inner">
             <view class="word-container">
             <Word
@@ -191,7 +192,6 @@ export default {
 }
 </script>
 
-
 <style>
     .word-container-inner {
         flex-direction: row;
@@ -205,5 +205,8 @@ export default {
         flex: 1;
         align-items: center;
         justify-content: center;
+    }
+    .divider {
+        flex: 0.25
     }
 </style>

@@ -1,7 +1,7 @@
 <template>
     <touchable-opacity :onPress="manualReadWord">
         <animated:image
-            :style="{height: maxGrowth, width: maxGrowth, opacity: opacityGrowth, resizeMode: 'stretch'}"
+            :style="{height: maxGrowth._value, width: maxGrowth._value, opacity: opacityGrowth._value, resizeMode: 'stretch'}"
             :source="pic">
     </touchable-opacity>
 </template>

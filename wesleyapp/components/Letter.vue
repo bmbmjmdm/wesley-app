@@ -1,17 +1,17 @@
 <template>
     <touchable-opacity :onPress="manualReadLetter" :disabled="disabled">
         <animated:view
-            :style="{opacity: opacityGrowth,
-                    borderTopLeftRadius: radiusLeftGrowth,
-                    borderTopRightRadius: radiusRightGrowth,
-                    borderBottomLeftRadius: radiusLeftGrowth,
-                    borderBottomRightRadius: radiusRightGrowth,
-                    paddingTop: paddingMod,
-                    paddingBottom: paddingMod,
-                    paddingLeft: paddingLeftGrowth,
-                    paddingRight: paddingRightGrowth,
-                    marginLeft: marginGrowth,
-                    marginRight: marginGrowth,
+            :style="{opacity: opacityGrowth._value,
+                    borderTopLeftRadius: radiusLeftGrowth._value,
+                    borderTopRightRadius: radiusRightGrowth._value,
+                    borderBottomLeftRadius: radiusLeftGrowth._value,
+                    borderBottomRightRadius: radiusRightGrowth._value,
+                    paddingTop: paddingMod._value,
+                    paddingBottom: paddingMod._value,
+                    paddingLeft: paddingLeftGrowth._value,
+                    paddingRight: paddingRightGrowth._value,
+                    marginLeft: marginGrowth._value,
+                    marginRight: marginGrowth._value,
                     marginTop: 3 * sizeFactor,
                     marginBottom: 3 * sizeFactor}"
             :class="{'blue-box':!tutorialHighlight && !tutorialFade, 'red-box':tutorialHighlight, 'fade-box':tutorialFade}">
@@ -303,7 +303,7 @@ export default {
                 // Animate the letter as we read it, making it inflate
                 Animated.parallel([
                     Animated.timing(this.paddingMod, {
-                        toValue: this.paddingSize + 20,
+                        toValue: this.paddingSize + Math.round(20 * this.sizeFactor),
                         duration: time,
                         useNativeDriver: false,
                     }),

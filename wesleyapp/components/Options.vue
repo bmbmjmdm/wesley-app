@@ -83,17 +83,17 @@ export default {
 
     computed: {
         difficultyTextReading () {
-            if (this.difficultyReading === difficulty.VERY_EASY) return "Reading: All Hints"
-            else if (this.difficultyReading === difficulty.EASY) return "Reading: Lots of Hints"
-            else if (this.difficultyReading === difficulty.MEDIUM) return "Reading: Some Hints"
-            else if (this.difficultyReading === difficulty.HARD) return "Reading: No Hints"
+            if (this.difficultyReading === difficulty.VERY_EASY) return "Reading: Answer Highlighted"
+            else if (this.difficultyReading === difficulty.EASY) return "Reading: Visual + Audio Clues"
+            else if (this.difficultyReading === difficulty.MEDIUM) return "Reading: Audio Clues"
+            else if (this.difficultyReading === difficulty.HARD) return "Reading: No Clues"
         },
 
         difficultyTextSpelling () {
-            if (this.difficultySpelling === difficulty.VERY_EASY) return "Spelling: All Hints"
-            else if (this.difficultySpelling === difficulty.EASY) return "Spelling: Lots of Hints"
-            else if (this.difficultySpelling === difficulty.MEDIUM) return "Spelling: Some Hints"
-            else if (this.difficultySpelling === difficulty.HARD) return "Spelling: No Hints"
+            if (this.difficultySpelling === difficulty.VERY_EASY) return "Spelling: Answer Highlighted"
+            else if (this.difficultySpelling === difficulty.EASY) return "Spelling: Visual + Audio Clues"
+            else if (this.difficultySpelling === difficulty.MEDIUM) return "Spelling: Less Visual + Audio Clues"
+            else if (this.difficultySpelling === difficulty.HARD) return "Spelling: No Clues"
         },
 
         topicText () {

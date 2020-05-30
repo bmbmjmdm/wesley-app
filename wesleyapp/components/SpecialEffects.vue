@@ -1,7 +1,7 @@
 <template>
     <animated:image
         :source="gifSource" 
-        :style="{opacity: opacityGrowth,
+        :style="{opacity: opacityGrowth._value,
                 width: '100%',
                 height: '100%'}">
 </template>

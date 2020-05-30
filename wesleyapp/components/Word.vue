@@ -2,15 +2,15 @@
     <touchable-opacity :onPress="manualReadWord">
         <animated:view
             :style="[{margin: 3 * sizeFactor,
-                    maxHeight: maxGrowth,
-                    maxWidth: maxGrowth,
-                    minWidth: minGrowth,
-                    minHeight: minGrowth,
-                    paddingTop: animated.add(paddingGrowth, paddingMod),
-                    paddingBottom: pic ? paddingMod : animated.add(paddingGrowth, paddingMod),
-                    paddingRight: pic ? 0 : paddingGrowth,
-                    paddingLeft: pic ? 0 : paddingGrowth,
-                    opacity: opacityGrowth,},
+                    maxHeight: maxGrowth._value,
+                    maxWidth: maxGrowth._value,
+                    minWidth: minGrowth._value,
+                    minHeight: minGrowth._value,
+                    paddingTop: paddingGrowthTop._value,
+                    paddingBottom: paddingGrowthBot._value,
+                    paddingRight: pic ? 0 : paddingGrowthSide._value,
+                    paddingLeft: pic ? 0 : paddingGrowthSide._value,
+                    opacity: opacityGrowth._value,},
                     roundBox]"
             :class="{'blue-box':!tutorialHighlight && !tutorialFade, 'red-box':tutorialHighlight, 'fade-box':tutorialFade}"
             class="column">
@@ -131,10 +131,12 @@ export default {
             highlighting: false,
             maxGrowth: new Animated.Value(0),
             minGrowth: new Animated.Value(0),
-            paddingGrowth: new Animated.Value(0),
+            paddingGrowthTop: new Animated.Value(0),
+            paddingGrowthBot: new Animated.Value(0),
+            paddingGrowthSide: new Animated.Value(0),
             opacityGrowth: new Animated.Value(0),
-            paddingMod: new Animated.Value(0),
-            animated: Animated,
+            defaultPaddingTop: 0,
+            defaultPaddingBot: 0,
         }
     },
 
@@ -149,7 +151,13 @@ export default {
         // we want to fade in the word on special occasion
         if (this.fadeAnimations) {
             this.maxGrowth.setValue(size)
-            this.paddingGrowth.setValue(padding)
+            this.paddingGrowthTop.setValue(padding)
+            this.paddingGrowthSide.setValue(padding)
+            if (!this.pic) {
+                this.paddingGrowthBot.setValue(padding)
+                this.defaultPaddingBot = padding
+            }
+            this.defaultPaddingTop = padding
             this.animateOpacity(1)
         }
         else {
@@ -190,27 +198,53 @@ export default {
             if (this.pic) {
                 time = 800 * this.animationSpeedFactor
             }
-            // Animate the word in, going from 0 size to full
-            Animated.parallel([
+
+            this.defaultPaddingTop = padding
+
+            let animationList = [
                 Animated.timing(this.maxGrowth, {
                     toValue: max,
                     duration: time,
                     useNativeDriver: false,
                 }),
-                Animated.timing(this.paddingGrowth, {
+                Animated.timing(this.paddingGrowthSide, {
                     toValue: padding,
                     duration: time,
                     useNativeDriver: false,
-                })
-            ]).start(this.finishedAnimating)
+                }),
+                Animated.timing(this.paddingGrowthTop, {
+                    toValue: padding,
+                    duration: time,
+                    useNativeDriver: false,
+                }),
+            ]
+
+            if (!this.pic) {
+                animationList.push(
+                    Animated.timing(this.paddingGrowthBot, {
+                        toValue: padding,
+                        duration: time,
+                        useNativeDriver: false,
+                    })
+                )
+                this.defaultPaddingBot = padding
+            }
+
+            // Animate the word in, going from 0 size to full
+            Animated.parallel(animationList).start(this.finishedAnimating)
         },
         
         widenWord () {
             var time = 300 * this.animationSpeedFactor
             // Animate the word as we read it, making it inflate
             Animated.parallel([
-                Animated.timing(this.paddingMod, {
-                    toValue: 20,
+                Animated.timing(this.paddingGrowthTop, {
+                    toValue: this.defaultPaddingTop + Math.round(20 * this.sizeFactor),
+                    duration: time,
+                    useNativeDriver: false,
+                }),
+                Animated.timing(this.paddingGrowthBot, {
+                    toValue: this.defaultPaddingBot + Math.round(20 * this.sizeFactor),
                     duration: time,
                     useNativeDriver: false,
                 }),
@@ -221,8 +255,13 @@ export default {
             var time = 300 * this.animationSpeedFactor
             // Animate the word after we read it, making it deflate
             Animated.parallel([
-                Animated.timing(this.paddingMod, {
-                    toValue: 0,
+                Animated.timing(this.paddingGrowthTop, {
+                    toValue: this.defaultPaddingTop,
+                    duration: time,
+                    useNativeDriver: false,
+                }),
+                Animated.timing(this.paddingGrowthBot, {
+                    toValue: this.defaultPaddingBot,
                     duration: time,
                     useNativeDriver: false,
                 }),

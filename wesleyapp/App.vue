@@ -6,7 +6,7 @@
         :imageStyle="{resizeMode: 'stretch'}"
         :class="'full-flex'">
         <animated:view
-            :style="{opacity: backgroundOpacity}"
+            :style="{opacity: backgroundOpacity._value}"
             :class="'full-flex'">
             <ImageBackground
                 :source="bgImageFront.source"
