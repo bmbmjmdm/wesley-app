@@ -232,8 +232,8 @@ export default {
                                 console.log('failed to load the sound', error)
                                 this.reviewed = true
                                 this.recording.release()
+                                this.audioDetails.push({})
                                 if (this.undoing) {
-                                    this.audioDetails.push({})
                                     this.finishedTargetWord()
                                 }
                                 else {

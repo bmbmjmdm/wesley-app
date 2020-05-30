@@ -419,6 +419,7 @@ export default new Vuex.Store({
 
         saveRecordings({getters, commit}, {audioDetails}) {
             for (let obj of audioDetails) {
+                if (!obj.word) continue
                 commit('setRecording', {
                     name: obj.word, 
                     user: true, 
