@@ -238,7 +238,7 @@ export default {
                                 }
                                 else {
                                     this.afterSpeak({
-                                        word: wordList[curWord],
+                                        word: this.wordList[curWord],
                                         callback: this.finishedTargetWord
                                     })
                                 }

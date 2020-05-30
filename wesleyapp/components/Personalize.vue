@@ -210,6 +210,7 @@
     </view>
     <RecordWord
         v-else
+        ref="recordWordRef"
         :wordList="wordsToRecord"
         :bulkRecording="true"
         :allDone="modalFinishRecording" />
@@ -461,6 +462,13 @@ export default {
             }
             else {
                 this.bulkRecording = false
+            }
+        },
+
+        async forceSaveRecordings () {
+            if (this.recordingView) {
+                await this.saveRecordings(this.$refs.recordWordRef.audioDetails)
+                this.$refs.recordWordRef.quit()
             }
         },
 

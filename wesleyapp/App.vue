@@ -48,6 +48,7 @@
                 />
                 <Personalize
                     v-else-if="curActivity.name === 'personalize'"
+                    ref="personalizeRef"
                     :change-background="changeBackground"
                 />
                 <FindWordInSentence
@@ -384,8 +385,13 @@ export default {
         },
         
         //save child progress data when app is put into background/closed 
-        handleAppStateChange (nextAppState) {
+        async handleAppStateChange (nextAppState) {
             if (this.appState === 'active' && nextAppState.match(/inactive|background/) ) {
+                // if we're recording, save items
+                if (this.curActivity.name === 'personalize') {
+                    await this.$refs.personalizeRef.forceSaveRecordings()
+                }
+
                 let dataString = JSON.stringify(this.getUserData)
                 AsyncStorage.setItem("WesleyApp-childProgress", dataString);
                 let picturesString = JSON.stringify(this.getUserPictures())
