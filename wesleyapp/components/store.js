@@ -181,6 +181,10 @@ export default new Vuex.Store({
                 // grab the actual sentence/alliteration/phrase associated with the word/letter/phrase
                 let sentence = wordObj.sentence || wordObj.alliteration
                 if (sentence) {
+                    // append the letter if its a letter we're looking at
+                    if (wordObj.alliteration) {
+                        sentence = wordObj.targetWord + " " + sentence
+                    }
                     sentence = sentence.split(' ')
                     // look at each word in that sentence/alliteration/phrase
                     for (let wordString of sentence) {

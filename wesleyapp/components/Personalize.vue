@@ -268,6 +268,10 @@ export default {
         getWordRecordingList () {
             let wordOrLetter = this.modalWordAsObject
             let sentence = wordOrLetter.sentence || wordOrLetter.alliteration || ""
+            // append the letter to the words to be recorded if its a letter being pressed
+            if (wordOrLetter.alliteration) {
+                sentence = wordOrLetter.targetWord + " " + sentence
+            }
             return sentence.split(' ')
         },
 

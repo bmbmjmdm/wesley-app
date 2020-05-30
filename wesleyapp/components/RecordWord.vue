@@ -22,7 +22,7 @@
                 v-if="showWord"
                 ref="targetWordRef"
                 :key="wordList[curWord]"
-                :word="wordList[curWord]"
+                :word="wordToShow"
                 :wordPressed="() => {}"
                 :setManuallyReading="() => {}"
                 :manuallyReading="true"
@@ -134,6 +134,15 @@ export default {
     },
 
     computed: {
+        // we always capitalized single-letter words so the user reads them correctly
+        wordToShow () {
+            let word = this.wordList[curWord]
+            if (word.length === 1) {
+                return word.charAt(0).toUpperCase()
+            }
+            return word
+        },
+
         filePath () {
             let word = this.wordList[this.curWord].toLowerCase().replace("'", "")
             return AudioUtils.DocumentDirectoryPath + '/' + word + '.aac'
