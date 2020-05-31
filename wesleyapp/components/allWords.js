@@ -32,6 +32,7 @@ dad
 so
 a
 kitten
+kittens
 small
 princess
 sleeps
@@ -227,8 +228,9 @@ igloos
 jittering
 jumping
 jazz
-killer
-kaboodle
+keen
+kiss
+kindly
 lovely
 ladies
 merry

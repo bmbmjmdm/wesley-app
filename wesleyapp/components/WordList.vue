@@ -136,6 +136,10 @@ export default {
             this.finishedAnimatingCount = 0
             this.$refs.wordRef[this.$refs.wordRef.length-(this.list.length-index)].readLetters(forceHighlight)
         },
+
+        readWord(index) {
+            this.$refs.wordRef[this.$refs.wordRef.length-(this.list.length-index)].readWord()
+        }
     }
 
 

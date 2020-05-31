@@ -96,6 +96,7 @@ export default {
             correctOnFirstTry: true,
             queuedCallback: null,
             callbackCount: 0,
+            reinforcingWord: null,
         }
     },
 
@@ -237,17 +238,24 @@ export default {
 
         // We finished reading/highlighting the list, now repeat the letter hint
         finishNarration () {
-            // timeout is delay between reading list and reading letter hint again
-            setTimeout( () => {
-                // in easy mode we highlight the letter as we read it
-                if (this.shouldShowLetter) {
-                    this.$refs.letterRef.readLetter(this.finishedLetterHint)
-                }
-                // in normal mode we just read it
-                else {
-                    this.afterSpeak({ word: this.curList.targetWord, callback: this.finishedLetterHint })
-                }
-            }, 350)
+            // this is hacky workflow but its last-minute, adding this so we can re-read a word we just spelled on hard mode
+            if (this.reinforcingWord !== null) {
+                this.reinforcingWord = null
+                this.doneSpelling()
+            }
+            else {
+                // timeout is delay between reading list and reading letter hint again
+                setTimeout( () => {
+                    // in easy mode we highlight the letter as we read it
+                    if (this.shouldShowLetter) {
+                        this.$refs.letterRef.readLetter(this.finishedLetterHint)
+                    }
+                    // in normal mode we just read it
+                    else {
+                        this.afterSpeak({ word: this.curList.targetWord, callback: this.finishedLetterHint })
+                    }
+                }, 350)
+            }
         },
 
         // User clicked a word, if they clicked the right one, move on to the next list
@@ -258,6 +266,9 @@ export default {
                 this.narrating = true
                 this.manuallyReading = true
                 this.queuedCallback = this.doneSpelling
+                if (this.shouldClickLetters) {
+                    this.reinforcingWord = index
+                }
                 Vue.nextTick(() => this.$refs.listRef.readLettersOfWord(index, true))
             }
             else {
@@ -267,6 +278,11 @@ export default {
 
         // correct word finished spelling after being pressed
         async doneSpelling () {
+            // we have to read the world whole first
+            if (this.reinforcingWord !== null) {
+                this.$refs.listRef.readWord(this.reinforcingWord)
+                return
+            }
             // prepare the callback for after animation finishes
             this.callbackCount = 0
             this.queuedCallback = async () => {

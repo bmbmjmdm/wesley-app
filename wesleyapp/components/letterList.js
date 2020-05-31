@@ -145,9 +145,9 @@ export default [
   { alliteration: 'Jittering jumping jazz',
     targetWord: 'j',
     words: [ 'just', 'jedi', 'jittering', 'jumping', 'jazz' ] },
-  { alliteration: 'Killer kitten kaboodle',
+  { alliteration: 'Keen kittens kiss kindly',
     targetWord: 'k',
-    words: [ 'kitten', 'killer', 'kaboodle' ] },
+    words: [ 'keen', 'kittens', 'kiss', 'kindly' ] },
   { alliteration: 'Lovely ladies laugh',
     targetWord: 'l',
     words:
