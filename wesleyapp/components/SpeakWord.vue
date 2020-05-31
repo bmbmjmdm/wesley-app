@@ -219,8 +219,8 @@ export default {
                                 return
                             }
 
-                            // Set the recording to start at 0.1 second before we heard the user start speaking
-                            recording.setCurrentTime(Math.max(this.audioBegins - 0.1, 0))
+                            // Set the recording to start at 0.5 second before we heard the user start speaking
+                            recording.setCurrentTime(Math.max(this.audioBegins - 0.5, 0))
                             // After it plays, read the word a final time
                             let callback = (success) => {
                                 recording.release()

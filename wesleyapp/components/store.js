@@ -394,7 +394,7 @@ export default new Vuex.Store({
             }
 
             // Update difficulty
-            if (state[rightStreek] >= 4) {
+            if (state[rightStreek] >= 6) {
                 Vue.set(state, rightStreek, 0)
                 state.adjustLevel = 1
                 levelUp = true
