@@ -150,7 +150,6 @@ export default {
 <style>
     .word-container {
         flex-direction: column;
-        flex-wrap: wrap;
         align-items: center;
     }
 </style>

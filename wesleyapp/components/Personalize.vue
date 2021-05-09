@@ -482,7 +482,7 @@ export default {
         },
 
         async forceSaveRecordings () {
-            if (this.recordingView) {
+            if (this.recordingView && !this.$refs.recordWordRef.preventForceSave) {
                 await this.saveRecordings({audioDetails: this.$refs.recordWordRef.audioDetails})
                 this.$refs.recordWordRef.quit()
             }

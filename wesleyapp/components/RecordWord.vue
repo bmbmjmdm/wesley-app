@@ -125,7 +125,8 @@ export default {
             recording: null,
             undoing: false,
             quiter: false,
-            prompting: false
+            prompting: false,
+            preventForceSave: false
         }
     },
 
@@ -282,8 +283,10 @@ export default {
         },
 
         promptSpeaking () {
-            // check if android needs checkAuthorizationStatus or this looped
+            // when android asks for permissions, it shouldnt quit RecordWord
+            this.preventForceSave = true
             AudioRecorder.requestAuthorization().then((isAuthorized) => {
+                this.preventForceSave = false
                 if (!isAuthorized) return this.requestPermission()
 
                 AudioRecorder.prepareRecordingAtPath(this.filePath, { MeteringEnabled: true, AudioEncoding: "aac" })
@@ -354,9 +357,10 @@ export default {
         },
 
         async requestPermission () {
+            let prompt = Platform.OS === 'android' ? 'Please try again or enable in settings' : 'Please go into settings and enable it for this app'
             Alert.alert(
                 'Audio permission required to record',
-                'Please go into settings and enable it for this app',
+                prompt,
                 [
                     {text: 'OK', onPress: this.quit}
                 ],
