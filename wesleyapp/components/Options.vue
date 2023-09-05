@@ -9,7 +9,7 @@
             :onPress="nextIntro">
             <text
                 class="normal-text"
-                :style="{fontSize: fontSize}"
+                :style="{fontSize: fontSize * 0.75}"
                 :allowFontScaling="false">
                 {{ introText }}
             </text>

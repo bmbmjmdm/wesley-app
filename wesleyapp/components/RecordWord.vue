@@ -10,7 +10,7 @@
             :onPress="undo">
             <text
                 class="normal-text"
-                :style="{fontSize: fontSize}"
+                :style="{fontSize: fontSize * 0.75}"
                 :allowFontScaling="false">
                 Be careful! What you record here is what your child will hear in the app. If you ever make a bad recording, press "Undo"!
             </text>
