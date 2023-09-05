@@ -206,7 +206,7 @@
             :onPress="finishPersonalizeIntro">
             <text
                 class="normal-text"
-                :style="{fontSize: fontSize}"
+                :style="{fontSize: fontSize * 0.75}"
                 :allowFontScaling="false">
                 Here a list of a words, phrases, and letters will be listed that you can customize with your voice and pictures. Doing them one at a time is tiresome though, so feel free to use the bulk button above (~30min to record all words). Warning: Pictures used with this app should not be deleted from your phone, or else this app will automatically restore the default.
             </text>
@@ -661,7 +661,6 @@ export default {
 <style>
     .container {
         align-items: center;
-        justify-content: center;
         flex: 1;
         flex-direction: column;
     }
