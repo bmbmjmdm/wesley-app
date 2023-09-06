@@ -59,7 +59,7 @@ Wesley App
 *react-native log-android
 *react-native run-android --variant=release
 *mp4 to gif: giphy.com + ezgif.com
-*react-native bundle --platform android --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle
+*react-native bundle --platform android --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/
 ==use "--dev false" for release (probably need to delete android/app/src/main/res/"drawable-mdpi" as well as "app.json" in raw)
 ==use "--assets-dest android/app/src/main/res/" for dev
 -for release, invalidate cache in android studio and delete everything in android/app/build, then restart AS and clean

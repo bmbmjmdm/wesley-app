@@ -223,7 +223,7 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { Alert, Platform } from 'react-native'
-import ImagePicker from 'react-native-image-picker/lib/commonjs';
+import { launchImageLibrary } from 'react-native-image-picker';
 import RecordWord from './RecordWord'
 import { ActivityIndicator } from 'react-native'
 import { request, PERMISSIONS } from 'react-native-permissions'
@@ -397,7 +397,7 @@ export default {
             }
             // open the image picker so they can override the word's picture
             let launchIP = () => {
-                ImagePicker.launchImageLibrary(options, async (response) => {
+                launchImageLibrary(options, async (response) => {
                     if (response.didCancel) {
                         console.log('User cancelled image picker')
                     } else if (response.error || !response) {
@@ -412,7 +412,7 @@ export default {
                     }
                     else {
                         // success!
-                        const source = { uri: response.uri }
+                        const source = { uri: response.assets[0].uri }
                         await this.savePicture({name: word, source, user: true})
                     }
                     // now show the user what the word's picture is, whether it changed or not
@@ -581,7 +581,7 @@ export default {
                     }
                     // open the image picker so they can override the word's picture
                     let launchIP = () => {
-                        ImagePicker.launchImageLibrary(options, async (response) => {
+                        launchImageLibrary(options, async (response) => {
                             if (response.didCancel) {
                                 // TODO the user canceled, offer option to skip cur picture
                                 Alert.alert(
